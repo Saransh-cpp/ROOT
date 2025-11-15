@@ -1,0 +1,33 @@
+# ROOT
+
+ROOT, but not the [particle physics one](https://github.com/root-project/root). Project submission for MATH-458: Programming concepts in scientific computing.
+
+## Project structure
+
+Given that project is relatively simple to structure and does not require installation or packaging, we use the recommended [Canonical Project Structure](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2018/p1204r0.html) for C++ projects.
+
+```
+.
+├── .github               # GitHub related files
+│   └── workflows         # CI files to build/test/check the project
+├── .gitignore            # To ignore files from git
+├── CMakeLists.txt        # Top-level CMakeLists.txt
+├── Doxyfile              # Doxygen configuration
+├── libROOT               # Developer-facing ROOT library
+│   ├── CMakeLists.txt    # CMakeLists.txt for developer-facing ROOT library
+│   ├── libROOT           # CXX and HXX files
+│   └── tests             # Tests for the ROOT library
+├── README.md             # This file
+└── ROOT                  # User-facing ROOT application/executable
+    ├── CMakeLists.txt    # CMakeLists.txt for user-facing ROOT application/executable
+    ├── ROOT              # CXX and HXX files
+    └── tests             # Tests for the ROOT application/executable
+```
+
+## Usage
+
+
+## Tests
+
+
+## Documentation
