@@ -1,5 +1,7 @@
 # ROOT
 
+[![Build Checks](https://github.com/Saransh-cpp/ROOT/actions/workflows/build-checks.yml/badge.svg)](https://github.com/Saransh-cpp/ROOT/actions/workflows/build-checks.yml)
+
 ROOT, but not the [particle physics one](https://github.com/root-project/root). Project submission for MATH-458: Programming concepts in scientific computing.
 
 ## Project structure

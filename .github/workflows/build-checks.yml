@@ -26,10 +26,10 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Install Doxygen
+      - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install doxygen
+          sudo apt-get install doxygen cmake
 
       - name: Generate make files
         run: cmake -S. -Bbuild
