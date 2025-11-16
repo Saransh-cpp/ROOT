@@ -1,3 +1,7 @@
+ci:
+  autoupdate_commit_msg: "chore: update pre-commit hooks"
+  autofix_commit_msg: "style: pre-commit fixes"
+
 repos:
   # C++ formatting
   - repo: https://github.com/pre-commit/mirrors-clang-format
