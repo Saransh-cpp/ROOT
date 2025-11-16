@@ -1,0 +1,12 @@
+# Clang-tidy configuration used on the whole code base
+Checks: >
+  bugprone-unhandled-self-assignment,
+  modernize-deprecated-headers,
+  modernize-redundant-void-arg,
+  modernize-use-bool-literals,
+  modernize-use-nullptr,
+  readability-braces-around-statements,
+  misc-no-recursion,
+  clang-analyzer-*,
+  -clang-analyzer-security.insecureAPI.rand
+WarningsAsErrors: '*'
