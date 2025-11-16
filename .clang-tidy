@@ -2,6 +2,7 @@
 Checks: >
   bugprone-*,
   modernize-*,
+  -modernize-use-trailing-return-type,
   readability-*,
   clang-analyzer-*,
   cppcoreguidelines-*,
