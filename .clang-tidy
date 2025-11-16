@@ -1,0 +1,10 @@
+# Clang-tidy configuration used on the whole code base
+Checks: >
+  bugprone-*,
+  modernize-*,
+  -modernize-use-trailing-return-type,
+  readability-*,
+  clang-analyzer-*,
+  cppcoreguidelines-*,
+  google-*
+WarningsAsErrors: '*'

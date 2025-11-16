@@ -32,7 +32,7 @@ jobs:
           sudo apt-get install doxygen cmake
 
       - name: Generate make files
-        run: cmake -S. -Bbuild
+        run: cmake -S. -Bbuild -DCMAKE_CXX_CLANG_TIDY=clang-tidy
 
-      - name: Build the project
-        run: cmake --build build
+      - name: Build the project (and lint it with clang-tidy)
+        run: cmake --build build -j8

@@ -11,20 +11,23 @@ Given that project is relatively simple to structure and does not require instal
 
 ```
 .
-├── .github               # GitHub related files
-│   └── workflows         # CI files to build/test/check the project
-├── .gitignore            # To ignore files from git
-├── CMakeLists.txt        # Top-level CMakeLists.txt
-├── Doxyfile              # Doxygen configuration
-├── libROOT               # Developer-facing ROOT library
-│   ├── CMakeLists.txt    # CMakeLists.txt for developer-facing ROOT library
-│   ├── libROOT           # CXX and HXX files
-│   └── tests             # Tests for the ROOT library
-├── README.md             # This file
-└── ROOT                  # User-facing ROOT application/executable
-    ├── CMakeLists.txt    # CMakeLists.txt for user-facing ROOT application/executable
-    ├── ROOT              # CXX and HXX files
-    └── tests             # Tests for the ROOT application/executable
+├── .clang-format             # ClangFormat configuration
+├── .clang-tidy               # ClangTidy configuration
+├── .github                   # GitHub related files
+│   └── workflows             # CI files to build/test/check the project
+├── .gitignore                # To ignore files from git
+├── .pre-commit-config.yaml   # Pre-commit configuration
+├── CMakeLists.txt            # Top-level CMakeLists.txt
+├── Doxyfile                  # Doxygen configuration
+├── libROOT                   # Developer-facing ROOT library
+│   ├── CMakeLists.txt        # CMakeLists.txt for developer-facing ROOT library
+│   ├── libROOT               # CXX and HXX files
+│   └── tests                 # Tests for the ROOT library
+├── README.md                 # This file
+└── ROOT                      # User-facing ROOT application/executable
+    ├── CMakeLists.txt        # CMakeLists.txt for user-facing ROOT application/executable
+    ├── ROOT                  # CXX and HXX files
+    └── tests                 # Tests for the ROOT application/executable
 ```
 
 ## Usage
