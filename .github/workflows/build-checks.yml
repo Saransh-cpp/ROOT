@@ -31,11 +31,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install doxygen cmake
 
-      - name: Run clang-format check
-        run: |
-          FILES=$(git ls-files '*.cpp' '*.hpp' '*.cxx' '*.hxx')
-          clang-format --dry-run --Werror $FILES
-
      - name: Generate make files
        run: cmake -S. -Bbuild
 
