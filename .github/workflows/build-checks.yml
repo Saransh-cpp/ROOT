@@ -36,13 +36,12 @@ jobs:
           FILES=$(git ls-files '*.cpp' '*.hpp' '*.cxx' '*.hxx')
           clang-format --dry-run --Werror $FILES
 
-      - name: Run clang-tidy
-        run: |
-          FILES=$(git ls-files '*.cpp')
-          clang-tidy $FILES -- -std=c++20
+     - name: Generate make files
+       run: cmake -S. -Bbuild
 
-      - name: Generate make files
-        run: cmake -S. -Bbuild
+     - name: Build
+       run: cmake --build build -DCMAKE_CXX_CLANG_TIDY=clang-tidy -j8
+
 
       - name: Build the project
         run: cmake --build build
