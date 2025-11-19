@@ -1,0 +1,41 @@
+name: Build Checks
+
+on:
+  pull_request:
+    branches: [ "main" ]
+    types: [ opened, synchronize, reopened, ready_for_review ]
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+concurrency:
+  cancel-in-progress: true
+  group: >-
+    ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+
+jobs:
+  build-checks:
+    permissions:
+      contents: read
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo + submodules
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # v5.0.0
+        with:
+          submodules: recursive
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install doxygen cmake
+
+      - name: Generate make files with testing ON
+        run: cmake -S. -Bbuild -DTEST=ON
+
+      - name: Build the project
+        run: cmake --build build -j8
+
+      - name: Run unit tests
+        run: GTEST_COLOR=1 ctest --test-dir build --output-on-failure -j4
