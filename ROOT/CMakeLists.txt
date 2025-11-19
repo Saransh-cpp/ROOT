@@ -1,3 +1,5 @@
-add_executable(ROOT ROOT/main.cpp)
+add_subdirectory(ROOT)
 
-target_link_libraries(ROOT libROOT)
+if(BUILD_TESTING)
+    add_subdirectory(tests)
+endif()
