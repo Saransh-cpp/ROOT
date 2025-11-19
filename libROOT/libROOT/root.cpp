@@ -1,3 +1,3 @@
-int add(int a, int b) {
-    return a + b;
+int add(int dummy, int variables) {
+    return dummy + variables;
 }
