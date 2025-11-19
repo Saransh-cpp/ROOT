@@ -32,9 +32,9 @@ jobs:
           sudo apt-get install cmake
 
       - name: Generate make files with testing ON
-        run: cmake -S. -Bbuild -DTEST=ON
+        run: cmake -S. -Bbuild -DTEST=ON -DCMAKE_CXX_CLANG_TIDY=clang-tidy
 
-      - name: Build the project
+      - name: Build the project and tests (and lint them with clang-tidy)
         run: cmake --build build -j8
 
       - name: Run unit tests
