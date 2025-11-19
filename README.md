@@ -20,7 +20,8 @@ Given that project is relatively simple to structure and does not require instal
 ├── .pre-commit-config.yaml   # Pre-commit configuration
 ├── CMakeLists.txt            # Top-level CMakeLists.txt
 ├── Doxyfile                  # Doxygen configuration
-├── googletest                # Googletest submodule to run tests
+├── external                  # External libraries (as git submodules)
+│   └── googletest            # Googletest submodule to run tests
 ├── libROOT                   # Developer-facing ROOT library
 │   ├── CMakeLists.txt        # CMakeLists.txt for developer-facing ROOT library
 │   ├── libROOT               # CXX and HXX files
@@ -54,6 +55,8 @@ cmake --build build
 
 Tests for the library (`libROOT`) can be founf in `libROOT/tests`, and the tests for the application (`ROOT`) can be found in `ROOT/tests`. We follow [test-driven development (TDD)](https://en.wikipedia.org/wiki/Test-driven_development), which means that each code changing PR must have tests to validate the changes. We use `googletest` `v1.17.0` (as a git submodule) to test our code.
 
+All the following tests and checks run as part of a Continuous Integration pipeline on GitHub Actions (on every PR and push to `main`).
+
 To build the tests, make sure your submodules are up-to-date (more specifically, the `googletest` submodule):
 ```
 git submodule update --init
@@ -69,5 +72,34 @@ To run the tests, use the `ctest` command:
 ```
 ctest --test-dir build --output-on-failure
 ```
+
+### Linters and formatters
+
+#### Clang Tidy
+
+The project uses `clang-tidy` to lint C++ and related files (except test files).
+
+One can generate make files with `clang-tidy` enabled which will enable cmake to run `clang-tidy` along while compiling the files.
+
+```
+cmake -S. -Bbuild -DCMAKE_CXX_CLANG_TIDY=clang-tidy
+cmake --build build -j8
+```
+
+#### Pre-commit
+
+The project also uses a set of `pre-commit` hooks (including ClangFormat and generic linters and formatters) to perform static analysis and formatting on the code. The hooks can be installed locally using:
+
+```bash
+pre-commit install  # inside your environment
+```
+
+This would run the checks every time a commit is created locally. The checks will only run on the files modified by that commit, but the checks can be triggered for all the files using:
+
+```bash
+pre-commit run --all-files
+```
+
+If you would like to skip the failing checks and push the code for further discussion, use the `--no-verify` option with `git commit`.
 
 ## Documentation
