@@ -2,6 +2,7 @@
 
 [![Build Checks](https://github.com/Saransh-cpp/ROOT/actions/workflows/build-checks.yml/badge.svg?branch=main)](https://github.com/Saransh-cpp/ROOT/actions/workflows/build-checks.yml)
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/Saransh-cpp/ROOT/main.svg)](https://results.pre-commit.ci/latest/github/Saransh-cpp/ROOT/main)
+[![Unit tests](https://github.com/Saransh-cpp/ROOT/actions/workflows/unit-tests.yml/badge.svg)](https://github.com/Saransh-cpp/ROOT/actions/workflows/unit-tests.yml)
 
 ROOT, but not the [particle physics one](https://github.com/root-project/root). Project submission for MATH-458: Programming concepts in scientific computing.
 
@@ -19,6 +20,7 @@ Given that project is relatively simple to structure and does not require instal
 ├── .pre-commit-config.yaml   # Pre-commit configuration
 ├── CMakeLists.txt            # Top-level CMakeLists.txt
 ├── Doxyfile                  # Doxygen configuration
+├── googletest                # Googletest submodule to run tests
 ├── libROOT                   # Developer-facing ROOT library
 │   ├── CMakeLists.txt        # CMakeLists.txt for developer-facing ROOT library
 │   ├── libROOT               # CXX and HXX files
@@ -30,10 +32,42 @@ Given that project is relatively simple to structure and does not require instal
     └── tests                 # Tests for the ROOT application/executable
 ```
 
+## Building the project
+
+To build the project, clone the repository locally:
+
+```
+git clone https://github.com/Saransh-cpp/ROOT --recursive
+```
+
+And build the library and the application using:
+
+```
+cmake -S. -Bbuild
+cmake --build build
+```
+
 ## Usage
 
 
 ## Tests
 
+Tests for the library (`libROOT`) can be founf in `libROOT/tests`, and the tests for the application (`ROOT`) can be found in `ROOT/tests`. We follow [test-driven development (TDD)](https://en.wikipedia.org/wiki/Test-driven_development), which means that each code changing PR must have tests to validate the changes. We use `googletest` `v1.17.0` (as a git submodule) to test our code.
+
+To build the tests, make sure your submodules are up-to-date (more specifically, the `googletest` submodule):
+```
+git submodule update --init
+```
+
+And build the code with `-DTEST=ON`:
+```
+cmake -S. -Bbuild -DTEST=ON
+cmake --build build
+```
+
+To run the tests, use the `ctest` command:
+```
+ctest --test-dir build --output-on-failure
+```
 
 ## Documentation

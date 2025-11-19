@@ -13,9 +13,6 @@ concurrency:
   group: >-
     ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
 
-env:
-  FORCE_COLOR: "1"
-
 jobs:
   unit-tests:
     permissions:
@@ -41,4 +38,4 @@ jobs:
         run: cmake --build build -j8
 
       - name: Run unit tests
-        run: ctest --test-dir build --output-on-failure -j4
+        run: ctest --test-dir build --output-on-failure -j8
