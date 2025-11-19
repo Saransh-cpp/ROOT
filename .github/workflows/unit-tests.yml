@@ -14,7 +14,7 @@ concurrency:
     ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
 
 jobs:
-  build-checks:
+  unit-tests:
     permissions:
       contents: read
     if: github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == false
