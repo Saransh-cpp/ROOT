@@ -53,7 +53,7 @@ cmake --build build
 
 ## Tests
 
-Tests for the library (`libROOT`) can be founf in `libROOT/tests`, and the tests for the application (`ROOT`) can be found in `ROOT/tests`. We follow [test-driven development (TDD)](https://en.wikipedia.org/wiki/Test-driven_development), which means that each code changing PR must have tests to validate the changes. We use `googletest` `v1.17.0` (as a git submodule) to test our code.
+Tests for the library (`libROOT`) can be found in `libROOT/tests`, and the tests for the application (`ROOT`) can be found in `ROOT/tests`. We follow [test-driven development (TDD)](https://en.wikipedia.org/wiki/Test-driven_development), which means that each code changing PR must have tests to validate the changes. We use `googletest` `v1.17.0` (as a git submodule) to test our code.
 
 All the following tests and checks run as part of a Continuous Integration pipeline on GitHub Actions (on every PR and push to `main`).
 
