@@ -102,4 +102,12 @@ pre-commit run --all-files
 
 If you would like to skip the failing checks and push the code for further discussion, use the `--no-verify` option with `git commit`.
 
-## Documentation
+## Documentation (Doxygen)
+
+We added a Doxygen target to the top-level `CMakeLists.txt`.
+
+### Generate docs locally
+```bash
+cmake -S . -B build
+cmake --build build --target doc
+# then open build/docs/html/index.html
