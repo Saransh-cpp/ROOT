@@ -22,19 +22,19 @@ endif()
 find_package(Doxygen)
 
 if (DOXYGEN_FOUND)
-    set(DOC_OUTPUT_DIR ${CMAKE_BINARY_DIR}/documentation)
+    set(DOC_OUTPUT_DIR ${CMAKE_BINARY_DIR}/docs)
 
     set(DOXYGEN_IN ${CMAKE_SOURCE_DIR}/Doxyfile)
     set(DOXYGEN_OUT ${CMAKE_BINARY_DIR}/Doxyfile)
 
     add_custom_target(doc
-            COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
-            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+            COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_IN}
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
             COMMENT "Generating documentation with Doxygen"
-            VERBATIM
     )
 
-    add_custom_target(doc-html ALL DEPENDS document)
+    configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
+    add_custom_target(doc-html ALL DEPENDS doc)
 else()
     message(STATUS "Doxygen not found. 'document' target will be unavailable.")
 endif()

@@ -2,7 +2,7 @@ PROJECT_NAME           = "ROOT"
 PROJECT_BRIEF          = "ROOT project"
 OUTPUT_DIRECTORY       = docs            # will be relative to CMake binary dir after configure
 
-INPUT                  = ./libROOT ./ROOT ./README.md .clang-format .clang-tidy
+INPUT                  = ./libROOT ./libROOT/libROOT ./ROOT/ROOT ./README.md .clang-format .clang-tidy
 
 FILE_PATTERNS          = *.cxx *.cpp *.c *.h *.hxx *.hpp *.h++ *.md *.txt *.clang-format *.clang-tidy
 
