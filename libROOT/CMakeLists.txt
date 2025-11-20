@@ -1,3 +1,5 @@
-add_library(libROOT SHARED libROOT/root.cpp)
+add_subdirectory(libROOT)
 
-target_include_directories(libROOT PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/libROOT)
+if(BUILD_TESTING)
+    add_subdirectory(tests)
+endif()

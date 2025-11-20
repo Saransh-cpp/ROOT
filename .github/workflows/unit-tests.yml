@@ -1,4 +1,4 @@
-name: Build Checks
+name: Unit tests
 
 on:
   pull_request:
@@ -14,7 +14,7 @@ concurrency:
     ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
 
 jobs:
-  build-checks:
+  unit-tests:
     permissions:
       contents: read
     if: github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == false
@@ -29,10 +29,13 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install doxygen cmake clang-tidy
+          sudo apt-get install cmake
 
-      - name: Generate make files
-        run: cmake -S. -Bbuild -DCMAKE_CXX_CLANG_TIDY=clang-tidy
+      - name: Generate make files with testing ON
+        run: cmake -S. -Bbuild -DTEST=ON
 
-      - name: Build the project (and lint it with clang-tidy)
+      - name: Build the project and tests
         run: cmake --build build -j8
+
+      - name: Run unit tests
+        run: ctest --test-dir build --output-on-failure -j8

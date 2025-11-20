@@ -1,0 +1,6 @@
+if(BUILD_TESTING)
+    add_executable(test_lib_root test_lib_root.cpp)
+    target_link_libraries(test_lib_root PRIVATE GTest::gtest_main libROOT)
+    include(GoogleTest)
+    gtest_discover_tests(test_lib_root)
+endif()
