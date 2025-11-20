@@ -36,3 +36,13 @@ jobs:
 
       - name: Build the project (and lint it with clang-tidy)
         run: cmake --build build -j8
+
+      - name: Install Doxygen
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y doxygen
+
+      - name: Build Doxygen documentation
+        run: |
+          cmake -S . -B build
+          cmake --build build --target document
