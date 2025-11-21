@@ -36,6 +36,3 @@ jobs:
 
       - name: Build the project (and lint it with clang-tidy)
         run: cmake --build build -j8
-
-      - name: Build Doxygen documentation
-        run: cmake --build build --target doc
