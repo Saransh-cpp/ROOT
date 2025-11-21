@@ -1,9 +1,9 @@
 PROJECT_NAME           = "ROOT"
 PROJECT_BRIEF          = "ROOT project"
-OUTPUT_DIRECTORY       = docs            # will be relative to CMake binary dir after configure
+OUTPUT_DIRECTORY       = docs/build
 
 INPUT                  = .
-USE_MDFILE_AS_MAINPAGE = README.md
+USE_MDFILE_AS_MAINPAGE = ./README.md
 EXCLUDE                = ./external
 
 FILE_PATTERNS          = *.cxx *.cpp *.c *.h *.hxx *.hpp *.h++ *.md *.txt *.clang-format *.clang-tidy
