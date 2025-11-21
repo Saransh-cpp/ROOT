@@ -25,7 +25,7 @@ if(DOXYGEN_FOUND)
     doxygen_add_docs(doc
             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
             COMMENT "Generating documentation with Doxygen"
-            CONFIG_FILE ${CMAKE_SOURCE_DIR}/docs/Doxyfile
+            CONFIG_FILE ${CMAKE_SOURCE_DIR}/Doxyfile
     )
 else()
     message(STATUS "Doxygen not found; 'doc' target will be unavailable")
