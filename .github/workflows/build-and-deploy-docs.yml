@@ -40,7 +40,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    # if: github.ref == 'refs/heads/main' && github.repository == 'Saransh-cpp/ROOT'
+    if: github.ref == 'refs/heads/main' && github.repository == 'Saransh-cpp/ROOT'
     needs: build
     permissions:
       pages: write
