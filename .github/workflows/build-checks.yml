@@ -30,6 +30,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install doxygen cmake clang-tidy
+          sudo apt-get install -y doxygen graphviz cmake clang-tidy
 
       - name: Generate make files
         run: cmake -S. -Bbuild -DCMAKE_CXX_CLANG_TIDY=clang-tidy
@@ -37,16 +38,8 @@ jobs:
       - name: Build the project (and lint it with clang-tidy)
         run: cmake --build build -j8
 
-      - name: Install Graphviz
-        run: |
-          sudo apt-get update && sudo apt-get install -y graphviz
-
-      - name: Install Doxygen
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y doxygen
-
       - name: Build Doxygen documentation
         run: |
+          rm -rf docs/html build/docs || true
           cmake -S . -B build
           cmake --build build --target document
