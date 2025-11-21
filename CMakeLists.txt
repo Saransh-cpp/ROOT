@@ -19,5 +19,20 @@ if(TEST)
     endif()
 endif()
 
+find_package(Doxygen)
+
+if(DOXYGEN_FOUND)
+    set(DOXYGEN_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/docs)
+    set(DOXYGEN_EXCLUDE_PATTERNS ${CMAKE_SOURCE_DIR}/external)
+
+    doxygen_add_docs(doc
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+            COMMENT "Generating documentation with Doxygen"
+            CONFIG_FILE ${CMAKE_SOURCE_DIR}/Doxyfile
+    )
+else()
+    message(STATUS "Doxygen not found; 'doc' target will be unavailable")
+endif()
+
 add_subdirectory(libROOT)
 add_subdirectory(ROOT)

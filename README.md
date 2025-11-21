@@ -103,3 +103,18 @@ pre-commit run --all-files
 If you would like to skip the failing checks and push the code for further discussion, use the `--no-verify` option with `git commit`.
 
 ## Documentation
+
+The project uses Doxygen to document the code. The project also provides CMake integration for building documentation.
+
+As with the tests, each code change should be accompanied with an updated documentation.
+
+### Building docs locally
+
+One can build the documentation locally using:
+
+```
+cmake -S . -B build
+cmake --build build --target doc
+```
+
+which will write the HTML files to `docs/html`.
