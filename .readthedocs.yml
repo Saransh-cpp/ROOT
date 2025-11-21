@@ -8,3 +8,7 @@ build:
   os: ubuntu-24.04
   tools:
     python: latest
+
+# Build documentation in the docs/ directory with Sphinx
+sphinx:
+  configuration: docs/conf.py
