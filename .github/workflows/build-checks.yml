@@ -38,7 +38,4 @@ jobs:
         run: cmake --build build -j8
 
       - name: Build Doxygen documentation
-        run: |
-          rm -rf docs/html build/docs || true
-          cmake -S . -B build
-          cmake --build build --target document
+        run: cmake --build build --target doc
