@@ -1,6 +1,6 @@
 PROJECT_NAME           = "ROOT"
 PROJECT_BRIEF          = "ROOT project"
-OUTPUT_DIRECTORY       = docs/build
+OUTPUT_DIRECTORY       = docs/
 
 INPUT                  = .
 USE_MDFILE_AS_MAINPAGE = ./README.md
