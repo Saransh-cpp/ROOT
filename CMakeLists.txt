@@ -19,24 +19,18 @@ if(TEST)
     endif()
 endif()
 
-find_package(Doxygen)
-
-if (DOXYGEN_FOUND)
-    set(DOC_OUTPUT_DIR ${CMAKE_BINARY_DIR}/docs)
+if(DOXYGEN_FOUND)
+    set(DOXYGEN_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/docs)
+    set(DOXYGEN_EXCLUDE_PATTERNS ${CMAKE_SOURCE_DIR}/external)
 
     set(DOXYGEN_IN ${CMAKE_SOURCE_DIR}/Doxyfile)
-    set(DOXYGEN_OUT ${CMAKE_BINARY_DIR}/Doxyfile)
 
-    add_custom_target(doc
-            COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_IN}
+    doxygen_add_docs(doc
             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
             COMMENT "Generating documentation with Doxygen"
     )
-
-    configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
-    add_custom_target(doc-html ALL DEPENDS doc)
 else()
-    message(STATUS "Doxygen not found. 'document' target will be unavailable.")
+    message(STATUS "Doxygen not found; 'doc' target will be unavailable")
 endif()
 
 add_subdirectory(libROOT)
