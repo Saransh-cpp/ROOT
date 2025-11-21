@@ -18,7 +18,7 @@ class DummyClass {
      * \brief Returns something dummy
      * \return Always returns 42
      */
-    int return_dummy_value() const;
+    static int return_dummy_value();
 };
 
 #endif
