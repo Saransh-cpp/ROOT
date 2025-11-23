@@ -4,12 +4,13 @@
 #include <Eigen/Sparse>
 #include <functional>
 
+template <typename T>
 struct Info {
     std::function<double(double)> function;
-    template <typename T>
     T previous_iteration;
 };
 
+template <typename T>
 class Solver {
   protected:
     static int max_iterations;
@@ -17,7 +18,7 @@ class Solver {
     static bool aitken_requirement;
     Eigen::MatrixX2d results;
     std::function<double(double)> function;
-    Info info;
+    Info<T> info;
 
   public:
     Solver();
@@ -52,7 +53,7 @@ class Stepper {
      * solver.starting_point and solver.function(x_prev)
      */
     Stepper(Solver solver);
-}
+};
 
 class NewtonRaphsonStepper : public Stepper {
   private:
@@ -61,8 +62,8 @@ class NewtonRaphsonStepper : public Stepper {
   public:
     NewtonRaphsonStepper(Solver solver);
     friend void set_derivative();
-    compute_guess_newton_raphson();
-}
+    void compute_guess_newton_raphson();
+};
 
 class FixedPointStepper : public Stepper {
   private:
@@ -71,7 +72,7 @@ class FixedPointStepper : public Stepper {
   public:
     FixedPointStepper(Solver solver, std::function<double(double)> fixed_point_function);
     void compute_guess_fixed_point();
-}
+};
 
 class ChordsStepper : public Stepper {
   private:
@@ -80,7 +81,7 @@ class ChordsStepper : public Stepper {
   public:
     ChordsStepper(Solver solver);
     void compute_guess_chords();
-}
+};
 
 class BisectionStepper : public Stepper {
   private:
@@ -88,7 +89,7 @@ class BisectionStepper : public Stepper {
 
   public:
     BisectionStepper(Solver solver);
-    compute_guess_bisection();
-}
+    void compute_guess_bisection();
+};
 
 #endif
