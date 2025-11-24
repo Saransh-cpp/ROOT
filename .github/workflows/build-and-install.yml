@@ -14,7 +14,7 @@ concurrency:
     ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
 
 jobs:
-  build-checks:
+  build-and-install:
     permissions:
       contents: read
     if: github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == false
@@ -32,16 +32,13 @@ jobs:
           sudo apt-get install -y cmake clang-tidy
 
       - name: Generate make files
-        run: cmake -S. -Bbuild -DCMAKE_CXX_CLANG_TIDY=clang-tidy
+        run: cmake -S. -DCMAKE_INSTALL_PREFIX=./install -Bbuild -DCMAKE_CXX_CLANG_TIDY=clang-tidy
 
       - name: Build the project (and lint it with clang-tidy)
         run: cmake --build build -j8
 
-      - name: Generate make files for installation
-        run: cmake -S. -DCMAKE_INSTALL_PREFIX=./install -Bbuild
-
       - name: Install the project
-        run: cmake --install build --target install -j8
+        run: cmake --build build --target install -j10
 
       - name: Verify installation
         run: |
