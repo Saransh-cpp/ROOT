@@ -1,4 +1,4 @@
-name: Build Checks
+name: Build and Install
 
 on:
   pull_request:
@@ -36,3 +36,17 @@ jobs:
 
       - name: Build the project (and lint it with clang-tidy)
         run: cmake --build build -j8
+
+      - name: Generate make files for installation
+        run: cmake -S. -DCMAKE_INSTALL_PREFIX=./install -Bbuild
+
+      - name: Install the project
+        run: cmake --install build --target install -j8
+
+      - name: Verify installation
+        run: |
+          ls -la install/bin
+          ls -la install/lib
+          ls -la install/include
+          file install/lib/libROOT.so
+          install/bin/root_cli
