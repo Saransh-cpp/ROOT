@@ -42,7 +42,7 @@ jobs:
 
       - name: Verify installation
         run: |
-          ls /usr/include
+          ls /usr/include | grep -E 'root.hpp|dummy_class.hpp'
           file /usr/bin/root_cli
           file /usr/lib/libROOT.so
           root_cli
