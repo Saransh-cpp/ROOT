@@ -32,13 +32,13 @@ jobs:
           sudo apt-get install -y cmake clang-tidy
 
       - name: Generate make files
-        run: cmake -S. -DCMAKE_INSTALL_PREFIX=/usr/ -Bbuild -DCMAKE_CXX_CLANG_TIDY=clang-tidy
+        run: sudo cmake -S. -DCMAKE_INSTALL_PREFIX=/usr/ -Bbuild -DCMAKE_CXX_CLANG_TIDY=clang-tidy
 
       - name: Build the project (and lint it with clang-tidy)
         run: cmake --build build -j8
 
       - name: Install the project
-        run: cmake --build build --target install -j8
+        run: sudo cmake --build build --target install -j8
 
       - name: Verify installation
         run: |
