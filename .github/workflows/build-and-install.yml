@@ -42,8 +42,7 @@ jobs:
 
       - name: Verify installation
         run: |
-          ls -la /usr/bin
-          ls -la /usr/lib
-          ls -la /usr/include
+          ls /usr/include
+          file /usr/bin/root_cli
           file /usr/lib/libROOT.so
-          /usr/bin/root_cli
+          root_cli

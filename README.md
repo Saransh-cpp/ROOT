@@ -64,7 +64,7 @@ The installed CLI application can simply be used by:
 
 ```
 $ <install_path>/bin/root_cli
-# or just root_cli if installed in /usr/bin/ in macOS for instance
+# or just root_cli if installed in /usr/bin/ on unix for instance
 ```
 
 And the shared library can be used inside `cxx` files using:
