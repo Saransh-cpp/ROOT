@@ -1,6 +1,6 @@
 # ROOT
 
-[![Build Checks](https://github.com/Saransh-cpp/ROOT/actions/workflows/build-checks.yml/badge.svg?branch=main)](https://github.com/Saransh-cpp/ROOT/actions/workflows/build-checks.yml)
+[![Build and Install](https://github.com/Saransh-cpp/ROOT/actions/workflows/build-and-install.yml/badge.svg?branch=main)](https://github.com/Saransh-cpp/ROOT/actions/workflows/build-and-install.yml)
 [![Unit tests](https://github.com/Saransh-cpp/ROOT/actions/workflows/unit-tests.yml/badge.svg?branch=main)](https://github.com/Saransh-cpp/ROOT/actions/workflows/unit-tests.yml)
 [![Documentation Deployment](https://github.com/Saransh-cpp/ROOT/actions/workflows/build-and-deploy-docs.yml/badge.svg?branch=main)](https://saransh-cpp.github.io/ROOT)
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/Saransh-cpp/ROOT/main.svg)](https://results.pre-commit.ci/latest/github/Saransh-cpp/ROOT/main)
