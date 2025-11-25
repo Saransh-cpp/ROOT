@@ -1,4 +1,4 @@
-name: Build Checks
+name: Build and Install
 
 on:
   pull_request:
@@ -14,7 +14,7 @@ concurrency:
     ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
 
 jobs:
-  build-checks:
+  build-and-install:
     permissions:
       contents: read
     if: github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == false
@@ -32,7 +32,17 @@ jobs:
           sudo apt-get install -y cmake clang-tidy
 
       - name: Generate make files
-        run: cmake -S. -Bbuild -DCMAKE_CXX_CLANG_TIDY=clang-tidy
+        run: sudo cmake -S. -DCMAKE_INSTALL_PREFIX=/usr/ -Bbuild -DCMAKE_CXX_CLANG_TIDY=clang-tidy
 
       - name: Build the project (and lint it with clang-tidy)
-        run: cmake --build build -j8
+        run: sudo cmake --build build -j8
+
+      - name: Install the project
+        run: sudo cmake --build build --target install -j8
+
+      - name: Verify installation
+        run: |
+          ls /usr/include | grep -E 'root.hpp|dummy_class.hpp'
+          file /usr/bin/root_cli
+          file /usr/lib/libROOT.so
+          root_cli
