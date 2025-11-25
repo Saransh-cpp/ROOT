@@ -41,13 +41,19 @@ void Solver<double>::loop() {
     int type = 0;
     std::cout << "Insert 1 to use NR, 2 to use FP: " << std::endl;
     std::cin >> type;
+    std::unique_ptr<Stepper<double>> stepper;
     if (type == 1) {
-        NewtonRaphsonStepper stepper(*this);
-        stepper.set_derivative();
+        auto temp_stepper = std::make_unique<NewtonRaphsonStepper>(*this);
+        temp_stepper->set_derivative();
+        stepper = std::move(temp_stepper);
+    } else if (type == 2) {
+        auto temp_stepper = std::make_unique<FixedPointStepper>(*this);
+        temp_stepper->set_fixed_point_function();
+        stepper = std::move(temp_stepper);
     } else {
-        FixedPointStepper stepper(*this);
-        stepper.set_fixed_point_function();
+        return;
     }
     while (err > tolerance && iter < max_iterations) {
+        stepper->compute_step();
     }
 }

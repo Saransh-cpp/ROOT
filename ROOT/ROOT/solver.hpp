@@ -61,6 +61,7 @@ class Stepper {
      * solver.starting_point and solver.function(x_prev)
      */
     Stepper(Solver<T>& solver);
+    virtual void compute_step() = 0;
 };
 
 class NewtonRaphsonStepper : public Stepper<double> {
@@ -70,7 +71,7 @@ class NewtonRaphsonStepper : public Stepper<double> {
   public:
     NewtonRaphsonStepper(Solver<double>& solver);
     void set_derivative();
-    void compute_guess_newton_raphson();
+    void compute_step() override;
 };
 
 class FixedPointStepper : public Stepper<double> {
@@ -80,7 +81,7 @@ class FixedPointStepper : public Stepper<double> {
   public:
     FixedPointStepper(Solver<double>& solver);
     void set_fixed_point_function();
-    void compute_guess_fixed_point();
+    void compute_step() override;
 };
 
 class ChordsStepper : public Stepper<Eigen::Vector2d> {
@@ -89,7 +90,7 @@ class ChordsStepper : public Stepper<Eigen::Vector2d> {
 
   public:
     ChordsStepper(Solver<Eigen::Vector2d>& solver);
-    void compute_guess_chords();
+    void compute_step() override;
 };
 
 class BisectionStepper : public Stepper<Eigen::Vector2d> {
@@ -98,7 +99,7 @@ class BisectionStepper : public Stepper<Eigen::Vector2d> {
 
   public:
     BisectionStepper(Solver<Eigen::Vector2d>& solver);
-    void compute_guess_bisection();
+    void compute_step() override;
 };
 
 #endif
