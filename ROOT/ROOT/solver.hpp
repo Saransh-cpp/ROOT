@@ -41,6 +41,7 @@ class Stepper {
   public:
     Stepper(Solver<T>& solver);
     virtual void compute_step() = 0;
+    void starting_point_setter(std::string method);
 };
 
 class NewtonRaphsonStepper : public Stepper<double> {
