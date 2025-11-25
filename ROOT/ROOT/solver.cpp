@@ -34,26 +34,16 @@ void Solver<T>::set_info(Info<T> info) {
     this->info = info;
 }
 
-template <>
-void Solver<double>::loop() {
+template <typename T>
+void Solver<T>::loop() {
     double err = 1;
     int iter = 0;
-    int type = 0;
-    std::cout << "Insert 1 to use NR, 2 to use FP: " << std::endl;
-    std::cin >> type;
-    std::unique_ptr<Stepper<double>> stepper;
-    if (type == 1) {
-        auto temp_stepper = std::make_unique<NewtonRaphsonStepper>(*this);
-        temp_stepper->set_derivative();
-        stepper = std::move(temp_stepper);
-    } else if (type == 2) {
-        auto temp_stepper = std::make_unique<FixedPointStepper>(*this);
-        temp_stepper->set_fixed_point_function();
-        stepper = std::move(temp_stepper);
-    } else {
-        return;
-    }
+
+    std::unique_ptr<Stepper<double>> stepper = create_stepper();
+
     while (err > tolerance && iter < max_iterations) {
         stepper->compute_step();
+        err = error_calculator(this->results(iter - 1, 0), this->results(iter, 0));
+        iter++;
     }
 }
