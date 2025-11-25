@@ -11,23 +11,30 @@ struct Info {
 };
 
 template <typename T>
+class Stepper;
+
+template <typename T>
+double error_calculator(double x_prev, double x_next);
+
+template <typename T>
 class Solver {
   protected:
-    static int max_iterations;
-    static double tolerance;
-    static bool aitken_requirement;
+    int max_iterations;
+    double tolerance;
+    bool aitken_requirement;
     Eigen::MatrixX2d results;
     std::function<double(double)> function;
     Info<T> info;
 
   public:
     Solver();
-    Solver(Info info, int max_iterations, double tolerance);
-    Solver(Info info, int max_iterations);
-    Solver(Info info, double tolerance);
-    void get_info(Info info);
+    Solver(Info<T> info, int max_iterations, double tolerance);
+    Solver(Info<T> info, int max_iterations);
+    Solver(Info<T> info, double tolerance);
+    void set_info(Info<T> info);
     void loop();
-    friend double error_calculator(double x_prev, double x_next);
+    friend double error_calculator<T>(double x_prev, double x_next);
+    template <typename N>
     friend class Stepper;
 };
 
@@ -37,7 +44,7 @@ class Solver {
  * The results will be updated in the Stepper class for elegance, id est I don't want to
  * return two doubles and then save them in the looper function.
  */
-
+template <typename T>
 class Stepper {
   protected:
     /**
@@ -45,6 +52,7 @@ class Stepper {
      * row of results or directly with solver.info.previous_iteration.
      */
     double x_prev, x_next, f_prev, f_next;
+    Solver<T>* solver;
 
   public:
     /**
@@ -52,43 +60,44 @@ class Stepper {
      * at each iteration of the loop. When it's constructed, x_prev and f_prev will be
      * solver.starting_point and solver.function(x_prev)
      */
-    Stepper(Solver solver);
+    Stepper(Solver<T>& solver);
 };
 
-class NewtonRaphsonStepper : public Stepper {
+class NewtonRaphsonStepper : public Stepper<double> {
   private:
     std::function<double(double)> derivative;
 
   public:
-    NewtonRaphsonStepper(Solver solver);
-    friend void set_derivative();
+    NewtonRaphsonStepper(Solver<double>& solver);
+    void set_derivative();
     void compute_guess_newton_raphson();
 };
 
-class FixedPointStepper : public Stepper {
+class FixedPointStepper : public Stepper<double> {
   private:
     std::function<double(double)> fixed_point_function;
 
   public:
-    FixedPointStepper(Solver solver, std::function<double(double)> fixed_point_function);
+    FixedPointStepper(Solver<double>& solver);
+    void set_fixed_point_function();
     void compute_guess_fixed_point();
 };
 
-class ChordsStepper : public Stepper {
+class ChordsStepper : public Stepper<Eigen::Vector2d> {
   private:
     double left_edge, right_edge;
 
   public:
-    ChordsStepper(Solver solver);
+    ChordsStepper(Solver<Eigen::Vector2d>& solver);
     void compute_guess_chords();
 };
 
-class BisectionStepper : public Stepper {
+class BisectionStepper : public Stepper<Eigen::Vector2d> {
   private:
     double left_edge, right_edge;
 
   public:
-    BisectionStepper(Solver solver);
+    BisectionStepper(Solver<Eigen::Vector2d>& solver);
     void compute_guess_bisection();
 };
 

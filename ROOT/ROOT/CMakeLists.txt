@@ -1,3 +1,4 @@
-add_executable(ROOT main.cpp)
+add_executable(ROOT main.cpp
+        solver.cpp)
 
 target_link_libraries(ROOT PRIVATE libROOT)
