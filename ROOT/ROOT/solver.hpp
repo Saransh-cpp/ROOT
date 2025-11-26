@@ -32,6 +32,9 @@ class Solver {
     Solver(Info<T> info, double tolerance);
     void set_info(Info<T> info);
     void loop();
+    void while_body(int& iter, auto stepper, double& err);
+    void aitken_step(int iter);
+    void save_results(int iter);
     friend double error_calculator(double x_prev, double x_next);
     std::unique_ptr<Stepper<T>> create_stepper();
 };
@@ -40,7 +43,7 @@ template <typename T>
 class Stepper {
   public:
     Stepper(Solver<T>& solver);
-    virtual void compute_step() = 0;
+    virtual void compute_step(int iter) = 0;
     void starting_point_setter(std::string method);
 };
 
@@ -51,7 +54,7 @@ class NewtonRaphsonStepper : public Stepper<double> {
   public:
     NewtonRaphsonStepper(Solver<double>& solver);
     void set_derivative();
-    void compute_step() override;
+    void compute_step(int iter) override;
 };
 
 class FixedPointStepper : public Stepper<double> {
@@ -61,7 +64,7 @@ class FixedPointStepper : public Stepper<double> {
   public:
     FixedPointStepper(Solver<double>& solver);
     void set_fixed_point_function();
-    void compute_step() override;
+    void compute_step(int iter) override;
 };
 
 class ChordsStepper : public Stepper<Eigen::Vector2d> {
@@ -70,7 +73,7 @@ class ChordsStepper : public Stepper<Eigen::Vector2d> {
 
   public:
     ChordsStepper(Solver<Eigen::Vector2d>& solver);
-    void compute_step() override;
+    void compute_step(int iter) override;
 };
 
 class BisectionStepper : public Stepper<Eigen::Vector2d> {
@@ -79,7 +82,7 @@ class BisectionStepper : public Stepper<Eigen::Vector2d> {
 
   public:
     BisectionStepper(Solver<Eigen::Vector2d>& solver);
-    void compute_step() override;
+    void compute_step(int iter) override;
 };
 
 #endif

@@ -42,8 +42,23 @@ void Solver<T>::loop() {
     std::unique_ptr<Stepper<double>> stepper = create_stepper();
 
     while (err > tolerance && iter < max_iterations) {
-        stepper->compute_step();
+        while_body(&iter, stepper.get(), &err);
+    }
+}
+
+template <typename T>
+void Solver<T>::while_body(int& iter, auto stepper, double& err) {
+    if (!this->aitken_requirement) {
+        stepper->compute_step(iter);
         err = error_calculator(this->results(iter - 1, 0), this->results(iter, 0));
         iter++;
+    } else {
+        stepper->compute_step(iter);
+        iter++;
+        stepper->compute_step(iter);
+        iter++;
+        this->aitken_step();
+        iter++;
+        err = error_calculator(this->results(iter - 1, 0), this->results(iter, 0));
     }
 }
