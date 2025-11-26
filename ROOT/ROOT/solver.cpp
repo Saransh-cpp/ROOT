@@ -1,6 +1,6 @@
 #include "solver.hpp"
-
 #include <iostream>
+#include "stepper.hpp"
 
 constexpr double tol = 1e-6;
 constexpr int max_iters = 200;
@@ -35,7 +35,7 @@ void Solver<T>::set_info(Info<T> info) {
 }
 
 template <typename T>
-void Solver<T>::convert_stepper(auto stepper, std::string& method) {
+void Solver<T>::convert_stepper(auto stepper, const std::string& method) {
     if (method == "newton") {
         stepper = std::make_unique<NewtonRaphsonStepper>(*this);
     } else if (method == "fixed point") {
@@ -70,6 +70,11 @@ void Solver<Eigen::Vector2d>::save_starting_point() {
 template <typename T>
 double Solver<T>::error_calculator(double x_prev, double x_next) {
     return abs(x_prev - x_next);
+}
+
+template <typename T>
+std::function<double(double)> Solver<T>::get_function() {
+    return info.function;
 }
 
 template <typename T>
@@ -109,7 +114,7 @@ void Solver<T>::while_body(int& iter, auto stepper, double& err) {
         new_results = stepper->compute_step(this->get_previous_result(0));
         this->save_results(iter, new_results);
         iter++;
-        new_results = stepper->aitken_step(this->get_previous_result(0));
+        new_results = stepper->aitken_step(new_results, this->get_previous_result(1));
         this->save_results(iter, new_results);
         iter++;
         err = error_calculator(new_results, this->get_previous_result(0)(0));
