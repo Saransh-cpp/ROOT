@@ -33,8 +33,8 @@ class Solver {
     void set_info(Info<T> info);
     void loop();
     void while_body(int& iter, auto stepper, double& err);
-    void save_results(int iter);                            // to do
-    void get_previous_results(int step_length);             // to do
+    void save_results(int iter, double partial_result);     // to do
+    Eigen::Vector2d get_previous_result(int step_length);   // to do
     double error_calculator(double x_prev, double x_next);  // to do -> convert to void via pointers
     void starting_point_setter(std::string& method);        // to do
     void starting_point_double(std::string& method);        // to do
@@ -46,7 +46,7 @@ template <typename T>
 class Stepper {
   public:
     Stepper(Solver<T>& solver);  // to do
-    virtual void compute_step(int iter) = 0;
+    virtual Eigen::Vector2d compute_step(Eigen::Vector2d) = 0;
     void aitken_step(int iter);  // to do
 };
 
@@ -57,7 +57,8 @@ class NewtonRaphsonStepper : public Stepper<double> {
   public:
     NewtonRaphsonStepper(Solver<double>& solver);  // to do
     void set_derivative();                         // to do
-    void compute_step(int iter) override;          // to do
+    Eigen::Vector2d compute_step(
+        Eigen::Vector2d previous_iteration) override;  // to do -> make it double and input info and previous_iteration
 };
 
 class FixedPointStepper : public Stepper<double> {
@@ -65,9 +66,9 @@ class FixedPointStepper : public Stepper<double> {
     std::function<double(double)> fixed_point_function;
 
   public:
-    FixedPointStepper(Solver<double>& solver);  // to do
-    void set_fixed_point_function();            // to do
-    void compute_step(int iter) override;       // to do
+    FixedPointStepper(Solver<double>& solver);                                  // to do
+    void set_fixed_point_function();                                            // to do
+    Eigen::Vector2d compute_step(Eigen::Vector2d previous_iteration) override;  // to do
 };
 
 class ChordsStepper : public Stepper<Eigen::Vector2d> {
@@ -75,8 +76,8 @@ class ChordsStepper : public Stepper<Eigen::Vector2d> {
     double left_edge, right_edge;
 
   public:
-    ChordsStepper(Solver<Eigen::Vector2d>& solver);  // to do
-    void compute_step(int iter) override;            // to do
+    ChordsStepper(Solver<Eigen::Vector2d>& solver);                             // to do
+    Eigen::Vector2d compute_step(Eigen::Vector2d previous_iteration) override;  // to do
 };
 
 class BisectionStepper : public Stepper<Eigen::Vector2d> {
@@ -84,8 +85,8 @@ class BisectionStepper : public Stepper<Eigen::Vector2d> {
     double left_edge, right_edge;
 
   public:
-    BisectionStepper(Solver<Eigen::Vector2d>& solver);  // to do
-    void compute_step(int iter) override;               // to do
+    BisectionStepper(Solver<Eigen::Vector2d>& solver);                          // to do
+    Eigen::Vector2d compute_step(Eigen::Vector2d previous_iteration) override;  // to do
 };
 
 #endif

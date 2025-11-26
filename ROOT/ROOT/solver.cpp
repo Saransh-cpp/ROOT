@@ -62,7 +62,7 @@ void Solver<T>::loop() {
     int iter = 0;
     std::string method;
 
-    std::unique_ptr<Stepper<T>> stepper;
+    std::unique_ptr<Stepper<T>> stepper;  // not sure we really need this step
 
     std::cout << "Insert method, options: 'newton', 'fixed point', 'bisection', 'chords'" << std::endl;
     std::getline(std::cin, method);  // or could be saved in a Stepper<T> argument
@@ -82,16 +82,20 @@ void Solver<T>::loop() {
 template <typename T>
 void Solver<T>::while_body(int& iter, auto stepper, double& err) {
     if (!this->aitken_requirement) {
-        stepper->compute_step(iter);
-        err = error_calculator(this->results(iter - 1, 0), this->results(iter, 0));
+        Eigen::Vector2d new_results = stepper->compute_step(this->get_previous_result(1));
+        this->save_results(iter, new_results);
+        err = error_calculator(new_results, this->get_previous_result(1)(0));
         iter++;
     } else {
-        stepper->compute_step(iter);
+        Eigen::Vector2d new_results = stepper->compute_step(this->get_previous_result(1));
+        this->save_results(iter, new_results);
         iter++;
-        stepper->compute_step(iter);
+        new_results = stepper->compute_step(this->get_previous_result(1));
+        this->save_results(iter, new_results);
         iter++;
-        stepper->aitken_step();
+        new_results = stepper->aitken_step(this->get_previous_result(1));
+        this->save_results(iter, new_results);
         iter++;
-        err = error_calculator(this->results(iter - 1, 0), this->results(iter, 0));
+        err = error_calculator(new_results, this->get_previous_result(1)(0));
     }
 }
