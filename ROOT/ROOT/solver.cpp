@@ -35,11 +35,44 @@ void Solver<T>::set_info(Info<T> info) {
 }
 
 template <typename T>
+void Solver<T>::convert_stepper(auto stepper, std::string& method) {
+    if (method == "newton") {
+        stepper = std::make_unique<NewtonRaphsonStepper>(*this);
+    } else if (method == "fixed point") {
+        stepper = std::make_unique<FixedPointStepper>(*this);
+    } else if (method == "bisection") {
+        stepper = std::make_unique<BisectionStepper>(*this);
+    } else if (method == "chords") {
+        stepper = std::make_unique<ChordsStepper>(*this);
+    }
+}
+
+template <typename T>
+void Solver<T>::starting_point_setter(std::string& method) {}
+
+template <>
+void Solver<double>::starting_point_double(std::string& method) {}
+
+template <>
+void Solver<Eigen::Vector2d>::starting_point_vector(std::string& method) {}
+
+template <typename T>
 void Solver<T>::loop() {
     double err = 1;
     int iter = 0;
+    std::string method;
 
-    std::unique_ptr<Stepper<double>> stepper = create_stepper();
+    std::unique_ptr<Stepper<T>> stepper;
+
+    std::cout << "Insert method, options: 'newton', 'fixed point', 'bisection', 'chords'" << std::endl;
+    std::getline(std::cin, method);  // or could be saved in a Stepper<T> argument
+
+    std::cout << "Do you want to apply the aitken acceleration? (1 for yes, 0 for no)" << std::endl;
+    std::cin >> this->aitken_requirement;
+
+    convert_stepper(stepper, method);
+
+    starting_point_setter(method);
 
     while (err > tolerance && iter < max_iterations) {
         while_body(&iter, stepper.get(), &err);
@@ -57,7 +90,7 @@ void Solver<T>::while_body(int& iter, auto stepper, double& err) {
         iter++;
         stepper->compute_step(iter);
         iter++;
-        this->aitken_step();
+        stepper->aitken_step();
         iter++;
         err = error_calculator(this->results(iter - 1, 0), this->results(iter, 0));
     }
