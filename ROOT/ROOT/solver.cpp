@@ -48,13 +48,29 @@ void Solver<T>::convert_stepper(auto stepper, std::string& method) {
 }
 
 template <typename T>
-void Solver<T>::starting_point_setter(std::string& method) {}
+void Solver<T>::save_results(int iter, Eigen::Vector2d partial_result) {
+    this->results.row(iter) = partial_result.transpose();
+}
+
+template <typename T>
+Eigen::Vector2d Solver<T>::get_previous_result(int step_length) {
+    return this->results.row(results.rows() - step_length);
+}
 
 template <>
-void Solver<double>::starting_point_double(std::string& method) {}
+void Solver<double>::save_starting_point() {
+    save_results(0, {info.previous_iteration, info.function(info.previous_iteration)});
+}
 
 template <>
-void Solver<Eigen::Vector2d>::starting_point_vector(std::string& method) {}
+void Solver<Eigen::Vector2d>::save_starting_point() {
+    save_results(0, {info.previous_iteration(0), info.function(info.previous_iteration(0))});
+}
+
+template <typename T>
+double Solver<T>::error_calculator(double x_prev, double x_next) {
+    return abs(x_prev - x_next);
+}
 
 template <typename T>
 void Solver<T>::loop() {
@@ -72,7 +88,7 @@ void Solver<T>::loop() {
 
     convert_stepper(stepper, method);
 
-    starting_point_setter(method);
+    save_starting_point();
 
     while (err > tolerance && iter < max_iterations) {
         while_body(&iter, stepper.get(), &err);
@@ -82,20 +98,20 @@ void Solver<T>::loop() {
 template <typename T>
 void Solver<T>::while_body(int& iter, auto stepper, double& err) {
     if (!this->aitken_requirement) {
-        Eigen::Vector2d new_results = stepper->compute_step(this->get_previous_result(1));
+        Eigen::Vector2d new_results = stepper->compute_step(this->get_previous_result(0));
         this->save_results(iter, new_results);
-        err = error_calculator(new_results, this->get_previous_result(1)(0));
+        err = error_calculator(new_results, this->get_previous_result(0)(0));
         iter++;
     } else {
-        Eigen::Vector2d new_results = stepper->compute_step(this->get_previous_result(1));
+        Eigen::Vector2d new_results = stepper->compute_step(this->get_previous_result(0));
         this->save_results(iter, new_results);
         iter++;
-        new_results = stepper->compute_step(this->get_previous_result(1));
+        new_results = stepper->compute_step(this->get_previous_result(0));
         this->save_results(iter, new_results);
         iter++;
-        new_results = stepper->aitken_step(this->get_previous_result(1));
+        new_results = stepper->aitken_step(this->get_previous_result(0));
         this->save_results(iter, new_results);
         iter++;
-        err = error_calculator(new_results, this->get_previous_result(1)(0));
+        err = error_calculator(new_results, this->get_previous_result(0)(0));
     }
 }

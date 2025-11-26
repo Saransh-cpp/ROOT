@@ -22,7 +22,6 @@ class Solver {
     double tolerance;
     bool aitken_requirement;
     Eigen::MatrixX2d results;
-    std::function<double(double)> function;
     Info<T> info;
 
   public:
@@ -33,12 +32,10 @@ class Solver {
     void set_info(Info<T> info);
     void loop();
     void while_body(int& iter, auto stepper, double& err);
-    void save_results(int iter, double partial_result);     // to do
-    Eigen::Vector2d get_previous_result(int step_length);   // to do
-    double error_calculator(double x_prev, double x_next);  // to do -> convert to void via pointers
-    void starting_point_setter(std::string& method);        // to do
-    void starting_point_double(std::string& method);        // to do
-    void starting_point_vector(std::string& method);        // to do
+    void save_results(int iter, Eigen::Vector2d partial_result);
+    Eigen::Vector2d get_previous_result(int step_length);
+    double error_calculator(double x_prev, double x_next);
+    void save_starting_point();
     void convert_stepper(auto stepper, std::string& method);
 };
 
