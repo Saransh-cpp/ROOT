@@ -4,6 +4,4 @@ constexpr int DUMMY_VALUE = 5;
 
 DummyClass::DummyClass() = default;
 
-int DummyClass::return_dummy_value() {
-    return DUMMY_VALUE;
-}
+int DummyClass::return_dummy_value() { return DUMMY_VALUE; }
