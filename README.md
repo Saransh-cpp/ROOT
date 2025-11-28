@@ -56,7 +56,7 @@ cmake -S. -DCMAKE_INSTALL_PREFIX=<installation_directory_such_as_/usr/> -Bbuild
 cmake --build build --target install
 ```
 
-Which will put the library, header files, and application in `<install_path>/lib`, `<install_path>/include`,  and `<install_path>/bin` respectively.
+Which will put the library, header files, and application in `<install_path>/lib`, `<install_path>/include/libROOT`,  and `<install_path>/bin` respectively.
 
 ## Usage
 
@@ -73,8 +73,10 @@ And the shared library can be used inside `cxx` files using:
 # set LD_LIBRARY_PATH to fetch code at runtime
 export LD_LIBRARY_PATH=$PWD/<install_path>/lib:$LD_LIBRARY_PATH
 # pass the path of headers + link with libROOT + pass the path of the library
-g++ <file>.cpp -o <executable_name> -I<install_path>/include -L<install_path>/lib -lROOT
+g++ <file>.cpp -o <executable_name> -I<install_path>/include -L<install_path>/lib/ -lROOT -rpath <install_path>/lib/
 ```
+
+All of which can also be set in `CMakeLists.txt`. Finally, only `-lROOT` and `-rpath /usr/local/lib` (or equivalent) will be required if `-DCMAKE_INSTALL_PREFIX` is not passed while generating make files (the shared object file is placed at a location already recognizable by the compiler).
 
 ## Tests
 
