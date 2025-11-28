@@ -48,8 +48,8 @@ void Solver<T>::convert_stepper(auto stepper, const std::string& method) {
 }
 
 template <typename T>
-void Solver<T>::save_results(int iter, Eigen::Vector2d partial_result) {
-    this->results.row(iter) = partial_result.transpose();
+void Solver<T>::save_results(int iter, Eigen::Vector2d resul_to_save) {
+    this->results.row(iter) = resul_to_save.transpose();
 }
 
 template <typename T>

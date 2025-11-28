@@ -61,9 +61,9 @@ ChordsStepper::ChordsStepper(Solver<Eigen::Vector2d>& solver) : Stepper<Eigen::V
 Eigen::Vector2d ChordsStepper::compute_step(Eigen::Vector2d last_iter) {
     iter_minus_1 = iter_zero;
     iter_zero = last_iter(0);
-    double numerator = last_iter(0) - iter_minus_1;
+    double numerator = iter_zero - iter_minus_1;
     double denominator = last_iter(1) - function(iter_minus_1);
-    double new_point = last_iter(0) - last_iter(1) * numerator / denominator;
+    double new_point = iter_zero - last_iter(1) * numerator / denominator;
     return {new_point, function(new_point)};
 }
 
