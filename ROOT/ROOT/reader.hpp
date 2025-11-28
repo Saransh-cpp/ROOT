@@ -4,15 +4,26 @@
 
 class ReaderBase {
   public:
-    virtual ConfigBase* read(std::string filename) = 0;
+    std::string filename;
+    virtual ConfigBase* read() = 0;
 };
 
 class ReaderCSV : public ReaderBase {
   public:
-    ConfigBase* read(std::string filename) override;
+    ReaderCSV(const std::string& filename);
+    ConfigBase* read() override;
 };
 
 class ReaderDAT : public ReaderBase {
   public:
-    ConfigBase* read(std::string filename) override;
+    ReaderDAT(const std::string& filename);
+    ConfigBase* read() override;
 };
+
+// class ReaderCLI : public ReaderBase {
+//   public:
+//     std::string method;
+
+//     ReaderCLI();
+//     ConfigBase* read() override;
+// };

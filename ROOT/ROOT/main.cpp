@@ -18,19 +18,6 @@ int main(int argc, char** argv) {
     bool verbose = false;
     app.add_flag("-v,--verbose", verbose, "Enable verbose output (applies to all methods)");
 
-    bool aitken = false;
-    app.add_flag("-a,--aitken", aitken, "Enable Aitken acceleration");
-
-    double tolerance = 1e-7;
-    app.add_option("-t,--tolerance", tolerance, "Tolerance for convergence")->check(CLI::PositiveNumber);
-
-    int max_iterations = 100;
-    app.add_option("-n,--max-iterations", max_iterations, "Maximum number of iterations")->check(CLI::PositiveNumber);
-
-    std::string function_str;
-    app.add_option("-f,--function", function_str,
-                   "Function to find root of (only polynomial and simple trig expressions in this demo)");
-
     // Subcommands for each input type
     // Subcommand for CSV input
     auto* csv = app.add_subcommand("csv", "Use CSV input");
@@ -42,29 +29,47 @@ int main(int argc, char** argv) {
     std::string dat_file;
     dat->add_option("--file", dat_file, "Path to DAT file containing input data")->required();
 
+    // Subcommand for CLI input
+    auto* cli = app.add_subcommand("cli", "Use CLI input");
+
+    bool aitken = false;
+    cli->add_flag("-a,--aitken", aitken, "Enable Aitken acceleration");
+
+    double tolerance = 1e-7;
+    cli->add_option("-t,--tolerance", tolerance, "Tolerance for convergence")->check(CLI::PositiveNumber);
+
+    int max_iterations = 100;
+    cli->add_option("-n,--max-iterations", max_iterations, "Maximum number of iterations")->check(CLI::PositiveNumber);
+
+    std::string function_str;
+    cli->add_option("-f,--function", function_str,
+                    "Function to find root of (only polynomial and simple trig expressions in this demo)")
+        ->required();
+
     // Subcommands for CLI input
-    auto* newton = app.add_subcommand("newton", "Use Newton's method");
+    // newton
+    auto* newton = cli->add_subcommand("newton", "Use Newton's method");
     double newton_initial = 0.0;
     std::string derivative_function;
     newton->add_option("--initial", newton_initial, "Initial guess x0 for Newton's method")->required();
     newton->add_option("--derivative", derivative_function, "Derivative of the function (optional)");
 
     // secant
-    auto* secant = app.add_subcommand("secant", "Use Secant method");
+    auto* secant = cli->add_subcommand("secant", "Use Secant method");
     double secant_x0 = 0.0;
     double secant_x1 = 1.0;
     secant->add_option("--x0", secant_x0, "First initial guess x0")->required();
     secant->add_option("--x1", secant_x1, "Second initial guess x1")->required();
 
     // iterative (fixed-point)
-    auto* iterative = app.add_subcommand("iterative", "Use fixed-point iterative method");
+    auto* iterative = cli->add_subcommand("iterative", "Use fixed-point iterative method");
     double iterative_initial = 0.0;
     std::string function_g;
     iterative->add_option("--initial", iterative_initial, "Initial guess x0 for iterative method")->required();
     iterative->add_option("--g-function", function_g, "g(x) for fixed-point iteration")->required();
 
     // bisection
-    auto* bisection = app.add_subcommand("bisection", "Use Bisection method");
+    auto* bisection = cli->add_subcommand("bisection", "Use Bisection method");
     double interval_a = 0.0;
     double interval_b = 1.0;
     bisection->add_option("--interval_a", interval_a, "Left endpoint a")->required();
@@ -79,12 +84,12 @@ int main(int argc, char** argv) {
 
     // If CSV subcommand used, delegate to CSV reader
     if (*csv) {
-        ReaderCSV csvReader;
-        config = csvReader.read(csv_file);
+        ReaderCSV csvReader(csv_file);
+        config = csvReader.read();
     } else if (*dat) {
-        ReaderDAT datReader;
-        config = datReader.read(dat_file);
-    } else {
+        ReaderDAT datReader(dat_file);
+        config = datReader.read();
+    } else if (*cli) {
         if (*newton) {
             config = new NewtonConfig(tolerance, max_iterations, aitken, parseFunction(function_str),
                                       parseFunction(derivative_function), newton_initial);

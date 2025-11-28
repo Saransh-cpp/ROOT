@@ -4,13 +4,15 @@
 
 #include "config.hpp"
 
-ConfigBase* ReaderCSV ::read(std::string filename) {
+ReaderCSV ::ReaderCSV(const std::string& filename) { this->filename = filename; }
+ConfigBase* ReaderCSV ::read() {
     ConfigBase* config = nullptr;
     config = new ConfigBase();
     return config;
 };
 
-ConfigBase* ReaderDAT ::read(std::string filename) {
+ReaderDAT ::ReaderDAT(const std::string& filename) { this->filename = filename; }
+ConfigBase* ReaderDAT ::read() {
     ConfigBase* config = nullptr;
     config = new ConfigBase();
     return config;
