@@ -53,6 +53,32 @@ Eigen::Vector2d FixedPointStepper::compute_step(Eigen::Vector2d previous_iterati
 }
 
 ChordsStepper::ChordsStepper(Solver<Eigen::Vector2d>& solver) : Stepper<Eigen::Vector2d>(solver) {
-    auto interval = solver.get_info();
-    right_edge = interval();
+    auto interval = solver.get_info().previous_iteration;
+    iter_minus_1 = interval(0);
+    iter_zero = interval(1);
+}
+
+Eigen::Vector2d ChordsStepper::compute_step(Eigen::Vector2d last_iter) {
+    iter_minus_1 = iter_zero;
+    iter_zero = last_iter(0);
+    double numerator = last_iter(0) - iter_minus_1;
+    double denominator = last_iter(1) - function(iter_minus_1);
+    double new_point = last_iter(0) - last_iter(1) * numerator / denominator;
+    return {new_point, function(new_point)};
+}
+
+BisectionStepper::BisectionStepper(Solver<Eigen::Vector2d>& solver) : Stepper<Eigen::Vector2d>(solver) {
+    auto interval = solver.get_info().previous_iteration;
+    left_edge = interval(0);
+    right_edge = interval(1);
+}
+
+Eigen::Vector2d BisectionStepper::compute_step(Eigen::Vector2d last_iter) {
+    double x_new = (left_edge + right_edge) / 2;
+    if (function(x_new) * function(left_edge) < 0) {
+        right_edge = x_new;
+    } else {
+        left_edge = x_new;
+    }
+    return {x_new, function(x_new)};
 }

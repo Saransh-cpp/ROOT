@@ -37,8 +37,8 @@ class Solver {
     double error_calculator(double x_prev, double x_next);
     void save_starting_point();
     void convert_stepper(auto stepper, const std::string& method);
-    std::function<double(double)> get_function();  // to do
-    Info<T> get_info();                            // to do
+    std::function<double(double)> get_function();
+    Info<T> get_info();
 };
 
 #endif

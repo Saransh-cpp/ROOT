@@ -64,7 +64,7 @@ void Solver<double>::save_starting_point() {
 
 template <>
 void Solver<Eigen::Vector2d>::save_starting_point() {
-    save_results(0, {info.previous_iteration(0), info.function(info.previous_iteration(0))});
+    save_results(0, {info.previous_iteration(1), info.function(info.previous_iteration(1))});
 }
 
 template <typename T>

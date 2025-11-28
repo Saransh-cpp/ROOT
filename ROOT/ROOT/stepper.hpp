@@ -33,17 +33,17 @@ class FixedPointStepper : public Stepper<double> {
 
   public:
     FixedPointStepper(Solver<double>& solver);
-    void set_fixed_point_function();                                            // to do
-    Eigen::Vector2d compute_step(Eigen::Vector2d previous_iteration) override;  // to do
+    void set_fixed_point_function();  // to do
+    Eigen::Vector2d compute_step(Eigen::Vector2d previous_iteration) override;
 };
 
 class ChordsStepper : public Stepper<Eigen::Vector2d> {
   private:
-    double left_edge, right_edge;
+    double iter_minus_1, iter_zero;
 
   public:
-    ChordsStepper(Solver<Eigen::Vector2d>& solver);                             // to do
-    Eigen::Vector2d compute_step(Eigen::Vector2d previous_iteration) override;  // to do
+    ChordsStepper(Solver<Eigen::Vector2d>& solver);
+    Eigen::Vector2d compute_step(Eigen::Vector2d previous_iteration) override;
 };
 
 class BisectionStepper : public Stepper<Eigen::Vector2d> {
@@ -51,8 +51,8 @@ class BisectionStepper : public Stepper<Eigen::Vector2d> {
     double left_edge, right_edge;
 
   public:
-    BisectionStepper(Solver<Eigen::Vector2d>& solver);                          // to do
-    Eigen::Vector2d compute_step(Eigen::Vector2d previous_iteration) override;  // to do
+    BisectionStepper(Solver<Eigen::Vector2d>& solver);
+    Eigen::Vector2d compute_step(Eigen::Vector2d previous_iteration) override;
 };
 
 #endif  // ROOT_STEPPER_HPP
