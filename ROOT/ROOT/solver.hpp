@@ -38,6 +38,7 @@ class Solver {
     void save_starting_point();
     void convert_stepper(auto stepper, const std::string& method);
     std::function<double(double)> get_function();  // to do
+    Info<T> get_info();                            // to do
 };
 
 #endif

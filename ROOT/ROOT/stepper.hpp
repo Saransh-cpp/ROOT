@@ -12,7 +12,9 @@ class Stepper {
   public:
     Stepper(Solver<T>& solver);
     virtual Eigen::Vector2d compute_step(Eigen::Vector2d) = 0;
-    Eigen::Vector2d aitken_step(Eigen::Vector2d last_iter, Eigen::Vector2d last_iter_two);  // to do
+    Eigen::Vector2d aitken_step(Eigen::Vector2d last_iter,
+                                Eigen::Vector2d last_iter_two,
+                                Eigen::Vector2d last_iter_three);
 };
 
 class NewtonRaphsonStepper : public Stepper<double> {
@@ -20,10 +22,9 @@ class NewtonRaphsonStepper : public Stepper<double> {
     std::function<double(double)> derivative;
 
   public:
-    NewtonRaphsonStepper(Solver<double>& solver);  // to do
-    void set_derivative();                         // to do
-    Eigen::Vector2d compute_step(
-        Eigen::Vector2d previous_iteration) override;  // to do -> make it double and input info and previous_iteration
+    NewtonRaphsonStepper(Solver<double>& solver);
+    void set_derivative();  // to do
+    Eigen::Vector2d compute_step(Eigen::Vector2d previous_iteration) override;
 };
 
 class FixedPointStepper : public Stepper<double> {
@@ -31,7 +32,7 @@ class FixedPointStepper : public Stepper<double> {
     std::function<double(double)> fixed_point_function;
 
   public:
-    FixedPointStepper(Solver<double>& solver);                                  // to do
+    FixedPointStepper(Solver<double>& solver);
     void set_fixed_point_function();                                            // to do
     Eigen::Vector2d compute_step(Eigen::Vector2d previous_iteration) override;  // to do
 };

@@ -78,6 +78,11 @@ std::function<double(double)> Solver<T>::get_function() {
 }
 
 template <typename T>
+Info<T> Solver<T>::get_info() {
+    return info;
+}
+
+template <typename T>
 void Solver<T>::loop() {
     double err = 1;
     int iter = 0;
