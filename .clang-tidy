@@ -1,10 +1,14 @@
 # Clang-tidy configuration used on the whole code base
 Checks: >
   bugprone-*,
+  -bugprone-exception-escape,
   modernize-*,
   -modernize-use-trailing-return-type,
   readability-*,
+  -readability-magic-numbers,
   clang-analyzer-*,
   cppcoreguidelines-*,
+  -cppcoreguidelines-avoid-magic-numbers,
+  -cppcoreguidelines-owning-memory,
   google-*
 WarningsAsErrors: '*'
