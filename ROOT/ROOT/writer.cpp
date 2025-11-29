@@ -62,8 +62,6 @@ void Writer::choose_how(std::unique_ptr<Printer>& printer) {
         }
     }
 }
-// I chose to let the Printer open the file each time it is called bc its job is just to handle the printing
-// Could be possible to let it print some iterations somewhere and others elsewhere
 
 OutputPrinter::OutputPrinter() {
     std::cout << "Here are the iterations of the method";
@@ -77,9 +75,9 @@ FilePrinter::FilePrinter(const std::string& fname, bool ow_mode) {
     filename = fname;
     append = ow_mode;
     if (ow_mode) {
-        file.open(filename, std::ios::app);
-    } else {
         file.open(filename, std::ios::trunc);
+    } else {
+        file.open(filename, std::ios::app);
     }
 
     if (!file.is_open()) {

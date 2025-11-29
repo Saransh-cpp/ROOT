@@ -58,17 +58,11 @@ class csvPrinter : public FilePrinter {
 };
 
 // LLM
-class GnuplotPrinter : public Printer {
-  private:
-    std::string filename;
-
+class GnuplotPrinter : public FilePrinter {
   public:
-    GnuplotPrinter(const std::string& fname) : filename(fname + ".dat") {}
+    GnuplotPrinter(const std::string& fname, bool ow_mode = true) : FilePrinter(fname + ".dat", ow_mode) {}
 
-    void write_values(const Eigen::Vector2d& value) override {
-        std::ofstream file(filename, std::ios::app);
-        file << value(0) << " " << value(1) << "\n";
-    }
+    void write_values(const Eigen::Vector2d& value) override { file << value(0) << " " << value(1) << "\n"; }
 
     void generate_gnuplot_script() const {
         std::ofstream script("plot.plt");
@@ -76,6 +70,7 @@ class GnuplotPrinter : public Printer {
                << "set output 'plot.png'\n"
                << "plot '" << filename << "' using 1:2 with linespoints\n";
         script.close();
+
         std::system("gnuplot plot.plt");
     }
 };
