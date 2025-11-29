@@ -4,7 +4,7 @@ OUTPUT_DIRECTORY       = docs/
 
 INPUT                  = .
 USE_MDFILE_AS_MAINPAGE = ./README.md
-EXCLUDE                = ./external
+EXCLUDE                = ./external ./build ./.clang-tidy ./.clang-format
 
 FILE_PATTERNS          = *.cxx *.cpp *.c *.h *.hxx *.hpp *.h++ *.md *.txt *.clang-format *.clang-tidy
 
@@ -20,3 +20,17 @@ HTML_OUTPUT            = html
 GENERATE_LATEX         = NO
 
 MARKDOWN_SUPPORT       = YES
+
+CLASS_DIAGRAMS         = YES
+HAVE_DOT               = YES
+CLASS_GRAPH            = YES
+COLLABORATION_GRAPH    = YES
+UML_LOOK               = YES
+UML_LIMIT_NUM_FIELDS   = 50
+TEMPLATE_RELATIONS     = YES
+DOT_GRAPH_MAX_NODES    = 100
+MAX_DOT_GRAPH_DEPTH    = 0
+DOT_TRANSPARENT        = YES
+CALL_GRAPH             = YES
+CALLER_GRAPH           = YES
+DIRECTORY_GRAPH        = YES

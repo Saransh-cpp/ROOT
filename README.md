@@ -1,6 +1,6 @@
 # ROOT
 
-[![Build Checks](https://github.com/Saransh-cpp/ROOT/actions/workflows/build-checks.yml/badge.svg?branch=main)](https://github.com/Saransh-cpp/ROOT/actions/workflows/build-checks.yml)
+[![Build and Install](https://github.com/Saransh-cpp/ROOT/actions/workflows/build-and-install.yml/badge.svg?branch=main)](https://github.com/Saransh-cpp/ROOT/actions/workflows/build-and-install.yml)
 [![Unit tests](https://github.com/Saransh-cpp/ROOT/actions/workflows/unit-tests.yml/badge.svg?branch=main)](https://github.com/Saransh-cpp/ROOT/actions/workflows/unit-tests.yml)
 [![Documentation Deployment](https://github.com/Saransh-cpp/ROOT/actions/workflows/build-and-deploy-docs.yml/badge.svg?branch=main)](https://saransh-cpp.github.io/ROOT)
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/Saransh-cpp/ROOT/main.svg)](https://results.pre-commit.ci/latest/github/Saransh-cpp/ROOT/main)
@@ -28,13 +28,13 @@ Given that project is relatively simple to structure and does not require instal
 │   ├── libROOT               # CXX and HXX files
 │   └── tests                 # Tests for the ROOT library
 ├── README.md                 # This file
-└── ROOT                      # User-facing ROOT application/executable
-    ├── CMakeLists.txt        # CMakeLists.txt for user-facing ROOT application/executable
+└── ROOT                      # User-facing root_cli application/executable
+    ├── CMakeLists.txt        # CMakeLists.txt for user-facing root_cli application/executable
     ├── ROOT                  # CXX and HXX files
-    └── tests                 # Tests for the ROOT application/executable
+    └── tests                 # Tests for the root_cli application/executable
 ```
 
-## Building the project
+## Building and installing the project
 
 To build the project, clone the repository locally:
 
@@ -49,27 +49,56 @@ cmake -S. -Bbuild
 cmake --build build
 ```
 
+The library (`libROOT`) and the application (`root_cli`) can be installed using:
+
+```
+cmake -S. -DCMAKE_INSTALL_PREFIX=<installation_directory_such_as_/usr/> -Bbuild
+cmake --build build --target install
+```
+
+Which will put the library, header files, and application in `<install_path>/lib`, `<install_path>/include/libROOT`,  and `<install_path>/bin` respectively.
+
 ## Usage
 
+The installed CLI application can simply be used by:
+
+```
+$ <install_path>/bin/root_cli
+# or just root_cli if installed in /usr/bin/ on unix for instance
+```
+
+And the shared library can be used inside `cxx` files using:
+
+```
+# set LD_LIBRARY_PATH to fetch code at runtime
+export LD_LIBRARY_PATH=$PWD/<install_path>/lib:$LD_LIBRARY_PATH
+# pass the path of headers + link with libROOT + pass the path of the library
+g++ <file>.cpp -o <executable_name> -I<install_path>/include -L<install_path>/lib/ -lROOT -rpath <install_path>/lib/
+```
+
+All of which can also be set in `CMakeLists.txt`. Finally, only `-lROOT` and `-rpath /usr/local/lib` (or equivalent) will be required if `-DCMAKE_INSTALL_PREFIX` is not passed while generating make files (the shared object file is placed at a location already recognizable by the compiler).
 
 ## Tests
 
-Tests for the library (`libROOT`) can be found in `libROOT/tests`, and the tests for the application (`ROOT`) can be found in `ROOT/tests`. We follow [test-driven development (TDD)](https://en.wikipedia.org/wiki/Test-driven_development), which means that each code changing PR must have tests to validate the changes. We use `googletest` `v1.17.0` (as a git submodule) to test our code.
+Tests for the library (`libROOT`) can be found in `libROOT/tests`, and the tests for the application (`root_cli`) can be found in `ROOT/tests`. We follow [test-driven development (TDD)](https://en.wikipedia.org/wiki/Test-driven_development), which means that each code changing PR must have tests to validate the changes. We use `googletest` `v1.17.0` (as a git submodule) to test our code.
 
 All the following tests and checks run as part of a Continuous Integration pipeline on GitHub Actions (on every PR and push to `main`).
 
 To build the tests, make sure your submodules are up-to-date (more specifically, the `googletest` submodule):
+
 ```
 git submodule update --init
 ```
 
 And build the code with `-DTEST=ON`:
+
 ```
 cmake -S. -Bbuild -DTEST=ON
 cmake --build build
 ```
 
 To run the tests, use the `ctest` command:
+
 ```
 ctest --test-dir build --output-on-failure
 ```
