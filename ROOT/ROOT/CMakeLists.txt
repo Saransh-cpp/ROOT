@@ -1,6 +1,8 @@
 include(GNUInstallDirs)
 
-add_executable(root_cli main.cpp)
+add_executable(root_cli main.cpp
+        writer.hpp
+        writer.cpp)
 
 target_link_libraries(root_cli PRIVATE libROOT)
 
