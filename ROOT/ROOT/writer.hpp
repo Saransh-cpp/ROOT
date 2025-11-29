@@ -35,14 +35,16 @@ class OutputPrinter : public Printer {
 class FilePrinter : public Printer {
   protected:
     std::string filename;
+    bool append;
+    std::ofstream file;
 
   public:
-    FilePrinter();
+    FilePrinter(const std::string& fname, bool ow_mode);
 };
 
 class datPrinter : public FilePrinter {
   public:
-    datPrinter();
+    datPrinter(const std::string& fname, bool ow_mode);
     void write_values(const Eigen::Vector2d& value) override;
 };
 
@@ -51,7 +53,7 @@ class csvPrinter : public FilePrinter {
     char separator;
 
   public:
-    csvPrinter();
+    csvPrinter(const std::string& fname, char sep, bool ow_mode);
     void write_values(const Eigen::Vector2d& value) override;
 };
 
@@ -73,6 +75,8 @@ class GnuplotPrinter : public Printer {
         script << "set terminal pngcairo size 800,600\n"
                << "set output 'plot.png'\n"
                << "plot '" << filename << "' using 1:2 with linespoints\n";
+        script.close();
+        std::system("gnuplot plot.plt");
     }
 };
 
