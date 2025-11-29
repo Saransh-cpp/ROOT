@@ -34,17 +34,22 @@ class VisualPrinter : public Printer {
 
 class OutputPrinter : public Printer {
   public:
+    OutputPrinter();
+    void write_values(Eigen::Vector2d value) override;
 };
 
 class FilePrinter : public Printer {
-  private:
+  protected:
     std::string filename;
 
   public:
+    FilePrinter();
 };
 
 class datPrinter : public FilePrinter {
   public:
+    datPrinter();
+    void write_values(Eigen::Vector2d value) override;
 };
 
 class csvPrinter : public FilePrinter {
@@ -52,6 +57,8 @@ class csvPrinter : public FilePrinter {
     char separator;
 
   public:
+    csvPrinter();
+    void write_values(Eigen::Vector2d value) override;
 };
 
 #endif  // ROOT_WRITER_HPP

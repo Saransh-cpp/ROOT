@@ -38,3 +38,33 @@ VisualPrinter::VisualPrinter() {
 void VisualPrinter::write_values(Eigen::Vector2d value) {
     std::cout << value(0) << "   " << value(1) << std::endl;
 }
+
+OutputPrinter::OutputPrinter() {
+    std::cout << "Here are the iterations of the method";
+}
+
+void OutputPrinter::write_values(Eigen::Vector2d value) {
+    std::cout << "x = " << value(0) << "--- f(x) = " << value(1) << std::endl;
+}
+
+FilePrinter::FilePrinter() {
+    std::cout << "Insert the filename of the file, without the extension" << std::endl;
+}
+
+csvPrinter::csvPrinter() {
+    filename.append(".csv");
+    std::cout << "Insert the separator" << std::endl;
+    std::cin >> separator;
+}
+
+void csvPrinter::write_values(Eigen::Vector2d value) {
+    std::cout << "x = " << value(0) << "--- f(x) = " << value(1) << std::endl;
+}
+
+datPrinter::datPrinter() {
+    filename.append(".dat");
+}
+
+void datPrinter::write_values(Eigen::Vector2d value) {
+    std::cout << "x = " << value(0) << "--- f(x) = " << value(1) << std::endl;
+}
