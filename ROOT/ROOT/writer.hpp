@@ -2,7 +2,7 @@
 #define ROOT_WRITER_HPP
 #include <string>
 
-#include "Eigen/Dense"
+#include "../external/eigen/Eigen/Dense"
 
 class Printer;
 
@@ -13,19 +13,23 @@ class Writer {
   public:
     Writer(Eigen::Matrix2d& vals_to_write);
     void writing_process();
-    void choose_how(auto printer);
+    void choose_how(std::unique_ptr<Printer>& printer);
     void print_final_result();
 };
 
 class Printer {
   public:
-    Printer(Writer& writer);
+    Printer() = default;
     virtual void write_values(Eigen::Vector2d value) = 0;
 };
 
 class VisualPrinter : public Printer {
+  private:
+    std::string filename;
+
   public:
-    VisualPrinter(Writer& writer);
+    VisualPrinter();
+    void write_values(Eigen::Vector2d value) override;
 };
 
 class OutputPrinter : public Printer {

@@ -20,7 +20,7 @@ if(TEST)
 endif()
 
 
-add_subdirectory(external/Eigen)
+add_subdirectory(external/eigen)
 
 find_package(Doxygen)
 
