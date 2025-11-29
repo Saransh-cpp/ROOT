@@ -3,6 +3,7 @@
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 #include <functional>
+#include <string>
 
 /**
  * The Solver class will handle all the methods and arguments required for managing a solving process to find

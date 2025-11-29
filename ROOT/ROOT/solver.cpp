@@ -1,5 +1,6 @@
 #include "solver.hpp"
 #include <iostream>
+#include <memory>
 #include "stepper.hpp"
 
 constexpr double tol = 1e-6;
@@ -48,8 +49,8 @@ void Solver<T>::convert_stepper(auto stepper, const std::string& method) {
 }
 
 template <typename T>
-void Solver<T>::save_results(int iter, Eigen::Vector2d resul_to_save) {
-    this->results.row(iter) = resul_to_save.transpose();
+void Solver<T>::save_results(int iter, Eigen::Vector2d result_to_save) {
+    this->results.row(iter) = result_to_save.transpose();
 }
 
 template <typename T>

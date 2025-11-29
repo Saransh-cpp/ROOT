@@ -4,6 +4,8 @@
 
 #include "Eigen/Dense"
 
+class Printer;
+
 class Writer {
   protected:
     Eigen::Matrix2d values;
@@ -11,39 +13,41 @@ class Writer {
   public:
     Writer(Eigen::Matrix2d& vals_to_write);
     void writing_process();
-    void choose_how();
-    virtual void write_values() = 0;
+    void choose_how(auto printer);
+    void print_final_result();
 };
 
-class VisualWriter : public Writer {
+class Printer {
   public:
-    void write_values() override;
+    Printer(Writer& writer);
+    virtual void write_values(Eigen::Vector2d value) = 0;
 };
 
-class OutputWriter : public Writer {
+class VisualPrinter : public Printer {
   public:
-    void write_values() override;
+    VisualPrinter(Writer& writer);
 };
 
-class FileWriter : public Writer {
+class OutputPrinter : public Printer {
+  public:
+};
+
+class FilePrinter : public Printer {
   private:
     std::string filename;
 
   public:
-    void write_values() override = 0;
 };
 
-class datWriter : public FileWriter {
+class datPrinter : public FilePrinter {
   public:
-    void write_values() override;
 };
 
-class csvWriter : public FileWriter {
+class csvPrinter : public FilePrinter {
   private:
     char separator;
 
   public:
-    void write_values() override;
 };
 
 #endif  // ROOT_WRITER_HPP
