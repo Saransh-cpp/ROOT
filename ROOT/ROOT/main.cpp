@@ -1,6 +1,7 @@
 #include <CLI/CLI.hpp>
 #include <functional>
 #include <iostream>
+#include <memory>
 #include <string>
 
 #include "config.hpp"
