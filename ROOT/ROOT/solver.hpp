@@ -4,6 +4,7 @@
 #include <Eigen/Sparse>
 #include <functional>
 #include <string>
+#include "stepper.hpp"
 
 /**
  * The Solver class will handle all the methods and arguments required for managing a solving process to find
@@ -83,11 +84,15 @@ class Solver {
     /**
      * \brief Converts the generic Abstract stepper into a typed one. Right now according to user's input as string
      */
-    void convert_stepper(auto stepper, const std::string& method);
+    void convert_stepper(std::unique_ptr<Stepper<T>>& stepper, const std::string& method);
     /** \brief Returns the function argument of the class in order to correctly construct a Stepper object.*/
     std::function<double(double)> get_function();
     /** \brief Returns the Info argument of the class in order to use it in a Stepper object.*/
     Info<T> get_info();
+    int ask_next_action() const;
+    void clear_results();
+    void end_solver();
+    Solver<T>& operator=(const Solver<T>& solver);
 };
 
 #endif

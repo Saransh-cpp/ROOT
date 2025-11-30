@@ -2,12 +2,19 @@
 #include <iostream>
 #include <memory>
 #include "stepper.hpp"
+#include "writer.hpp"
 
 constexpr double tol = 1e-6;
 constexpr int max_iters = 200;
 
 template <typename T>
 Solver<T>::Solver() = default;
+
+template <typename T>
+Info<T> read_info_from_user() {
+    Info<T> info;
+    return info;
+}
 
 template <typename T>
 Solver<T>::Solver(Info<T> info, int max_iterations, double tolerance) {
@@ -36,7 +43,7 @@ void Solver<T>::set_info(Info<T> info) {
 }
 
 template <typename T>
-void Solver<T>::convert_stepper(auto stepper, const std::string& method) {
+void Solver<T>::convert_stepper(std::unique_ptr<Stepper<T>>& stepper, const std::string& method) {
     if (method == "newton") {
         stepper = std::make_unique<NewtonRaphsonStepper>(*this);
     } else if (method == "fixed point") {
@@ -89,7 +96,7 @@ void Solver<T>::loop() {
     int iter = 0;
     std::string method;
 
-    std::unique_ptr<Stepper<T>> stepper;  // not sure we really need this step
+    std::unique_ptr<Stepper<T>> stepper;
 
     std::cout << "Insert method, options: 'newton', 'fixed point', 'bisection', 'chords'" << std::endl;
     std::getline(std::cin, method);  // or could be saved in a Stepper<T> argument
@@ -104,6 +111,11 @@ void Solver<T>::loop() {
     while (err > tolerance && iter < max_iterations) {
         while_body(&iter, stepper.get(), &err);
     }
+
+    auto writer = std::make_unique<Writer<Eigen::MatrixX2d>>(results);
+    writer->writing_process();
+
+    end_solver();
 }
 
 template <typename T>
@@ -124,5 +136,47 @@ void Solver<T>::while_body(int& iter, auto stepper, double& err) {
         this->save_results(iter, new_results);
         iter++;
         err = error_calculator(new_results, this->get_previous_result(0)(0));
+    }
+}
+
+template <typename T>
+int Solver<T>::ask_next_action() const {
+    std::cout << "\nWhat would you like to do now?\n"
+              << "0 - Exit program\n"
+              << "1 - Restart solver with same Info\n"
+              << "2 - Restart solver with NEW Info\n";
+
+    int choice = 0;
+    std::cin >> choice;
+
+    return choice;
+}
+
+template <typename T>
+void Solver<T>::clear_results() {
+    results.resize(0, 0);
+}
+
+template <typename T>
+void Solver<T>::end_solver() {
+    int action = ask_next_action();
+
+    if (action == 0) {
+        std::cout << "Exiting program.\n";
+        clear_results();
+        return;
+    }
+
+    if (action == 1) {
+        std::cout << "Restarting with same Info. \n";
+        clear_results();
+        loop();
+    }
+
+    if (action == 2) {
+        std::cout << "Restarting solver with new Info. \n";
+        info = read_info_from_user<T>();
+        results.resize(0, 0);
+        loop();
     }
 }
