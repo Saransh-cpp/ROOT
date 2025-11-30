@@ -4,6 +4,10 @@
 #include <iostream>
 
 std::function<double(double)> convert_string_to_fct(std::string fct) {};
+template <>
+void NewtonRaphsonStepper<double>::set_derivative();
+template<>
+void FixedPointStepper<double>::set_fixed_point_function();
 
 template <typename T>
 Stepper<T>::Stepper(Solver<T>& solver) {
@@ -24,47 +28,55 @@ Eigen::Vector2d Stepper<T>::aitken_step(Eigen::Vector2d last_iter,
     return {new_point, function(new_point)};
 }
 
-NewtonRaphsonStepper::NewtonRaphsonStepper(Solver<double>& solver) : Stepper<double>(solver) {
+template<>
+NewtonRaphsonStepper<double>::NewtonRaphsonStepper(Solver<double>& solver) : Stepper<double>(solver) {
     set_derivative();
 }
 
-void NewtonRaphsonStepper::set_derivative() {
+template<>
+void NewtonRaphsonStepper<double>::set_derivative() {
     std::string der;
     std::cout << "Insert the derivative: " << std::endl;
     std::getline(std::cin, der);
     derivative = convert_string_to_fct(der);
 }
 
-Eigen::Vector2d NewtonRaphsonStepper::compute_step(Eigen::Vector2d previous_iteration) {
+template<>
+Eigen::Vector2d NewtonRaphsonStepper<double>::compute_step(Eigen::Vector2d previous_iteration) {
     double new_point = previous_iteration(0) - previous_iteration(1) / derivative(previous_iteration(0));
     double new_eval = function(new_point);
     return {new_point, new_eval};
 }
 
-FixedPointStepper::FixedPointStepper(Solver<double>& solver) : Stepper<double>(solver) {
+template<>
+FixedPointStepper<double>::FixedPointStepper(Solver<double>& solver) : Stepper<double>(solver) {
     set_fixed_point_function();
 }
 
-void FixedPointStepper::set_fixed_point_function() {
+template<>
+void FixedPointStepper<double>::set_fixed_point_function() {
     std::string fpf;
     std::cout << "Insert the fixed point function: " << std::endl;
     std::getline(std::cin, fpf);
     fixed_point_function = convert_string_to_fct(fpf);
 }
 
-Eigen::Vector2d FixedPointStepper::compute_step(Eigen::Vector2d previous_iteration) {
+template<>
+Eigen::Vector2d FixedPointStepper<double>::compute_step(Eigen::Vector2d previous_iteration) {
     double new_point = fixed_point_function(previous_iteration(0));
     double new_eval = function(new_point);
     return {new_point, new_eval};
 }
 
-ChordsStepper::ChordsStepper(Solver<Eigen::Vector2d>& solver) : Stepper<Eigen::Vector2d>(solver) {
+template <>
+ChordsStepper<Eigen::Vector2d>::ChordsStepper(Solver<Eigen::Vector2d>& solver) : Stepper<Eigen::Vector2d>(solver) {
     auto interval = solver.get_info().previous_iteration;
     iter_minus_1 = interval(0);
     iter_zero = interval(1);
 }
 
-Eigen::Vector2d ChordsStepper::compute_step(Eigen::Vector2d last_iter) {
+template <>
+Eigen::Vector2d ChordsStepper<Eigen::Vector2d>::compute_step(Eigen::Vector2d last_iter) {
     iter_minus_1 = iter_zero;
     iter_zero = last_iter(0);
     double numerator = iter_zero - iter_minus_1;
@@ -73,13 +85,15 @@ Eigen::Vector2d ChordsStepper::compute_step(Eigen::Vector2d last_iter) {
     return {new_point, function(new_point)};
 }
 
-BisectionStepper::BisectionStepper(Solver<Eigen::Vector2d>& solver) : Stepper<Eigen::Vector2d>(solver) {
+template <>
+BisectionStepper<Eigen::Vector2d>::BisectionStepper(Solver<Eigen::Vector2d>& solver) : Stepper<Eigen::Vector2d>(solver) {
     auto interval = solver.get_info().previous_iteration;
     left_edge = interval(0);
     right_edge = interval(1);
 }
 
-Eigen::Vector2d BisectionStepper::compute_step(Eigen::Vector2d last_iter) {
+template <>
+Eigen::Vector2d BisectionStepper<Eigen::Vector2d>::compute_step(Eigen::Vector2d last_iter) {
     double x_new = (left_edge + right_edge) / 2;
     if (function(x_new) * function(left_edge) < 0) {
         right_edge = x_new;

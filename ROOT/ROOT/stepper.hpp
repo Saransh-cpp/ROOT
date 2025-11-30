@@ -43,7 +43,8 @@ class Stepper {
 /**
  * \brief The specialized Stepper to compute the root with the Newton-Raphson method.
  */
-class NewtonRaphsonStepper : public Stepper<double> {
+template <typename T>
+class NewtonRaphsonStepper : public Stepper<T> {
   private:
     /** \brief Stores the derivative of the function, input by the user.*/
     std::function<double(double)> derivative;
@@ -58,7 +59,8 @@ class NewtonRaphsonStepper : public Stepper<double> {
 };
 
 /** \brief The specialized Stepper to compute the root with the Fixed Point method*/
-class FixedPointStepper : public Stepper<double> {
+template <typename T>
+class FixedPointStepper : public Stepper<T> {
   private:
     /** \brief Stores the fixed point to use in the steps, input by the user.*/
     std::function<double(double)> fixed_point_function;
@@ -73,7 +75,8 @@ class FixedPointStepper : public Stepper<double> {
 };
 
 /** \brief The specialized Stepper to compute the root with the Chords Method (also called Secants in literature)*/
-class ChordsStepper : public Stepper<Eigen::Vector2d> {
+template <typename T>
+class ChordsStepper : public Stepper<T> {
   private:
     /** \brief The method requires two precedent steps at each iteration, and they are saved and updated in these
      * arguments
@@ -94,7 +97,8 @@ class ChordsStepper : public Stepper<Eigen::Vector2d> {
 };
 
 /** \brief The specialized Stepper to compute the root with the Bisection Method*/
-class BisectionStepper : public Stepper<Eigen::Vector2d> {
+template <typename T>
+class BisectionStepper : public Stepper<T> {
   private:
     /** \brief The method requires an interval which we save the bounds of */
     double left_edge, right_edge;

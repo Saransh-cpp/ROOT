@@ -43,17 +43,20 @@ void Solver<T>::set_info(Info<T> info) {
 }
 
 template <typename T>
-void Solver<T>::convert_stepper(std::unique_ptr<Stepper<T>>& stepper, const std::string& method) {
-    if (method == "newton") {
-        stepper = std::make_unique<NewtonRaphsonStepper>(*this);
-    } else if (method == "fixed point") {
-        stepper = std::make_unique<FixedPointStepper>(*this);
-    } else if (method == "bisection") {
-        stepper = std::make_unique<BisectionStepper>(*this);
-    } else if (method == "chords") {
-        stepper = std::make_unique<ChordsStepper>(*this);
-    }
+void convert_stepper(std::unique_ptr<Stepper<T>>& stepper, const std::string& method);
+
+template<>
+void Solver<double>::convert_stepper(std::unique_ptr<Stepper<double>>& stepper, const std::string& method) {
+    if (method == "newton") stepper = std::make_unique<NewtonRaphsonStepper<double>>(*this);
+    if (method == "fixed point") stepper = std::make_unique<FixedPointStepper<double>>(*this);
 }
+
+template<>
+void Solver<Eigen::Vector2d>::convert_stepper(std::unique_ptr<Stepper<Eigen::Vector2d>>& stepper, const std::string& method) {
+    if (method == "bisection") stepper = std::make_unique<BisectionStepper<Eigen::Vector2d>>(*this);
+    if (method == "chords") stepper = std::make_unique<ChordsStepper<Eigen::Vector2d>>(*this);
+}
+
 
 template <typename T>
 void Solver<T>::save_results(int iter, Eigen::Vector2d result_to_save) {
@@ -62,7 +65,7 @@ void Solver<T>::save_results(int iter, Eigen::Vector2d result_to_save) {
 
 template <typename T>
 Eigen::Vector2d Solver<T>::get_previous_result(int step_length) {
-    return this->results.row(results.rows() - step_length);
+    return this->results.row(results.rows() - step_length - 1);
 }
 
 template <>
