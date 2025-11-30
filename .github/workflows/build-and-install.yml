@@ -45,4 +45,4 @@ jobs:
           ls /usr/include/libROOT | grep -E 'root_lib.hpp|dummy_class.hpp'
           file /usr/bin/root_cli
           file /usr/lib/x86_64-linux-gnu/libROOT.so
-          root_cli
+          root_cli --help
