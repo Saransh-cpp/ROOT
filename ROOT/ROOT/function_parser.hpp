@@ -1,3 +1,13 @@
+/**
+ * @file function_parser.hpp
+ * @brief Function parser classes for parsing mathematical functions from strings.
+ *
+ * This file defines the base class and derived classes for parsing mathematical functions,
+ * including polynomial and trigonometric functions. The parsers convert string representations
+ * of functions into callable std::function<double(double)> objects.
+ *
+ * @author Saransh-cpp
+ */
 #ifndef FUNCTION_HPP
 #define FUNCTION_HPP
 

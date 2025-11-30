@@ -1,3 +1,16 @@
+/**
+ * @file reader.hpp
+ * @brief Reader classes for reading configuration from files.
+ *
+ * This file contains the definitions of ReaderBase, ReaderCSV, and ReaderDAT classes,
+ * which are responsible for reading configuration data from various file formats
+ * (e.g., CSV, DAT) and producing ConfigBase objects.
+ *
+ * @author Saransh-cpp
+ */
+#ifndef READER_HPP
+#define READER_HPP
+
 #include <memory>
 #include <string>
 #include <vector>
@@ -157,3 +170,5 @@ class ReaderDAT : public ReaderBase {
      */
     std::unique_ptr<ConfigBase> read() override;
 };
+
+#endif  // READER_HPP
