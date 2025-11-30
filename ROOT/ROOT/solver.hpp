@@ -92,6 +92,8 @@ class Solver {
     int ask_next_action() const;
     void clear_results();
     void end_solver();
+    bool ask_aitken();
+    std::string ask_method();
     Solver<T>& operator=(const Solver<T>& solver);
 };
 

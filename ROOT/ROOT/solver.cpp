@@ -89,20 +89,48 @@ template <typename T>
 Info<T> Solver<T>::get_info() {
     return info;
 }
+// used LLM for output readability
+template <typename T>
+bool Solver<T>::ask_aitken() {
+    int choice;
+    while (true) {
+        std::cout << "Apply Aitken acceleration? (1 = yes, 0 = no): ";
+        if (std::cin >> choice && (choice == 0 || choice == 1))
+            return choice;
+
+        std::cout << "Invalid input, please enter 0 or 1.\n";
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
+}
+
+template <typename T>
+std::string Solver<T>::ask_method() {
+    std::string method;
+    std::vector<std::string> valid = {"newton", "fixed point", "bisection", "chords"};
+
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+    while (true) {
+        std::cout << "Insert method (newton, fixed point, bisection, chords): ";
+        std::getline(std::cin, method);
+
+        if (std::count(valid.begin(), valid.end(), method))
+            return method;
+
+        std::cout << "Invalid method. Try again.\n";
+    }
+}
 
 template <typename T>
 void Solver<T>::loop() {
     double err = 1;
     int iter = 0;
-    std::string method;
 
     std::unique_ptr<Stepper<T>> stepper;
 
-    std::cout << "Insert method, options: 'newton', 'fixed point', 'bisection', 'chords'" << std::endl;
-    std::getline(std::cin, method);  // or could be saved in a Stepper<T> argument
-
-    std::cout << "Do you want to apply the aitken acceleration? (1 for yes, 0 for no)" << std::endl;
-    std::cin >> this->aitken_requirement;
+    std::string method = ask_method();
+    aitken_requirement = ask_aitken();
 
     convert_stepper(stepper, method);
 
@@ -160,23 +188,32 @@ void Solver<T>::clear_results() {
 template <typename T>
 void Solver<T>::end_solver() {
     int action = ask_next_action();
-
     if (action == 0) {
         std::cout << "Exiting program.\n";
         clear_results();
         return;
     }
-
     if (action == 1) {
         std::cout << "Restarting with same Info. \n";
         clear_results();
         loop();
     }
-
     if (action == 2) {
         std::cout << "Restarting solver with new Info. \n";
         info = read_info_from_user<T>();
         results.resize(0, 0);
         loop();
     }
+}
+
+template <typename T>
+Solver<T>& Solver<T>::operator=(const Solver<T>& solver) {
+    if (this == &solver)
+        return *this;
+    max_iterations = solver.max_iterations;
+    tolerance = solver.tolerance;
+    aitken_requirement = solver.aitken_requirement;
+    results = solver.results;
+    info = solver.info;
+    return *this;
 }
