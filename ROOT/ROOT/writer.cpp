@@ -67,7 +67,7 @@ void Writer<T>::choose_how(std::unique_ptr<Printer<V>>& printer) {
         } else if (choice == 2) {
             printer = std::make_unique<datPrinter<V>>(fname, ow_choice);
         } else {
-            printer = std::make_unique<GnuplotPrinter<V>>(fname);
+            printer = std::make_unique<GnuplotPrinter<V>>(fname, ow_choice);
         }
     }
 }
@@ -115,10 +115,8 @@ void datPrinter<Eigen::Vector2d>::write_values(const Eigen::Vector2d& value) {
     file << value(0) << " " << value(1) << std::endl;
 }
 
-template <>
-void GnuplotPrinter<Eigen::Vector2d>::write_values(const Eigen::Vector2d& value) {
-    file << value(0) << " " << value(1) << "\n";
-}
+template <typename V>
+GnuplotPrinter<V>::GnuplotPrinter(const std::string& fname, bool ow_mode) : datPrinter<V>(fname, ow_mode) {}
 
 template <>
 void GnuplotPrinter<Eigen::Vector2d>::generate_gnuplot_script() const {
