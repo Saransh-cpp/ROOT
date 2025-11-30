@@ -2,20 +2,27 @@
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <ranges>
 #include <string>
 
-Writer::Writer(const Eigen::MatrixX2d& vals_to_write) {
+template <>
+void GnuplotPrinter<Eigen::Vector2d>::generate_gnuplot_script() const;
+
+template <>
+Writer<Eigen::MatrixX2d>::Writer(const Eigen::MatrixX2d& vals_to_write) {
     values = vals_to_write;
 }
 
-void Writer::print_final_result() const {
+template <>
+void Writer<Eigen::MatrixX2d>::print_final_result() const {
     std::cout << "The found root is " << values.row(values.rows() - 1)(0) << std::endl;
 }
-// Add the possibility to either overwrite the file or to flush it
-void Writer::writing_process() {
+
+template <>
+void Writer<Eigen::MatrixX2d>::writing_process() {
     print_final_result();
 
-    std::unique_ptr<Printer> printer;
+    std::unique_ptr<Printer<Eigen::Vector2d>> printer;
     choose_how(printer);
 
     for (int i = 0; i < values.rows(); i++) {
@@ -24,13 +31,15 @@ void Writer::writing_process() {
     }
 
     // LLM
-    if (auto gp = dynamic_cast<GnuplotPrinter*>(printer.get())) {
+    if (auto gp = dynamic_cast<GnuplotPrinter<Eigen::Vector2d>*>(printer.get())) {
         gp->generate_gnuplot_script();
         std::cout << "Gnuplot script generated: plot.plt\n";
     }
 }
 
-void Writer::choose_how(std::unique_ptr<Printer>& printer) {
+template <typename T>
+template <typename V>
+void Writer<T>::choose_how(std::unique_ptr<Printer<V>>& printer) {
     int choice = 0;
     std::cout << "Choose output format:\n"
               << "0 - Console (verbose)\n"
@@ -40,7 +49,7 @@ void Writer::choose_how(std::unique_ptr<Printer>& printer) {
 
     std::cin >> choice;
     if (choice == 0) {
-        printer = std::make_unique<OutputPrinter>();
+        printer = std::make_unique<OutputPrinter<V>>();
     } else {
         std::string fname;
         std::cout << "Insert the filename (w/o) extension: ";
@@ -54,24 +63,27 @@ void Writer::choose_how(std::unique_ptr<Printer>& printer) {
             char sep;
             std::cout << "Enter the separator: ";
             std::cin >> sep;
-            printer = std::make_unique<csvPrinter>(fname, sep, ow_choice);
+            printer = std::make_unique<csvPrinter<V>>(fname, sep, ow_choice);
         } else if (choice == 2) {
-            printer = std::make_unique<datPrinter>(fname, ow_choice);
+            printer = std::make_unique<datPrinter<V>>(fname, ow_choice);
         } else {
-            printer = std::make_unique<GnuplotPrinter>(fname);
+            printer = std::make_unique<GnuplotPrinter<V>>(fname);
         }
     }
 }
 
-OutputPrinter::OutputPrinter() {
+template <typename V>
+OutputPrinter<V>::OutputPrinter() {
     std::cout << "Here are the iterations of the method";
 }
 
-void OutputPrinter::write_values(const Eigen::Vector2d& value) {
+template <>
+void OutputPrinter<Eigen::Vector2d>::write_values(const Eigen::Vector2d& value) {
     std::cout << "x = " << value(0) << "--- f(x) = " << value(1) << std::endl;
 }
 
-FilePrinter::FilePrinter(const std::string& fname, bool ow_mode) {
+template <typename V>
+FilePrinter<V>::FilePrinter(const std::string& fname, bool ow_mode) {
     filename = fname;
     append = ow_mode;
     if (ow_mode) {
@@ -85,16 +97,36 @@ FilePrinter::FilePrinter(const std::string& fname, bool ow_mode) {
     }
 }
 
-csvPrinter::csvPrinter(const std::string& fname, char sep, bool ow_mode) : FilePrinter(fname + ".csv", ow_mode) {
+template <typename V>
+csvPrinter<V>::csvPrinter(const std::string& fname, char sep, bool ow_mode) : FilePrinter<V>(fname + ".csv", ow_mode) {
     separator = sep;
 }
 
-void csvPrinter::write_values(const Eigen::Vector2d& value) {
+template <>
+void csvPrinter<Eigen::Vector2d>::write_values(const Eigen::Vector2d& value) {
     file << value(0) << separator << value(1) << std::endl;
 }
 
-datPrinter::datPrinter(const std::string& fname, bool ow_mode) : FilePrinter(fname + ".dat", ow_mode) {}
+template <typename V>
+datPrinter<V>::datPrinter(const std::string& fname, bool ow_mode) : FilePrinter<V>(fname + ".dat", ow_mode) {}
 
-void datPrinter::write_values(const Eigen::Vector2d& value) {
+template <>
+void datPrinter<Eigen::Vector2d>::write_values(const Eigen::Vector2d& value) {
     file << value(0) << " " << value(1) << std::endl;
+}
+
+template <>
+void GnuplotPrinter<Eigen::Vector2d>::write_values(const Eigen::Vector2d& value) {
+    file << value(0) << " " << value(1) << "\n";
+}
+
+template <>
+void GnuplotPrinter<Eigen::Vector2d>::generate_gnuplot_script() const {
+    std::ofstream script("plot.plt");
+    script << "set terminal pngcairo size 800,600\n"
+           << "set output 'plot.png'\n"
+           << "plot '" << filename << "' using 1:2 with linespoints\n";
+    script.close();
+
+    std::system("gnuplot plot.plt");
 }
