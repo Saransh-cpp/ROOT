@@ -76,20 +76,19 @@ class FilePrinter : public Printer<V> {
     FilePrinter(const std::string& fname, bool ow_mode);
 };
 
-/** */
+/** \brief Class to write on .dat the result, from which Gnu Printer will inherit*/
 template <typename V>
 class datPrinter : public FilePrinter<V> {
-  private:
-    bool gnu_mode;
-
   public:
     datPrinter(const std::string& fname, bool ow_mode);
     void write_values(const V& value) override;
 };
 
+/** Class to write on .csv the result*/
 template <typename V>
 class csvPrinter : public FilePrinter<V> {
   private:
+    /** Separator for the .csv output file, given at construction time */
     char separator;
 
   public:
@@ -97,6 +96,7 @@ class csvPrinter : public FilePrinter<V> {
     void write_values(const V& value) override;
 };
 
+/** Daughter of datPrinter lass to write on .dat (inherited) and produce a gnu plot for the results*/
 template <typename V>
 // LLM
 class GnuplotPrinter : public datPrinter<V> {
