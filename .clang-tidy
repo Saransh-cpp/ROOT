@@ -16,4 +16,5 @@ Checks: >
 CheckOptions:
   - key: readability-function-cognitive-complexity.Threshold
     value: '35'
+ExtraArgs: ['-std=c++20']
 WarningsAsErrors: '*'
