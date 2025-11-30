@@ -3,6 +3,7 @@ include(GNUInstallDirs)
 add_library(libROOT SHARED root_lib.cpp
         dummy_class.cpp)
 
+
 target_include_directories(libROOT
   PUBLIC
     # when building from source, this directory is used

@@ -19,6 +19,9 @@ if(TEST)
     endif()
 endif()
 
+
+add_subdirectory(external/eigen)
+
 find_package(Doxygen)
 
 if(DOXYGEN_FOUND)
