@@ -14,6 +14,7 @@ class FunctionParserBase {
     // Type checks
     static bool isPolynomial(const std::string& expression);
     static bool isTrigonometric(const std::string& expression);
+    FunctionParserBase(std::string function_str);
 
   protected:
     std::string function_str;

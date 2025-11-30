@@ -7,6 +7,7 @@ enum class Method { BISECTION, NEWTON, SECANT, FIXED_POINT };
 
 class ConfigBase {
   public:
+    virtual ~ConfigBase() {};
     Method method;
     double tolerance;
     int max_iterations;

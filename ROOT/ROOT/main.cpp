@@ -81,7 +81,7 @@ int main(int argc, char** argv) {
     // ------------------------------------------------------------
     // Solver configuration
     // ------------------------------------------------------------
-    ConfigBase* config = nullptr;
+    std::unique_ptr<ConfigBase> config;
 
     // If CSV subcommand used, delegate to CSV reader
     if (*csv) {
@@ -92,19 +92,21 @@ int main(int argc, char** argv) {
         config = datReader.read();
     } else if (*cli) {
         if (*newton) {
-            config =
-                new NewtonConfig(tolerance, max_iterations, aitken, FunctionParserBase::parseFunction(function_str),
-                                 FunctionParserBase::parseFunction(derivative_function), newton_initial);
+            config = std::make_unique<NewtonConfig>(
+                tolerance, max_iterations, aitken, FunctionParserBase::parseFunction(function_str),
+                FunctionParserBase::parseFunction(derivative_function), newton_initial);
         } else if (*secant) {
-            config = new SecantConfig(tolerance, max_iterations, aitken,
-                                      FunctionParserBase::parseFunction(function_str), secant_x0, secant_x1);
-        } else if (*iterative) {
             config =
-                new FixedPointConfig(tolerance, max_iterations, aitken, FunctionParserBase::parseFunction(function_str),
-                                     iterative_initial, FunctionParserBase::parseFunction(function_g));
+                std::make_unique<SecantConfig>(tolerance, max_iterations, aitken,
+                                               FunctionParserBase::parseFunction(function_str), secant_x0, secant_x1);
+        } else if (*iterative) {
+            config = std::make_unique<FixedPointConfig>(
+                tolerance, max_iterations, aitken, FunctionParserBase::parseFunction(function_str), iterative_initial,
+                FunctionParserBase::parseFunction(function_g));
         } else if (*bisection) {
-            config = new BisectionConfig(tolerance, max_iterations, aitken,
-                                         FunctionParserBase::parseFunction(function_str), interval_a, interval_b);
+            config = std::make_unique<BisectionConfig>(tolerance, max_iterations, aitken,
+                                                       FunctionParserBase::parseFunction(function_str), interval_a,
+                                                       interval_b);
         } else {
             std::cerr << "No valid subcommand provided." << std::endl;
             return 1;
@@ -116,16 +118,20 @@ int main(int argc, char** argv) {
     // ------------------------------------------------------------
     switch (config->method) {
         case Method::BISECTION:
-            /* code */
+            std::cout << config->max_iterations << std::endl;
             break;
         case Method::NEWTON:
-            /* code */
+            std::cout << config->function(0) << std::endl;
+            std::cout << dynamic_cast<NewtonConfig*>(config.get())->initial_guess << std::endl;
+            std::cout << dynamic_cast<NewtonConfig*>(config.get())->derivative(3) << std::endl;
             break;
         case Method::SECANT:
-            /* code */
+            std::cout << config->function(0) << std::endl;
+            std::cout << dynamic_cast<SecantConfig*>(config.get())->final_point << std::endl;
             break;
         case Method::FIXED_POINT:
-            /* code */
+            std::cout << config->function(0) << std::endl;
+            std::cout << dynamic_cast<FixedPointConfig*>(config.get())->initial_guess << std::endl;
             break;
         default:
             break;

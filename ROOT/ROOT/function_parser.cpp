@@ -10,6 +10,8 @@
 #include <string>
 #include <vector>
 
+FunctionParserBase::FunctionParserBase(std::string function_str) : function_str(std::move(function_str)) {}
+
 inline bool FunctionParserBase::isPolynomial(const std::string& expression) {
     if (expression.empty()) {
         return false;
@@ -73,7 +75,7 @@ std::pair<double, std::string> FunctionParserBase::parseOptionalCoefficient(cons
     return {1.0, token};
 }
 
-PolynomialParser ::PolynomialParser(std::string function_str) { this->function_str = function_str; }
+PolynomialParser ::PolynomialParser(std::string function_str) : FunctionParserBase(function_str) {}
 
 bool PolynomialParser::parseTokenAsPolyTerm(const std::string& raw_token, std::function<double(double)>& out_term) {
     if (raw_token.empty()) {
@@ -151,7 +153,7 @@ std::function<double(double)> PolynomialParser::parse() {
     };
 }
 
-TrigonometricParser ::TrigonometricParser(std::string function_str) { this->function_str = function_str; }
+TrigonometricParser ::TrigonometricParser(std::string function_str) : FunctionParserBase(function_str) {}
 
 bool TrigonometricParser::parseTokenAsTrigTerm(const std::string& raw_token, std::function<double(double)>& out_term) {
     if (raw_token.empty()) {
