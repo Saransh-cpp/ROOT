@@ -4,6 +4,7 @@
 #include <memory>
 #include <ranges>
 #include <string>
+#include <Eigen/Dense>
 
 template <>
 void GnuplotPrinter<Eigen::Vector2d>::generate_gnuplot_script() const;

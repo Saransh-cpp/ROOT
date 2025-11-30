@@ -105,4 +105,6 @@ class GnuplotPrinter : public datPrinter<V> {
     void generate_gnuplot_script() const;
 };
 
+#include "writer_impl.hpp"
+
 #endif  // ROOT_WRITER_HPP

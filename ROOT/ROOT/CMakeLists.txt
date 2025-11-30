@@ -1,12 +1,6 @@
 include(GNUInstallDirs)
 
-add_executable(root_cli main.cpp
-        writer.hpp
-        writer.cpp
-        solver.cpp
-        solver.hpp
-        stepper.hpp
-        stepper.cpp)
+add_executable(root_cli main.cpp)
 
 target_link_libraries(root_cli PRIVATE libROOT Eigen3::Eigen)
 

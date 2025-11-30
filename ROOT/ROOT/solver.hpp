@@ -99,4 +99,6 @@ class Solver {
     Solver<T>& operator=(const Solver<T>& solver);
 };
 
+#include "solver_impl.hpp"
+
 #endif

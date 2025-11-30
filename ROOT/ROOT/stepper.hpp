@@ -2,10 +2,7 @@
 #define ROOT_STEPPER_HPP
 
 #include <functional>
-#include "solver.hpp"
-
-template <typename T>
-class Solver;
+#include <Eigen/Dense>
 /**
  * The stepper class is a mother class, in which the Stepper is just initialized, but not computed. Despite this, the
  * aitken step is in common for all the methods and its method is defined here as a consequence, and the same
@@ -22,7 +19,7 @@ class Stepper {
     std::function<double(double)> function;
 
   public:
-    Stepper(Solver<T>& solver);
+    Stepper(std::function<double(double)> fun);
     virtual Eigen::Vector2d compute_step(Eigen::Vector2d) = 0;
     /** \brief Returns the result of the computation of the additional step which Aitken acceleration introduces.
      * The three parameters are the previous 3 steps of the iterative solution, required to compute the new one,
@@ -31,7 +28,7 @@ class Stepper {
     Eigen::Vector2d aitken_step(Eigen::Vector2d last_iter,
                                 Eigen::Vector2d last_iter_two,
                                 Eigen::Vector2d last_iter_three);
-    Stepper<T>& operator=(const Stepper<T>& solver);
+    Stepper<T>& operator=(const Stepper<T>& stepper);
 };
 
 /**
@@ -51,7 +48,7 @@ class NewtonRaphsonStepper : public Stepper<T> {
 
   public:
     /** \brief The constructor initializes the function and the derivative*/
-    NewtonRaphsonStepper(Solver<double>& solver);
+    NewtonRaphsonStepper(std::function<double(double)> fun);
     /** \brief Takes the derivative as a string input and converts in a std::function.*/
     void set_derivative();  // to do
                             /** \brief x_new = x_old - f(x_old) / f'(x_old) */
@@ -67,7 +64,7 @@ class FixedPointStepper : public Stepper<T> {
 
   public:
     /** \brief The constructor initializs the function and the derivative*/
-    FixedPointStepper(Solver<double>& solver);
+    FixedPointStepper(std::function<double(double)> fun);
     /** \brief Takes the fixed point function as a string input and converts it in a std::function*/
     void set_fixed_point_function();  // to do
                                       /** \brief x_new = phi(x_old), where phi is the fixed point function.*/
@@ -88,7 +85,7 @@ class ChordsStepper : public Stepper<T> {
 
   public:
     /** \brief The arguments are initialized from the Solver info*/
-    ChordsStepper(Solver<Eigen::Vector2d>& solver);
+    ChordsStepper(std::function<double(double)> fun, Eigen::Vector2d _int);
     /** \brief x_2 = x_1 - (x_1 - x_0) / (f(x_1) - f(x_0)) * f(x_1)
      *
      * Before the computation, the two arguments are then updated for the next step.
@@ -105,11 +102,13 @@ class BisectionStepper : public Stepper<T> {
 
   public:
     /** The arguments are initialized by the Solver info*/
-    BisectionStepper(Solver<Eigen::Vector2d>& solver);
+    BisectionStepper(std::function<double(double)> fun, Eigen::Vector2d _int);
     /** \brief We have an interval [a,b] such that f(a)*f(b) < 0; We compute x_new = (a+b)/2; if f(a)*f(x_new) < 0 then
      * a_new = a, b_new = x_new, otherwise a_new = x_new, b_new = b.
      */
     Eigen::Vector2d compute_step(Eigen::Vector2d previous_iteration) override;
 };
+
+#include "stepper_impl.hpp"
 
 #endif  // ROOT_STEPPER_HPP
