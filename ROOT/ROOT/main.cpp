@@ -43,8 +43,9 @@ int main(int argc, char** argv) {
 
     std::string function_str;
     cli->add_option("-f,--function", function_str,
-                    "Function to find root of (only polynomial and simple trig expressions in this demo)")
+                    "Function to find root of (only polynomial and simple trig expressions)")
         ->required();
+    cli->require_subcommand(1);
 
     // Subcommands for CLI input
     // newton
@@ -52,7 +53,7 @@ int main(int argc, char** argv) {
     double newton_initial = 0.0;
     std::string derivative_function;
     newton->add_option("--initial", newton_initial, "Initial guess x0 for Newton's method")->required();
-    newton->add_option("--derivative", derivative_function, "Derivative of the function (optional)");
+    newton->add_option("--derivative", derivative_function, "Derivative of the function (optional)")->required();
 
     // secant
     auto* secant = cli->add_subcommand("secant", "Use Secant method");
@@ -91,17 +92,19 @@ int main(int argc, char** argv) {
         config = datReader.read();
     } else if (*cli) {
         if (*newton) {
-            config = new NewtonConfig(tolerance, max_iterations, aitken, parseFunction(function_str),
-                                      parseFunction(derivative_function), newton_initial);
-        } else if (*secant) {
             config =
-                new SecantConfig(tolerance, max_iterations, aitken, parseFunction(function_str), secant_x0, secant_x1);
+                new NewtonConfig(tolerance, max_iterations, aitken, FunctionParserBase::parseFunction(function_str),
+                                 FunctionParserBase::parseFunction(derivative_function), newton_initial);
+        } else if (*secant) {
+            config = new SecantConfig(tolerance, max_iterations, aitken,
+                                      FunctionParserBase::parseFunction(function_str), secant_x0, secant_x1);
         } else if (*iterative) {
-            config = new FixedPointConfig(tolerance, max_iterations, aitken, parseFunction(function_str),
-                                          iterative_initial, parseFunction(function_g));
+            config =
+                new FixedPointConfig(tolerance, max_iterations, aitken, FunctionParserBase::parseFunction(function_str),
+                                     iterative_initial, FunctionParserBase::parseFunction(function_g));
         } else if (*bisection) {
-            config = new BisectionConfig(tolerance, max_iterations, aitken, parseFunction(function_str), interval_a,
-                                         interval_b);
+            config = new BisectionConfig(tolerance, max_iterations, aitken,
+                                         FunctionParserBase::parseFunction(function_str), interval_a, interval_b);
         } else {
             std::cerr << "No valid subcommand provided." << std::endl;
             return 1;
