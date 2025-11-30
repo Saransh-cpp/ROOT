@@ -6,6 +6,8 @@
 #include <string>
 #include "stepper.hpp"
 
+template <typename T>
+class Stepper;
 /**
  * The Solver class will handle all the methods and arguments required for managing a solving process to find
  * the root of a Non-linear function.
@@ -68,7 +70,7 @@ class Solver {
      */
     void loop();
     /** \brief Creates the stepper, calls the step computation, the error calculation and the results' saver.*/
-    void while_body(int& iter, auto stepper, double& err);
+    void while_body(int& iter, std::unique_ptr<Stepper<T>>& stepper, double& err);
     /** \brief Save the result of a step in a defined row of the results' matrix.*/
     void save_results(int iter, Eigen::Vector2d result_to_save);
     /** \brief Returns a row of the results matrix. @param step_length tells how far to go up from the bottom row */

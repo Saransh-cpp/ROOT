@@ -1,5 +1,6 @@
 #include "stepper.hpp"
 
+#include <functional>
 #include <iostream>
 
 std::function<double(double)> convert_string_to_fct(std::string fct) {};
@@ -7,6 +8,11 @@ std::function<double(double)> convert_string_to_fct(std::string fct) {};
 template <typename T>
 Stepper<T>::Stepper(Solver<T>& solver) {
     function = solver.get_function();
+}
+
+template <typename T>
+Stepper<T>& Stepper<T>::operator=(const Stepper<T>& solver) {
+    function = solver.function;
 }
 
 template <typename T>

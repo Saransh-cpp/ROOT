@@ -137,7 +137,7 @@ void Solver<T>::loop() {
     save_starting_point();
 
     while (err > tolerance && iter < max_iterations) {
-        while_body(&iter, stepper.get(), &err);
+        while_body(iter, stepper, err);
     }
 
     auto writer = std::make_unique<Writer<Eigen::MatrixX2d>>(results);
@@ -147,11 +147,11 @@ void Solver<T>::loop() {
 }
 
 template <typename T>
-void Solver<T>::while_body(int& iter, auto stepper, double& err) {
+void Solver<T>::while_body(int& iter, std::unique_ptr<Stepper<T>>& stepper, double& err) {
     if (!this->aitken_requirement) {
         Eigen::Vector2d new_results = stepper->compute_step(this->get_previous_result(0));
         this->save_results(iter, new_results);
-        err = error_calculator(new_results, this->get_previous_result(0)(0));
+        err = error_calculator(new_results(0), this->get_previous_result(0)(0));
         iter++;
     } else {
         Eigen::Vector2d new_results = stepper->compute_step(this->get_previous_result(0));
@@ -160,10 +160,10 @@ void Solver<T>::while_body(int& iter, auto stepper, double& err) {
         new_results = stepper->compute_step(this->get_previous_result(0));
         this->save_results(iter, new_results);
         iter++;
-        new_results = stepper->aitken_step(new_results, this->get_previous_result(1));
+        new_results = stepper->aitken_step(new_results, this->get_previous_result(1), this->get_previous_result(2));
         this->save_results(iter, new_results);
         iter++;
-        err = error_calculator(new_results, this->get_previous_result(0)(0));
+        err = error_calculator(new_results(0), this->get_previous_result(0)(0));
     }
 }
 
@@ -217,3 +217,6 @@ Solver<T>& Solver<T>::operator=(const Solver<T>& solver) {
     info = solver.info;
     return *this;
 }
+
+template class Solver<double>;
+template class Solver<Eigen::Vector2d>;

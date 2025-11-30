@@ -4,6 +4,8 @@
 #include <functional>
 #include "solver.hpp"
 
+template <typename T>
+class Solver;
 /**
  * The stepper class is a mother class, in which the Stepper is just initialized, but not computed. Despite this, the
  * aitken step is in common for all the methods and its method is defined here as a consequence, and the same
@@ -29,6 +31,7 @@ class Stepper {
     Eigen::Vector2d aitken_step(Eigen::Vector2d last_iter,
                                 Eigen::Vector2d last_iter_two,
                                 Eigen::Vector2d last_iter_three);
+    Stepper<T>& operator=(const Stepper<T>& solver);
 };
 
 /**
