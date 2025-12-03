@@ -98,8 +98,8 @@ void Solver<Eigen::Vector2d>::save_starting_point() {
     if (results.rows() == 0) {
         results.resize(1, 2);
     }
-    double mid = (info.previous_iteration(0), info.previous_iteration(1)) / 2;
-    save_results(0, {mid, info.function(mid)});
+    double to_save = info.previous_iteration(1);
+    save_results(0, {to_save, info.function(to_save)});
 }
 
 template <typename T>
@@ -161,9 +161,12 @@ void Solver<T>::loop() {
     convert_stepper(stepper, method);
 
     save_starting_point();
+
+    std::cout << "x(0): " << get_previous_result(0)(0) << "f(x0): " << get_previous_result(0)(1) << std::endl;
+
     int iter = 1;
 
-    while (err > tolerance && iter < max_iterations) {
+    while (err > tolerance && abs(get_previous_result(0)(1)) > tolerance && iter < max_iterations) {
         while_body(iter, stepper, err);
     }
 
@@ -209,7 +212,7 @@ int Solver<T>::ask_next_action() const {
 
 template <typename T>
 void Solver<T>::clear_results() {
-    results.resize(0, 0);
+    results.resize(0, 2);
 }
 
 template <typename T>
