@@ -136,7 +136,7 @@ void GnuplotPrinter<Eigen::Vector2d>::generate_gnuplot_script() const {
         std::cerr << "Error: could not open gnuplot script file.\n";
         return;
     }
-
+    // LLM
     script << "# Auto-generated gnuplot script\n"
            << "set terminal pngcairo size 1000,800 enhanced font 'Arial,12'\n"
            << "set output '" << png_file << "'\n"

@@ -67,37 +67,27 @@ void Solver<Eigen::Vector2d>::convert_stepper(std::unique_ptr<Stepper<Eigen::Vec
 
 template <typename T>
 void Solver<T>::save_results(int iter, Eigen::Vector2d result_to_save) {
-    if (iter >= results.rows()) {
-        results.conservativeResize(iter + 1, 2);
-    }
+    results.conservativeResize(iter + 1, 2);
     this->results.row(iter) = result_to_save.transpose();
 }
 
 template <typename T>
 Eigen::Vector2d Solver<T>::get_previous_result(int step_length) {
     int target_row = results.rows() - step_length - 1;
-    if (target_row < 0) {
-        target_row = 0;
-    }
-    if (target_row >= results.rows()) {
-        target_row = results.rows() - 1;
-    }
     return this->results.row(target_row);
 }
 
 template <>
 void Solver<double>::save_starting_point() {
-    if (results.rows() == 0) {
+    if (results.rows() == 0)
         results.conservativeResize(1, 2);
-    }
     save_results(0, {info.previous_iteration, info.function(info.previous_iteration)});
 }
 
 template <>
 void Solver<Eigen::Vector2d>::save_starting_point() {
-    if (results.rows() == 0) {
+    if (results.rows() == 0)
         results.resize(1, 2);
-    }
     double to_save = info.previous_iteration(1);
     save_results(0, {to_save, info.function(to_save)});
 }
@@ -136,7 +126,7 @@ template <typename T>
 std::string Solver<T>::ask_method() {
     std::string method;
     std::vector<std::string> valid = {"newton", "fixed point", "bisection", "chords"};
-
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     while (true) {
         std::cout << "Insert method (newton, fixed point, bisection, chords): ";
         std::getline(std::cin, method);
