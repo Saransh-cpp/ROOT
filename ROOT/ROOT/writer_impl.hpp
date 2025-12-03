@@ -1,10 +1,10 @@
-#include "writer.hpp"
+#include <Eigen/Dense>
 #include <fstream>
 #include <iostream>
 #include <memory>
 #include <ranges>
 #include <string>
-#include <Eigen/Dense>
+#include "writer.hpp"
 
 template <>
 void GnuplotPrinter<Eigen::Vector2d>::generate_gnuplot_script() const;
@@ -75,12 +75,12 @@ void Writer<T>::choose_how(std::unique_ptr<Printer<V>>& printer) {
 
 template <typename V>
 OutputPrinter<V>::OutputPrinter() {
-    std::cout << "Here are the iterations of the method";
+    std::cout << "Here are the iterations of the method: " << std::endl;
 }
 
 template <>
 void OutputPrinter<Eigen::Vector2d>::write_values(const Eigen::Vector2d& value) {
-    std::cout << "x = " << value(0) << "--- f(x) = " << value(1) << std::endl;
+    std::cout << "x = " << value(0) << " --- f(x) = " << value(1) << std::endl;
 }
 
 template <typename V>
@@ -91,6 +91,7 @@ FilePrinter<V>::FilePrinter(const std::string& fname, bool ow_mode) {
         file.open(filename, std::ios::trunc);
     } else {
         file.open(filename, std::ios::app);
+        file << std::endl;
     }
 
     if (!file.is_open()) {
@@ -121,11 +122,37 @@ GnuplotPrinter<V>::GnuplotPrinter(const std::string& fname, bool ow_mode) : datP
 
 template <>
 void GnuplotPrinter<Eigen::Vector2d>::generate_gnuplot_script() const {
-    std::ofstream script("plot.plt");
-    script << "set terminal pngcairo size 800,600\n"
-           << "set output 'plot.png'\n"
-           << "plot '" << filename << "' using 1:2 with linespoints\n";
+    std::string base_name = filename;
+    size_t last_dot = base_name.find_last_of(".");
+    if (last_dot != std::string::npos) {
+        base_name = base_name.substr(0, last_dot);
+    }
+
+    std::string png_file = base_name + ".png";  // PNG output
+    std::string plt_file = "plot.plt";          // Gnuplot script
+
+    std::ofstream script(plt_file);
+    if (!script.is_open()) {
+        std::cerr << "Error: could not open gnuplot script file.\n";
+        return;
+    }
+
+    script << "# Auto-generated gnuplot script\n"
+           << "set terminal pngcairo size 1000,800 enhanced font 'Arial,12'\n"
+           << "set output '" << png_file << "'\n"
+           << "set title 'Root-Finding Iterations'\n"
+           << "set xlabel 'x'\n"
+           << "set ylabel 'f(x)'\n"
+           << "set grid\n"
+           << "plot '" << filename << "' using 1:2 with linespoints lt rgb 'blue' pt 7 lw 2 title 'Iteration Path'\n";
+
     script.close();
 
-    std::system("gnuplot plot.plt");
+    // Check if gnuplot exists before calling it
+    if (std::system("which gnuplot > /dev/null 2>&1") == 0) {
+        std::system(("gnuplot " + plt_file).c_str());
+        std::cout << "Gnuplot image generated: " << png_file << std::endl;
+    } else {
+        std::cerr << "Warning: gnuplot not found. Script generated but PNG not created.\n";
+    }
 }

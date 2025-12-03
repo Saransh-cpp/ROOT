@@ -131,12 +131,11 @@ bool Solver<T>::ask_aitken() {
     }
 }
 
+// LLm for clean output
 template <typename T>
 std::string Solver<T>::ask_method() {
     std::string method;
     std::vector<std::string> valid = {"newton", "fixed point", "bisection", "chords"};
-
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
     while (true) {
         std::cout << "Insert method (newton, fixed point, bisection, chords): ";
@@ -162,7 +161,7 @@ void Solver<T>::loop() {
 
     save_starting_point();
 
-    std::cout << "x(0): " << get_previous_result(0)(0) << "f(x0): " << get_previous_result(0)(1) << std::endl;
+    std::cout << "x(0): " << get_previous_result(0)(0) << "; f(x0): " << get_previous_result(0)(1) << std::endl;
 
     int iter = 1;
 

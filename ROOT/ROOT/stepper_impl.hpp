@@ -5,7 +5,7 @@
 #include <iostream>
 
 std::function<double(double)> convert_string_to_fct(std::string fct) {
-    return [](double x) { return x; };
+    return [](double x) { return 2 * x; };
 };
 template <>
 void NewtonRaphsonStepper<double>::set_derivative();
