@@ -1,8 +1,8 @@
 #ifndef ROOT_STEPPER_HPP
 #define ROOT_STEPPER_HPP
 
-#include <functional>
 #include <Eigen/Dense>
+#include <functional>
 /**
  * The stepper class is a mother class, in which the Stepper is just initialized, but not computed. Despite this, the
  * aitken step is in common for all the methods and its method is defined here as a consequence, and the same
