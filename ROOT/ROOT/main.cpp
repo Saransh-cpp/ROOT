@@ -12,6 +12,14 @@ int main(int argc, char** argv) {
     // ------------------------------------------------------------
     // Command-line interface
     // ------------------------------------------------------------
+
+    // !!!!!!!!!!!!!!!!!!!!!! IMPORTANT !!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // It is required to add options and subcommands in the main
+    // function itself. CLI11 raises either segmentation faults or
+    // bus errors if options/subcommands are added from other
+    // functions. Hence, we cannot modularize this part of the code.
+    // !!!!!!!!!!!!!!!!!!!!!! IMPORTANT !!!!!!!!!!!!!!!!!!!!!!!!!!!
+
     CLI::App app{"ROOT Command Line Interface"};
     app.require_subcommand(1);
 
@@ -79,9 +87,16 @@ int main(int argc, char** argv) {
 
     CLI11_PARSE(app, argc, argv);
 
+    // !!!!!!!!!!!!!!!!!!!!!! IMPORTANT !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // Everything below here can be modularized into functions and
+    // classes as needed since CLI11 has finished all parsing of
+    // options and subcommands.
+    // !!!!!!!!!!!!!!!!!!!!!! IMPORTANT !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
     // ------------------------------------------------------------
     // Solver configuration
     // ------------------------------------------------------------
+
     std::unique_ptr<ConfigBase> config;
     std::unique_ptr<ReaderBase> reader;
 
