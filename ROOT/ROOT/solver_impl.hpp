@@ -50,9 +50,9 @@ void convert_stepper(std::unique_ptr<Stepper<T>>& stepper, const std::string& me
 template <>
 void Solver<double>::convert_stepper(std::unique_ptr<Stepper<double>>& stepper, const std::string& method) {
     if (method == "newton")
-        stepper = std::make_unique<NewtonRaphsonStepper<double>>(this->info.function);
+        stepper = std::make_unique<NewtonRaphsonStepper<double>>(this->info.function, this->aitken_requirement);
     if (method == "fixed point")
-        stepper = std::make_unique<FixedPointStepper<double>>(this->info.function);
+        stepper = std::make_unique<FixedPointStepper<double>>(this->info.function, this->aitken_requirement);
 }
 
 template <>
@@ -60,9 +60,9 @@ void Solver<Eigen::Vector2d>::convert_stepper(std::unique_ptr<Stepper<Eigen::Vec
                                               const std::string& method) {
     if (method == "bisection")
         stepper =
-            std::make_unique<BisectionStepper<Eigen::Vector2d>>(this->info.function, this->info.previous_iteration);
+            std::make_unique<BisectionStepper<Eigen::Vector2d>>(this->info.function, this->aitken_requirement ,this->info.previous_iteration);
     if (method == "chords")
-        stepper = std::make_unique<ChordsStepper<Eigen::Vector2d>>(this->info.function, this->info.previous_iteration);
+        stepper = std::make_unique<ChordsStepper<Eigen::Vector2d>>(this->info.function, this->aitken_requirement, this->info.previous_iteration);
 }
 
 template <typename T>
@@ -167,23 +167,10 @@ void Solver<T>::loop() {
 
 template <typename T>
 void Solver<T>::while_body(int& iter, std::unique_ptr<Stepper<T>>& stepper, double& err) {
-    if (!this->aitken_requirement) {
-        Eigen::Vector2d new_results = stepper->compute_step(this->get_previous_result(0));
-        this->save_results(iter, new_results);
-        err = error_calculator(new_results(0), this->get_previous_result(1)(0));
-        ++iter;
-    } else {
-        Eigen::Vector2d new_results = stepper->compute_step(this->get_previous_result(0));
-        this->save_results(iter, new_results);
-        ++iter;
-        new_results = stepper->compute_step(this->get_previous_result(0));
-        this->save_results(iter, new_results);
-        ++iter;
-        new_results = stepper->aitken_step(new_results, this->get_previous_result(1), this->get_previous_result(2));
-        this->save_results(iter, new_results);
-        ++iter;
-        err = error_calculator(new_results(0), this->get_previous_result(1)(0));
-    }
+    auto new_results = stepper->step(this->get_previous_result(0));
+    err = error_calculator(new_results(0), this->get_previous_result(1)(0));
+    save_results(iter, new_results);
+    ++iter;
 }
 
 template <typename T>

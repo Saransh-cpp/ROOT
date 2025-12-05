@@ -13,8 +13,9 @@ template <>
 void FixedPointStepper<double>::set_fixed_point_function();
 
 template <typename T>
-Stepper<T>::Stepper(std::function<double(double)> fun) {
+Stepper<T>::Stepper(std::function<double(double)> fun, bool aitken_mode) {
     function = fun;
+    aitken_requirement = aitken_mode;
 }
 
 template <typename T>
@@ -24,11 +25,17 @@ Stepper<T>& Stepper<T>::operator=(const Stepper<T>& stepper) {
 }
 
 template <typename T>
-Eigen::Vector2d Stepper<T>::aitken_step(Eigen::Vector2d last_iter,
-                                        Eigen::Vector2d last_iter_two,
-                                        Eigen::Vector2d last_iter_three) {
-    double denominator = (last_iter(0) - last_iter_two(0)) / (last_iter_two(0) - last_iter_three(0));
-    double new_point = last_iter(0) - (pow(last_iter(0) - last_iter_two(0), 2) / denominator);
+Eigen::Vector2d Stepper<T>::step(Eigen::Vector2d previous_step) {
+    if (!aitken_requirement) {compute_step(previous_step);}
+    else {aitken_step(previous_step);}
+}
+
+template <typename T>
+Eigen::Vector2d Stepper<T>::aitken_step(Eigen::Vector2d previous_iter) {
+    Eigen::Vector2d iter_one = compute_step(previous_iter);
+    Eigen::Vector2d iter_two = compute_step(iter_one);
+    double denominator = (iter_two(0) - iter_one(0)) / (iter_one(0) - previous_iter(0));
+    double new_point = iter_two(0) - (pow(iter_two(0) - iter_one(0), 2) / denominator);
     return {new_point, function(new_point)};
 }
 

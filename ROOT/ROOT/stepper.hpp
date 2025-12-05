@@ -14,20 +14,20 @@
  */
 template <typename T>
 class Stepper {
-  protected:
+  private:
     /**	\brief function argument is got from the Solver class and is the function to compute the root of. */
     std::function<double(double)> function;
+    bool aitken_requirement;
 
   public:
-    Stepper(std::function<double(double)> fun);
+    Stepper(std::function<double(double)> fun, bool aitken_mode);
     virtual Eigen::Vector2d compute_step(Eigen::Vector2d) = 0;
     /** \brief Returns the result of the computation of the additional step which Aitken acceleration introduces.
      * The three parameters are the previous 3 steps of the iterative solution, required to compute the new one,
      * and are got from the Solver object which created the Stepper.
      */
-    Eigen::Vector2d aitken_step(Eigen::Vector2d last_iter,
-                                Eigen::Vector2d last_iter_two,
-                                Eigen::Vector2d last_iter_three);
+    Eigen::Vector2d step(Eigen::Vector2d previous_step);
+    Eigen::Vector2d aitken_step(Eigen::Vector2d previous_iter);
     Stepper<T>& operator=(const Stepper<T>& stepper);
 };
 
