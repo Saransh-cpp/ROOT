@@ -59,10 +59,11 @@ template <>
 void Solver<Eigen::Vector2d>::convert_stepper(std::unique_ptr<Stepper<Eigen::Vector2d>>& stepper,
                                               const std::string& method) {
     if (method == "bisection")
-        stepper =
-            std::make_unique<BisectionStepper<Eigen::Vector2d>>(this->info.function, this->aitken_requirement ,this->info.previous_iteration);
+        stepper = std::make_unique<BisectionStepper<Eigen::Vector2d>>(this->info.function, this->aitken_requirement,
+                                                                      this->info.previous_iteration);
     if (method == "chords")
-        stepper = std::make_unique<ChordsStepper<Eigen::Vector2d>>(this->info.function, this->aitken_requirement, this->info.previous_iteration);
+        stepper = std::make_unique<ChordsStepper<Eigen::Vector2d>>(this->info.function, this->aitken_requirement,
+                                                                   this->info.previous_iteration);
 }
 
 template <typename T>
