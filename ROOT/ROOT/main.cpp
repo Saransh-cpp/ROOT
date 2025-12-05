@@ -19,36 +19,36 @@ int main(int argc, char** argv) {
     bool verbose = false;
     app.add_flag("-v,--verbose", verbose, "Enable verbose output (applies to all methods)");
 
-    // Subcommands for each input type
-    // Subcommand for CSV input
+    // Subcommands for different input methods
+    // CSV
     auto* csv = app.add_subcommand("csv", "Use CSV input");
     std::string csv_file;
     csv->add_option("--file", csv_file, "Path to CSV file containing input data")->required();
 
-    // Subcommand for dat input
+    // DAT
     auto* dat = app.add_subcommand("dat", "Use DAT input");
     std::string dat_file;
     dat->add_option("--file", dat_file, "Path to DAT file containing input data")->required();
 
-    // Subcommand for CLI input
+    // CLI
     auto* cli = app.add_subcommand("cli", "Use CLI input");
+    std::string function_str;
+    cli->add_option("-f,--function", function_str,
+                    "Function to find root of (only polynomial and simple trig expressions)")
+        ->required();
 
     bool aitken = false;
     cli->add_flag("-a,--aitken", aitken, "Enable Aitken acceleration");
 
-    double tolerance = 1e-7;
+    double tolerance = 1e-5;
     cli->add_option("-t,--tolerance", tolerance, "Tolerance for convergence")->check(CLI::PositiveNumber);
 
     int max_iterations = 100;
     cli->add_option("-n,--max-iterations", max_iterations, "Maximum number of iterations")->check(CLI::PositiveNumber);
 
-    std::string function_str;
-    cli->add_option("-f,--function", function_str,
-                    "Function to find root of (only polynomial and simple trig expressions)")
-        ->required();
     cli->require_subcommand(1);
 
-    // Subcommands for CLI input
+    // Subcommands for the CLI subcommand
     // newton
     auto* newton = cli->add_subcommand("newton", "Use Newton's method");
     double newton_initial = 0.0;
@@ -83,35 +83,18 @@ int main(int argc, char** argv) {
     // Solver configuration
     // ------------------------------------------------------------
     std::unique_ptr<ConfigBase> config;
+    std::unique_ptr<ReaderBase> reader;
 
-    // If CSV subcommand used, delegate to CSV reader
+    // Read configuration based on selected input method
     if (*csv) {
-        ReaderCSV csvReader(csv_file);
-        config = csvReader.read();
+        reader = std::make_unique<ReaderCSV>();
+        config = reader->read(csv);
     } else if (*dat) {
-        ReaderDAT datReader(dat_file);
-        config = datReader.read();
+        reader = std::make_unique<ReaderDAT>();
+        config = reader->read(dat);
     } else if (*cli) {
-        if (*newton) {
-            config = std::make_unique<NewtonConfig>(
-                tolerance, max_iterations, aitken, FunctionParserBase::parseFunction(function_str),
-                FunctionParserBase::parseFunction(derivative_function), newton_initial);
-        } else if (*secant) {
-            config =
-                std::make_unique<SecantConfig>(tolerance, max_iterations, aitken,
-                                               FunctionParserBase::parseFunction(function_str), secant_x0, secant_x1);
-        } else if (*iterative) {
-            config = std::make_unique<FixedPointConfig>(
-                tolerance, max_iterations, aitken, FunctionParserBase::parseFunction(function_str), iterative_initial,
-                FunctionParserBase::parseFunction(function_g));
-        } else if (*bisection) {
-            config = std::make_unique<BisectionConfig>(tolerance, max_iterations, aitken,
-                                                       FunctionParserBase::parseFunction(function_str), interval_a,
-                                                       interval_b);
-        } else {
-            std::cerr << "No valid subcommand provided." << std::endl;
-            return 1;
-        }
+        reader = std::make_unique<ReaderCLI>();
+        config = reader->read(cli);
     }
 
     // ------------------------------------------------------------

@@ -11,6 +11,7 @@
 #ifndef READER_HPP
 #define READER_HPP
 
+#include <CLI/CLI.hpp>
 #include <memory>
 #include <string>
 #include <vector>
@@ -54,19 +55,14 @@ class ReaderBase {
   public:
     std::string filename;   //!< The input filename to read from.
     ReaderOptions options;  //!< Options for reading the file.
+    virtual ~ReaderBase() = default;
     /**
-     * @brief Pure virtual method to read the configuration from the input file.
+     * @brief Read the configuration from the input.
      *
+     * @param app The CLI app subcommand containing the options for a specific input type.
      * @return A unique pointer to a ConfigBase object representing the read configuration.
      */
-    virtual std::unique_ptr<ConfigBase> read() = 0;
-    /**
-     * @brief Constructor for ReaderBase.
-     *
-     * @param filename The input filename to read from.
-     * @param options Options for reading the file.
-     */
-    ReaderBase(const std::string& filename, const ReaderOptions& options = ReaderOptions());
+    virtual std::unique_ptr<ConfigBase> read(CLI::App* app) = 0;
 
   protected:
     /**
@@ -126,18 +122,12 @@ class ReaderBase {
 class ReaderCSV : public ReaderBase {
   public:
     /**
-     * @brief Constructor for ReaderCSV.
-     *
-     * @param filename The input filename to read from.
-     * @param options Options for reading the file.
-     */
-    ReaderCSV(const std::string& filename, const ReaderOptions& options = ReaderOptions());
-    /**
      * @brief Method to read the configuration from the CSV file.
      *
+     * @param app The CLI app subcommand containing the options for the CSV input.
      * @return A unique pointer to a ConfigBase object representing the read configuration.
      */
-    std::unique_ptr<ConfigBase> read() override;
+    std::unique_ptr<ConfigBase> read(CLI::App* app) override;
 
   private:
     /**
@@ -157,18 +147,28 @@ class ReaderCSV : public ReaderBase {
 class ReaderDAT : public ReaderBase {
   public:
     /**
-     * @brief Constructor for ReaderDAT.
-     *
-     * @param filename The input filename to read from.
-     * @param options Options for reading the file.
-     */
-    ReaderDAT(const std::string& filename, const ReaderOptions& options = ReaderOptions());
-    /**
      * @brief Method to read the configuration from the DAT file.
      *
+     * @param app The CLI app subcommand containing the options for the DAT input.
      * @return A unique pointer to a ConfigBase object representing the read configuration.
      */
-    std::unique_ptr<ConfigBase> read() override;
+    std::unique_ptr<ConfigBase> read(CLI::App* app) override;
+};
+
+/**
+ * @brief Reader class for CLI input.
+ *
+ * This class extends ReaderBase and implements reading configuration data from CLI input.
+ */
+class ReaderCLI : public ReaderBase {
+  public:
+    /**
+     * @brief Read the configuration from CLI input.
+     *
+     * @param app The CLI app subcommand containing the options for the CLI input.
+     * @return A unique pointer to a ConfigBase object representing the read configuration.
+     */
+    std::unique_ptr<ConfigBase> read(CLI::App* app) override;
 };
 
 #endif  // READER_HPP

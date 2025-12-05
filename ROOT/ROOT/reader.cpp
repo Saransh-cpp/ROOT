@@ -11,8 +11,6 @@
 #include "config.hpp"
 #include "function_parser.hpp"
 
-ReaderBase::ReaderBase(const std::string& filename, const ReaderOptions& options)
-    : filename(std::move(filename)), options(std::move(options)) {}
 std::string ReaderBase::trim(const std::string& untrimmed_str) {
     size_t start = 0;
     while (start < untrimmed_str.size() && (std::isspace(static_cast<unsigned char>(untrimmed_str[start]))) != 0) {
@@ -206,8 +204,6 @@ std::unique_ptr<ConfigBase> ReaderBase::make_config_from_map(
     return nullptr;  // unreachable
 }
 
-ReaderCSV::ReaderCSV(const std::string& filename, const ReaderOptions& options) : ReaderBase(filename, options) {}
-
 std::vector<std::string> ReaderCSV::splitCsvLine(const std::string& line) const {
     std::vector<std::string> fields;
     std::string cur;
@@ -242,7 +238,8 @@ std::vector<std::string> ReaderCSV::splitCsvLine(const std::string& line) const 
     return fields;
 }
 
-std::unique_ptr<ConfigBase> ReaderCSV::read() {
+std::unique_ptr<ConfigBase> ReaderCSV::read(CLI::App* app) {
+    auto filename = app->get_option("--file")->as<std::string>();
     std::ifstream ifs(filename);
     if (!ifs) {
         std::cerr << "ReaderCSV: failed to open file: " << filename << "\n";
@@ -309,9 +306,8 @@ std::unique_ptr<ConfigBase> ReaderCSV::read() {
     return make_config_from_map(config_map);
 }
 
-ReaderDAT::ReaderDAT(const std::string& filename, const ReaderOptions& options) : ReaderBase(filename, options) {}
-
-std::unique_ptr<ConfigBase> ReaderDAT::read() {
+std::unique_ptr<ConfigBase> ReaderDAT::read(CLI::App* app) {
+    auto filename = app->get_option("--file")->as<std::string>();
     std::ifstream ifs(filename);
     if (!ifs) {
         std::cerr << "ReaderDAT: failed to open file: " << filename << "\n";
@@ -344,4 +340,40 @@ std::unique_ptr<ConfigBase> ReaderDAT::read() {
     }
 
     return make_config_from_map(config_map);
+}
+
+std::unique_ptr<ConfigBase> ReaderCLI::read(CLI::App* app) {
+    std::unique_ptr<ConfigBase> config;
+    if (app->get_subcommand("newton") != nullptr) {
+        config = std::make_unique<NewtonConfig>(
+            app->get_option("--tolerance")->as<double>(), app->get_option("--max-iterations")->as<int>(),
+            app->get_option("--aitken")->as<bool>(),
+            FunctionParserBase::parseFunction(app->get_option("--function")->as<std::string>()),
+            FunctionParserBase::parseFunction(
+                app->get_subcommand("newton")->get_option("--derivative")->as<std::string>()),
+            app->get_subcommand("newton")->get_option("--initial")->as<double>());
+    } else if (app->get_subcommand("secant") != nullptr) {
+        config = std::make_unique<SecantConfig>(
+            app->get_option("--tolerance")->as<double>(), app->get_option("--max-iterations")->as<int>(),
+            app->get_option("--aitken")->as<bool>(),
+            FunctionParserBase::parseFunction(app->get_option("--function")->as<std::string>()),
+            app->get_subcommand("secant")->get_option("--x0")->as<double>(),
+            app->get_subcommand("secant")->get_option("--x1")->as<double>());
+    } else if (app->get_subcommand("iterative") != nullptr) {
+        config = std::make_unique<FixedPointConfig>(
+            app->get_option("--tolerance")->as<double>(), app->get_option("--max-iterations")->as<int>(),
+            app->get_option("--aitken")->as<bool>(),
+            FunctionParserBase::parseFunction(app->get_option("--function")->as<std::string>()),
+            app->get_subcommand("iterative")->get_option("--initial")->as<double>(),
+            FunctionParserBase::parseFunction(
+                app->get_subcommand("iterative")->get_option("--g-function")->as<std::string>()));
+    } else if (app->get_subcommand("bisection") != nullptr) {
+        config = std::make_unique<BisectionConfig>(
+            app->get_option("--tolerance")->as<double>(), app->get_option("--max-iterations")->as<int>(),
+            app->get_option("--aitken")->as<bool>(),
+            FunctionParserBase::parseFunction(app->get_option("--function")->as<std::string>()),
+            app->get_subcommand("bisection")->get_option("--interval_a")->as<double>(),
+            app->get_subcommand("bisection")->get_option("--interval_b")->as<double>());
+    }
+    return config;
 }
