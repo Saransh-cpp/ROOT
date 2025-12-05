@@ -4,7 +4,7 @@
 #include <iostream>
 #include <string>
 
-#include "../external/eigen/Eigen/Dense"
+#include "../../external/eigen/Eigen/Dense"
 /**
  * Polymorphic Writer and Printer classes for the results of the root finding process.
  * These classes themselves could be used for other kinds of writing, and do not have any relationship
@@ -80,19 +80,23 @@ class FilePrinter : public Printer<V> {
 template <typename V>
 class datPrinter : public FilePrinter<V> {
   public:
+    /** @brief Constructor taking the filename and whether to overwrite or not the file */
     datPrinter(const std::string& fname, bool ow_mode);
+    /** @brief Writes a given result into the .dat file*/
     void write_values(const V& value) override;
 };
 
-/** Class to write on .csv the result*/
+/** @brief Class to write on .csv the result*/
 template <typename V>
 class csvPrinter : public FilePrinter<V> {
   private:
-    /** Separator for the .csv output file, given at construction time */
+    /** @brief Separator for the .csv output file, given at construction time */
     char separator;
 
   public:
+    /** Constructor taking the filename, the separator and whether to overwrite or not the file */
     csvPrinter(const std::string& fname, char sep, bool ow_mode);
+    /** @brief Writes a given result into the .csv file */
     void write_values(const V& value) override;
 };
 
@@ -101,7 +105,9 @@ template <typename V>
 // LLM
 class GnuplotPrinter : public datPrinter<V> {
   public:
+    /** @brief Constructor taking the filename and whether to overwrite the file or not */
     GnuplotPrinter(const std::string& fname, bool ow_mode);
+    /** @brief Callsthe generation of the .png output plot */
     void generate_gnuplot_script() const;
 };
 
