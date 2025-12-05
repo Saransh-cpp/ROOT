@@ -4,6 +4,8 @@
 #include <functional>
 #include <iostream>
 
+#include "stepper.hpp"
+
 std::function<double(double)> convert_string_to_fct(std::string fct) {
     return [](double x) { return 2 * x; };
 };
@@ -26,8 +28,8 @@ Stepper<T>& Stepper<T>::operator=(const Stepper<T>& stepper) {
 
 template <typename T>
 Eigen::Vector2d Stepper<T>::step(Eigen::Vector2d previous_step) {
-    if (!aitken_requirement) {compute_step(previous_step);}
-    else {aitken_step(previous_step);}
+    if (!aitken_requirement) {return compute_step(previous_step);}
+    else {return aitken_step(previous_step);}
 }
 
 template <typename T>
@@ -40,7 +42,7 @@ Eigen::Vector2d Stepper<T>::aitken_step(Eigen::Vector2d previous_iter) {
 }
 
 template <>
-NewtonRaphsonStepper<double>::NewtonRaphsonStepper(std::function<double(double)> fun) : Stepper<double>(fun) {
+NewtonRaphsonStepper<double>::NewtonRaphsonStepper(std::function<double(double)> fun, bool aitken_mode) : Stepper<double>(fun, aitken_mode) {
     set_derivative();
 }
 
@@ -60,7 +62,7 @@ Eigen::Vector2d NewtonRaphsonStepper<double>::compute_step(Eigen::Vector2d previ
 }
 
 template <>
-FixedPointStepper<double>::FixedPointStepper(std::function<double(double)> fun) : Stepper<double>(fun) {
+FixedPointStepper<double>::FixedPointStepper(std::function<double(double)> fun, bool aitken_mode) : Stepper<double>(fun, aitken_mode) {
     set_fixed_point_function();
 }
 
@@ -80,8 +82,8 @@ Eigen::Vector2d FixedPointStepper<double>::compute_step(Eigen::Vector2d previous
 }
 
 template <>
-ChordsStepper<Eigen::Vector2d>::ChordsStepper(std::function<double(double)> fun, Eigen::Vector2d _int)
-    : Stepper<Eigen::Vector2d>(fun) {
+ChordsStepper<Eigen::Vector2d>::ChordsStepper(std::function<double(double)> fun, bool aitken_mode, Eigen::Vector2d _int)
+    : Stepper<Eigen::Vector2d>(fun, aitken_mode) {
     auto interval = _int;
     iter_minus_1 = interval(0);
     iter_zero = interval(1);
@@ -98,8 +100,8 @@ Eigen::Vector2d ChordsStepper<Eigen::Vector2d>::compute_step(Eigen::Vector2d las
 }
 
 template <>
-BisectionStepper<Eigen::Vector2d>::BisectionStepper(std::function<double(double)> fun, Eigen::Vector2d _int)
-    : Stepper<Eigen::Vector2d>(fun) {
+BisectionStepper<Eigen::Vector2d>::BisectionStepper(std::function<double(double)> fun, bool aitken_mode, Eigen::Vector2d _int)
+    : Stepper<Eigen::Vector2d>(fun, aitken_mode) {
     auto interval = _int;
     left_edge = interval(0);
     right_edge = interval(1);

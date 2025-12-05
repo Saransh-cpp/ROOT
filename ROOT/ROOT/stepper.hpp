@@ -14,7 +14,7 @@
  */
 template <typename T>
 class Stepper {
-  private:
+  protected:
     /**	\brief function argument is got from the Solver class and is the function to compute the root of. */
     std::function<double(double)> function;
     bool aitken_requirement;
@@ -48,7 +48,7 @@ class NewtonRaphsonStepper : public Stepper<T> {
 
   public:
     /** \brief The constructor initializes the function and the derivative*/
-    NewtonRaphsonStepper(std::function<double(double)> fun);
+    NewtonRaphsonStepper(std::function<double(double)> fun, bool aitken_mode);
     /** \brief Takes the derivative as a string input and converts in a std::function.*/
     void set_derivative();  // to do
                             /** \brief x_new = x_old - f(x_old) / f'(x_old) */
@@ -64,7 +64,7 @@ class FixedPointStepper : public Stepper<T> {
 
   public:
     /** \brief The constructor initializs the function and the derivative*/
-    FixedPointStepper(std::function<double(double)> fun);
+    FixedPointStepper(std::function<double(double)> fun, bool aitken_mode);
     /** \brief Takes the fixed point function as a string input and converts it in a std::function*/
     void set_fixed_point_function();  // to do
                                       /** \brief x_new = phi(x_old), where phi is the fixed point function.*/
@@ -85,7 +85,7 @@ class ChordsStepper : public Stepper<T> {
 
   public:
     /** \brief The arguments are initialized from the Solver info*/
-    ChordsStepper(std::function<double(double)> fun, Eigen::Vector2d _int);
+    ChordsStepper(std::function<double(double)> fun, bool aitken_mode, Eigen::Vector2d _int);
     /** \brief x_2 = x_1 - (x_1 - x_0) / (f(x_1) - f(x_0)) * f(x_1)
      *
      * Before the computation, the two arguments are then updated for the next step.
@@ -102,7 +102,7 @@ class BisectionStepper : public Stepper<T> {
 
   public:
     /** The arguments are initialized by the Solver info*/
-    BisectionStepper(std::function<double(double)> fun, Eigen::Vector2d _int);
+    BisectionStepper(std::function<double(double)> fun, bool aitken_mode, Eigen::Vector2d _int);
     /** \brief We have an interval [a,b] such that f(a)*f(b) < 0; We compute x_new = (a+b)/2; if f(a)*f(x_new) < 0 then
      * a_new = a, b_new = x_new, otherwise a_new = x_new, b_new = b.
      */
