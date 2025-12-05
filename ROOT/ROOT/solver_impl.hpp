@@ -94,7 +94,6 @@ void Solver<Eigen::Vector2d>::save_starting_point() {
 
 template <typename T>
 double Solver<T>::error_calculator(double x_prev, double x_next) {
-    std::cout << x_prev << ", " << x_next << std::endl;
     return abs(x_prev - x_next);
 }
 
@@ -170,9 +169,7 @@ template <typename T>
 void Solver<T>::while_body(int& iter, std::unique_ptr<Stepper<T>>& stepper, double& err) {
     auto new_results = stepper->step(this->get_previous_result(0));
     save_results(iter, new_results);
-    std::cout << "x(" << iter << "): " << new_results(0) << std::endl;
     err = error_calculator(new_results(0), this->get_previous_result(1)(0));
-    std::cout << "err(" << iter << "): " << err << std::endl;
     ++iter;
 }
 
