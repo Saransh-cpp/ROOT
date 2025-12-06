@@ -30,10 +30,11 @@ class Writer {
   public:
     Writer(const T& vals_to_write, WritingMethod write_method);
     /** \brief Method to run the printing loop and correctly initialize the Printer*/
-    void write(std::string filename = "");
+    void write(std::string filename = "", char sep = ',', bool overwrite = true);
     /** \brief Converts the generic Printer into a typed one for a specific output destination*/
     template <typename V>
-    void choose_how(std::unique_ptr<Printer<V>>& printer, std::string filename);
+    void build_printer(std::unique_ptr<Printer<V>>& printer, std::string filename, char sep = ',',
+                       bool overwrite = true);
     /** \brief Helper just to print the final result of the solver process*/
     void print_final_result() const;
 };

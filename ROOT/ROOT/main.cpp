@@ -62,16 +62,26 @@ int main(int argc, char** argv) {
         ->capture_default_str();
 
     bool write_to_cli = false;
-    cli->add_flag("-w,--write-to-cli", write_to_cli, "Write output to CLI")->capture_default_str();
+    cli->add_flag("--wcli,--write-to-cli", write_to_cli, "Write output to CLI")->capture_default_str();
 
     std::string write_to_csv;
-    cli->add_option("--write-to-csv", write_to_csv, "Filename for CSV output")->capture_default_str();
+    cli->add_option("--wcsv,--write-to-csv", write_to_csv, "Filename for CSV output")->capture_default_str();
 
     std::string write_to_dat;
-    cli->add_option("--write-to-dat", write_to_dat, "Filename for DAT output")->capture_default_str();
+    cli->add_option("--wdat,--write-to-dat", write_to_dat, "Filename for DAT output")->capture_default_str();
 
     std::string write_with_gnuplot;
-    cli->add_option("--write-with-gnuplot", write_with_gnuplot, "Filename for DAT output with GNU plot formatting")
+    cli->add_option("--wgnuplot,--write-with-gnuplot", write_with_gnuplot,
+                    "Filename for DAT output with GNU plot formatting")
+        ->capture_default_str();
+
+    char csv_sep = ',';
+    cli->add_option("--wcsv-sep,--write-to-csv-sep", csv_sep, "Separator character for CSV output")
+        ->capture_default_str();
+
+    char append_or_overwrite = 'o';
+    cli->add_option("--w-mode,--write-mode", append_or_overwrite, "Append (a) or Overwrite (o) output file")
+        ->check(CLI::IsMember({'a', 'o'}))
         ->capture_default_str();
 
     cli->require_subcommand(1);
@@ -174,22 +184,18 @@ int main(int argc, char** argv) {
     // Writer execution
     // ------------------------------------------------------------
     if (*cli) {
-        bool write_to_cli_for_writer = cli->get_option("--write-to-cli")->as<bool>();
-        std::string write_to_csv_for_writer = cli->get_option("--write-to-csv")->as<std::string>();
-        std::string write_to_dat_for_writer = cli->get_option("--write-to-dat")->as<std::string>();
-        std::string write_to_gnuplot_for_writer = cli->get_option("--write-with-gnuplot")->as<std::string>();
-        if (write_to_cli_for_writer) {
+        if (write_to_cli) {
             Writer<Eigen::MatrixX2d> writer(results, WritingMethod::CONSOLE);
-            // writer.write();
-        } else if (write_to_csv_for_writer != "") {
+            writer.write();
+        } else if (write_to_csv != "") {
             Writer<Eigen::MatrixX2d> writer(results, WritingMethod::CSV);
-            writer.write(write_to_csv_for_writer);
-        } else if (write_to_dat_for_writer != "") {
+            writer.write(write_to_csv, csv_sep, append_or_overwrite == 'o');
+        } else if (write_to_dat != "") {
             Writer<Eigen::MatrixX2d> writer(results, WritingMethod::DAT);
-            writer.write(write_to_dat_for_writer);
-        } else if (write_to_gnuplot_for_writer != "") {
+            writer.write(write_to_dat, ' ', append_or_overwrite == 'o');
+        } else if (write_with_gnuplot != "") {
             Writer<Eigen::MatrixX2d> writer(results, WritingMethod::GNUPLOT);
-            writer.write(write_to_gnuplot_for_writer);
+            writer.write(write_with_gnuplot, ',', append_or_overwrite == 'o');
         }
     }
 
