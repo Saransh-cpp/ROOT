@@ -2,7 +2,7 @@
 #include <Eigen/Dense>
 #include <functional>
 #include <iostream>
-#include <libROOT/solver_impl.hpp>
+#include <libROOT/solver.hpp>
 #include <memory>
 #include <string>
 
@@ -179,17 +179,17 @@ int main(int argc, char** argv) {
         std::string write_to_dat_for_writer = cli->get_option("--write-to-dat")->as<std::string>();
         std::string write_to_gnuplot_for_writer = cli->get_option("--write-with-gnuplot")->as<std::string>();
         if (write_to_cli_for_writer) {
-            Writer<Eigen::MatrixX2d> writer(results, CONSOLE);
-            writer.writing_process();
+            Writer<Eigen::MatrixX2d> writer(results, WritingMethod::CONSOLE);
+            // writer.write();
         } else if (write_to_csv_for_writer != "") {
-            Writer<Eigen::MatrixX2d> writer(results, CSV);
-            writer.writing_process(write_to_csv_for_writer);
+            Writer<Eigen::MatrixX2d> writer(results, WritingMethod::CSV);
+            writer.write(write_to_csv_for_writer);
         } else if (write_to_dat_for_writer != "") {
-            Writer<Eigen::MatrixX2d> writer(results, DAT);
-            writer.writing_process(write_to_dat_for_writer);
+            Writer<Eigen::MatrixX2d> writer(results, WritingMethod::DAT);
+            writer.write(write_to_dat_for_writer);
         } else if (write_to_gnuplot_for_writer != "") {
-            Writer<Eigen::MatrixX2d> writer(results, GNUPLOT);
-            writer.writing_process(write_to_gnuplot_for_writer);
+            Writer<Eigen::MatrixX2d> writer(results, WritingMethod::GNUPLOT);
+            writer.write(write_to_gnuplot_for_writer);
         }
     }
 
