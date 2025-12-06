@@ -344,7 +344,8 @@ std::unique_ptr<ConfigBase> ReaderDAT::read(CLI::App* app) {
 
 std::unique_ptr<ConfigBase> ReaderCLI::read(CLI::App* app) {
     std::unique_ptr<ConfigBase> config;
-    if (app->get_subcommand("newton") != nullptr) {
+    // std::cout << "here1" << (*app->get_subcommand("newton"))->as<std::string>() << std::endl;
+    if (*app->get_subcommand("newton")) {
         config = std::make_unique<NewtonConfig>(
             app->get_option("--tolerance")->as<double>(), app->get_option("--max-iterations")->as<int>(),
             app->get_option("--aitken")->as<bool>(),
@@ -352,14 +353,14 @@ std::unique_ptr<ConfigBase> ReaderCLI::read(CLI::App* app) {
             FunctionParserBase::parseFunction(
                 app->get_subcommand("newton")->get_option("--derivative")->as<std::string>()),
             app->get_subcommand("newton")->get_option("--initial")->as<double>());
-    } else if (app->get_subcommand("secant") != nullptr) {
+    } else if (*app->get_subcommand("secant")) {
         config = std::make_unique<SecantConfig>(
             app->get_option("--tolerance")->as<double>(), app->get_option("--max-iterations")->as<int>(),
             app->get_option("--aitken")->as<bool>(),
             FunctionParserBase::parseFunction(app->get_option("--function")->as<std::string>()),
             app->get_subcommand("secant")->get_option("--x0")->as<double>(),
             app->get_subcommand("secant")->get_option("--x1")->as<double>());
-    } else if (app->get_subcommand("iterative") != nullptr) {
+    } else if (*app->get_subcommand("iterative")) {
         config = std::make_unique<FixedPointConfig>(
             app->get_option("--tolerance")->as<double>(), app->get_option("--max-iterations")->as<int>(),
             app->get_option("--aitken")->as<bool>(),
@@ -367,7 +368,7 @@ std::unique_ptr<ConfigBase> ReaderCLI::read(CLI::App* app) {
             app->get_subcommand("iterative")->get_option("--initial")->as<double>(),
             FunctionParserBase::parseFunction(
                 app->get_subcommand("iterative")->get_option("--g-function")->as<std::string>()));
-    } else if (app->get_subcommand("bisection") != nullptr) {
+    } else if (*app->get_subcommand("bisection")) {
         config = std::make_unique<BisectionConfig>(
             app->get_option("--tolerance")->as<double>(), app->get_option("--max-iterations")->as<int>(),
             app->get_option("--aitken")->as<bool>(),

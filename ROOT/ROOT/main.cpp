@@ -1,12 +1,13 @@
 #include <CLI/CLI.hpp>
+#include <Eigen/Dense>
 #include <functional>
 #include <iostream>
+#include <libROOT/solver_impl.hpp>
 #include <memory>
 #include <string>
 
 #include "config.hpp"
 #include "function_parser.hpp"
-#include "libROOT/solver_impl.hpp"
 #include "reader.hpp"
 
 int main(int argc, char** argv) {
@@ -121,23 +122,34 @@ int main(int argc, char** argv) {
     // Solver execution
     // ------------------------------------------------------------
     switch (config->method) {
-        case Method::BISECTION:
-            std::cout << config->max_iterations << std::endl;
+        case Method::BISECTION: {
+            Eigen::Vector2d interval = {dynamic_cast<BisectionConfig*>(config.get())->initial_point,
+                                        dynamic_cast<BisectionConfig*>(config.get())->final_point};
+            Solver solver(config->function, interval, config->method, config->max_iterations, config->tolerance,
+                          config->aitken);
+            solver.loop();
             break;
+        }
         case Method::NEWTON: {
             Solver solver(config->function, dynamic_cast<NewtonConfig*>(config.get())->initial_guess, config->method,
                           config->max_iterations, config->tolerance, config->aitken);
             solver.loop(dynamic_cast<NewtonConfig*>(config.get())->derivative);
             break;
         }
-        case Method::SECANT:
-            std::cout << config->function(0) << std::endl;
-            std::cout << dynamic_cast<SecantConfig*>(config.get())->final_point << std::endl;
+        case Method::SECANT: {
+            Eigen::Vector2d interval = {dynamic_cast<SecantConfig*>(config.get())->initial_point,
+                                        dynamic_cast<SecantConfig*>(config.get())->final_point};
+            Solver solver(config->function, interval, config->method, config->max_iterations, config->tolerance,
+                          config->aitken);
+            solver.loop();
             break;
-        case Method::FIXED_POINT:
-            std::cout << config->function(0) << std::endl;
-            std::cout << dynamic_cast<FixedPointConfig*>(config.get())->initial_guess << std::endl;
+        }
+        case Method::FIXED_POINT: {
+            Solver solver(config->function, dynamic_cast<FixedPointConfig*>(config.get())->initial_guess,
+                          config->method, config->max_iterations, config->tolerance, config->aitken);
+            solver.loop(dynamic_cast<FixedPointConfig*>(config.get())->g_function);
             break;
+        }
         default:
             break;
     }

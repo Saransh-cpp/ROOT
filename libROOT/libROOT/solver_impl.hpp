@@ -4,11 +4,10 @@
 #include <iostream>
 #include <memory>
 
+#include "method.hpp"
 #include "solver.hpp"
 #include "stepper_impl.hpp"
-// #include "writer.hpp"
-
-#include "method.hpp"
+#include "writer.hpp"
 
 constexpr double tol = 1e-6;
 constexpr int max_iters = 200;
@@ -43,9 +42,10 @@ void Solver<double>::convert_stepper(std::unique_ptr<Stepper<double>>& stepper,
 template <>
 void Solver<Eigen::Vector2d>::convert_stepper(std::unique_ptr<Stepper<Eigen::Vector2d>>& stepper,
                                               std::function<double(double)> additional_function) {
-    if (method == Method::BISECTION)
+    if (method == Method::BISECTION) {
         stepper = std::make_unique<BisectionStepper<Eigen::Vector2d>>(this->function, this->aitken_requirement,
                                                                       this->initial_guess);
+    }
     if (method == Method::SECANT)
         stepper = std::make_unique<ChordsStepper<Eigen::Vector2d>>(this->function, this->aitken_requirement,
                                                                    this->initial_guess);
@@ -105,14 +105,15 @@ void Solver<T>::loop(std::function<double(double)> additional_function) {
         while_body(iter, stepper, err);
     }
 
-    // auto writer = std::make_unique<Writer<Eigen::MatrixX2d>>(results);
-    // writer->writing_process();
+    auto writer = std::make_unique<Writer<Eigen::MatrixX2d>>(results);
+    writer->writing_process();
 
     std::cout << "Exiting program." << std::endl;
 }
 
 template <typename T>
 void Solver<T>::while_body(int& iter, std::unique_ptr<Stepper<T>>& stepper, double& err) {
+    std::cout << "Iteration " << iter << ": ";
     auto new_results = stepper->step(this->get_previous_result(0));
     save_results(iter, new_results);
     err = error_calculator(new_results(0), this->get_previous_result(1)(0));

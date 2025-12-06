@@ -13,8 +13,7 @@
 #define CONFIG_HPP
 
 #include <functional>
-
-#include "libROOT/method.hpp"
+#include <libROOT/method.hpp>
 
 /**
  * @brief Base (shared) configuration (data) class for root-finding methods.

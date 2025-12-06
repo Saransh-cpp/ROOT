@@ -40,7 +40,6 @@ NewtonRaphsonStepper<double>::NewtonRaphsonStepper(std::function<double(double)>
 
 template <>
 Eigen::Vector2d NewtonRaphsonStepper<double>::compute_step(Eigen::Vector2d previous_iteration) {
-    std::cout << "Derivative at " << previous_iteration(0) << " is " << derivative(previous_iteration(0)) << std::endl;
     double new_point = previous_iteration(0) - previous_iteration(1) / derivative(previous_iteration(0));
     double new_eval = function(new_point);
     return {new_point, new_eval};

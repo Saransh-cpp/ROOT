@@ -19,9 +19,6 @@ if(TEST)
     endif()
 endif()
 
-
-add_subdirectory(external/eigen)
-
 find_package(Doxygen)
 
 if(DOXYGEN_FOUND)
@@ -34,6 +31,7 @@ else()
     message(STATUS "Doxygen not found; 'doc' target will be unavailable")
 endif()
 
+add_subdirectory(external/eigen)
 add_subdirectory(external/CLI11)
 
 add_subdirectory(libROOT)
