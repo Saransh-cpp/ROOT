@@ -5,6 +5,7 @@
 #include <functional>
 #include <string>
 #include "stepper.hpp"
+#include "config.hpp"
 
 template <typename T>
 class Stepper;
@@ -18,26 +19,12 @@ class Stepper;
  */
 
 /**
- * \brief Templated Info struct to get as input to create a Solver object
- */
-template <typename T>
-struct Info {
-    /**
-     * Stores the function we want to find zero of
-     */
-    std::function<double(double)> function;
-    /**
-     * Stores the starting guess (NR, FP), the two starting guess (Chords), or the starting interval (Bisection)
-     */
-    T previous_iteration;
-};
-
-/**
  * \brief Class managing the solving process
  */
 template <typename T>
 class Solver {
-  protected:
+  private:
+    Method method;
     /** \brief Stores the maximum iterations for the method*/
     int max_iterations;
     /** \brief Stores the tolerance below which the process ends*/
@@ -58,7 +45,7 @@ class Solver {
      * are not given, default values (constexpr) will be assigned to them (max_iterations = 200, tolerance = 1e-6).
      * Potentially the aitken requirement could be set here, but for now we ask the user before the loop.
      */
-    Solver(std::function<double(double)> fun, T initial_guess, std::string& method, int max_iterations, double tolerance);
+    Solver(std::function<double(double)> fun, T initial_guess, const Method method, int max_iterations, double tolerance, bool aitken_mode);
     /** \brief Calls everything required to Solve with a method.*/
     /**
      * Caveat: could create and call the writer too.
@@ -86,7 +73,6 @@ class Solver {
     /** \brief Returns the function argument of the class in order to correctly construct a Stepper object.*/
     std::function<double(double)> get_function();
     /** \brief Returns the Info argument of the class in order to use it in a Stepper object.*/
-    Info<T> get_function();
     int ask_next_action() const;
     void clear_results();
     void end_solver();
