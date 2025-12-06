@@ -53,7 +53,7 @@ class Solver {
      * Caveat: could create and call the writer too.
      * Caveat: could add a method to restart the solver with a different method or whatever.
      */
-    void loop(std::function<double(double)> additional_function = [](double x) { return x; });
+    Eigen::MatrixX2d loop(std::function<double(double)> additional_function = [](double x) { return x; });
     /** \brief Creates the stepper, calls the step computation, the error calculation and the results' saver.*/
     void while_body(int& iter, std::unique_ptr<Stepper<T>>& stepper, double& err);
     /** \brief Save the result of a step in a defined row of the results' matrix.*/

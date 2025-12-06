@@ -9,6 +9,7 @@
 #include "config.hpp"
 #include "function_parser.hpp"
 #include "reader.hpp"
+#include "writer.hpp"
 
 int main(int argc, char** argv) {
     // ------------------------------------------------------------
@@ -50,7 +51,7 @@ int main(int argc, char** argv) {
     bool aitken = false;
     cli->add_flag("-a,--aitken", aitken, "Enable Aitken acceleration")->capture_default_str();
 
-    double tolerance{1e-5};
+    double tolerance = 1e-5;
     cli->add_option("-t,--tolerance", tolerance, "Tolerance for convergence")
         ->check(CLI::PositiveNumber)
         ->capture_default_str();
@@ -58,6 +59,19 @@ int main(int argc, char** argv) {
     int max_iterations = 100;
     cli->add_option("-n,--max-iterations", max_iterations, "Maximum number of iterations")
         ->check(CLI::PositiveNumber)
+        ->capture_default_str();
+
+    bool write_to_cli = false;
+    cli->add_flag("-w,--write-to-cli", write_to_cli, "Write output to CLI")->capture_default_str();
+
+    std::string write_to_csv;
+    cli->add_option("--write-to-csv", write_to_csv, "Filename for CSV output")->capture_default_str();
+
+    std::string write_to_dat;
+    cli->add_option("--write-to-dat", write_to_dat, "Filename for DAT output")->capture_default_str();
+
+    std::string write_with_gnuplot;
+    cli->add_option("--write-with-gnuplot", write_with_gnuplot, "Filename for DAT output with GNU plot formatting")
         ->capture_default_str();
 
     cli->require_subcommand(1);
@@ -100,13 +114,15 @@ int main(int argc, char** argv) {
     // !!!!!!!!!!!!!!!!!!!!!! IMPORTANT !!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     // ------------------------------------------------------------
-    // Solver configuration
+    // Initialise pointers nand variables
     // ------------------------------------------------------------
-
     std::unique_ptr<ConfigBase> config;
     std::unique_ptr<ReaderBase> reader;
+    Eigen::MatrixX2d results;
 
-    // Read configuration based on selected input method
+    // ------------------------------------------------------------
+    // Reader execution
+    // ------------------------------------------------------------
     if (*csv) {
         reader = std::make_unique<ReaderCSV>();
         config = reader->read(csv);
@@ -127,13 +143,13 @@ int main(int argc, char** argv) {
                                         dynamic_cast<BisectionConfig*>(config.get())->final_point};
             Solver solver(config->function, interval, config->method, config->max_iterations, config->tolerance,
                           config->aitken);
-            solver.loop();
+            results = solver.loop();
             break;
         }
         case Method::NEWTON: {
             Solver solver(config->function, dynamic_cast<NewtonConfig*>(config.get())->initial_guess, config->method,
                           config->max_iterations, config->tolerance, config->aitken);
-            solver.loop(dynamic_cast<NewtonConfig*>(config.get())->derivative);
+            results = solver.loop(dynamic_cast<NewtonConfig*>(config.get())->derivative);
             break;
         }
         case Method::SECANT: {
@@ -141,17 +157,40 @@ int main(int argc, char** argv) {
                                         dynamic_cast<SecantConfig*>(config.get())->final_point};
             Solver solver(config->function, interval, config->method, config->max_iterations, config->tolerance,
                           config->aitken);
-            solver.loop();
+            results = solver.loop();
             break;
         }
         case Method::FIXED_POINT: {
             Solver solver(config->function, dynamic_cast<FixedPointConfig*>(config.get())->initial_guess,
                           config->method, config->max_iterations, config->tolerance, config->aitken);
-            solver.loop(dynamic_cast<FixedPointConfig*>(config.get())->g_function);
+            results = solver.loop(dynamic_cast<FixedPointConfig*>(config.get())->g_function);
             break;
         }
         default:
             break;
+    }
+
+    // ------------------------------------------------------------
+    // Writer execution
+    // ------------------------------------------------------------
+    if (*cli) {
+        bool write_to_cli_for_writer = cli->get_option("--write-to-cli")->as<bool>();
+        std::string write_to_csv_for_writer = cli->get_option("--write-to-csv")->as<std::string>();
+        std::string write_to_dat_for_writer = cli->get_option("--write-to-dat")->as<std::string>();
+        std::string write_to_gnuplot_for_writer = cli->get_option("--write-with-gnuplot")->as<std::string>();
+        if (write_to_cli_for_writer) {
+            Writer<Eigen::MatrixX2d> writer(results, CONSOLE);
+            writer.writing_process();
+        } else if (write_to_csv_for_writer != "") {
+            Writer<Eigen::MatrixX2d> writer(results, CSV);
+            writer.writing_process(write_to_csv_for_writer);
+        } else if (write_to_dat_for_writer != "") {
+            Writer<Eigen::MatrixX2d> writer(results, DAT);
+            writer.writing_process(write_to_dat_for_writer);
+        } else if (write_to_gnuplot_for_writer != "") {
+            Writer<Eigen::MatrixX2d> writer(results, GNUPLOT);
+            writer.writing_process(write_to_gnuplot_for_writer);
+        }
     }
 
     return 0;

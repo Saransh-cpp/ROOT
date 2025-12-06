@@ -7,7 +7,6 @@
 #include "method.hpp"
 #include "solver.hpp"
 #include "stepper_impl.hpp"
-#include "writer.hpp"
 
 constexpr double tol = 1e-6;
 constexpr int max_iters = 200;
@@ -87,7 +86,7 @@ std::function<double(double)> Solver<T>::get_function() {
 }
 
 template <typename T>
-void Solver<T>::loop(std::function<double(double)> additional_function) {
+Eigen::MatrixX2d Solver<T>::loop(std::function<double(double)> additional_function) {
     double err = 1.0;
 
     std::unique_ptr<Stepper<T>> stepper;
@@ -105,10 +104,9 @@ void Solver<T>::loop(std::function<double(double)> additional_function) {
         while_body(iter, stepper, err);
     }
 
-    auto writer = std::make_unique<Writer<Eigen::MatrixX2d>>(results);
-    writer->writing_process();
-
     std::cout << "Exiting program." << std::endl;
+
+    return results;
 }
 
 template <typename T>

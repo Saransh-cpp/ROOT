@@ -5,6 +5,9 @@
 #include <string>
 
 #include "../../external/eigen/Eigen/Dense"
+
+enum WritingMethod { CONSOLE, CSV, DAT, GNUPLOT };
+
 /**
  * Polymorphic Writer and Printer classes for the results of the root finding process.
  * These classes themselves could be used for other kinds of writing, and do not have any relationship
@@ -23,14 +26,15 @@ template <typename T>
 class Writer {
   protected:
     T values;
+    WritingMethod method;
 
   public:
-    Writer(const T& vals_to_write);
+    Writer(const T& vals_to_write, WritingMethod write_method);
     /** \brief Method to run the printing loop and correctly initialize the Printer*/
-    void writing_process();
+    void writing_process(std::string filename = "");
     /** \brief Converts the generic Printer into a typed one for a specific output destination*/
     template <typename V>
-    void choose_how(std::unique_ptr<Printer<V>>& printer);
+    void choose_how(std::unique_ptr<Printer<V>>& printer, std::string filename);
     /** \brief Helper just to print the final result of the solver process*/
     void print_final_result() const;
 };
