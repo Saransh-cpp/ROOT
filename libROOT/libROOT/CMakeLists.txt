@@ -10,6 +10,7 @@ target_include_directories(libROOT
     # when installed, consumers should include from <libROOT/...>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/libROOT>
 )
+target_link_libraries(libROOT INTERFACE Eigen3::Eigen)
 
 set_target_properties(libROOT PROPERTIES PREFIX "")
 install(TARGETS libROOT
