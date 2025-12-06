@@ -15,4 +15,4 @@ set_target_properties(libROOT PROPERTIES PREFIX "")
 install(TARGETS libROOT
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/libROOT)
-install(FILES root_lib.hpp dummy_class.hpp DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/libROOT)
+install(FILES solver.hpp stepper.hpp method.hpp solver_impl.hpp stepper_impl.hpp DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/libROOT)
