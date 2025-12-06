@@ -1,10 +1,20 @@
 # Clang-tidy configuration used on the whole code base
 Checks: >
   bugprone-*,
+  -bugprone-exception-escape,
+  -bugprone-easily-swappable-parameters,
   modernize-*,
   -modernize-use-trailing-return-type,
+  -modernize-use-ranges,
   readability-*,
+  -readability-magic-numbers,
   clang-analyzer-*,
   cppcoreguidelines-*,
+  -cppcoreguidelines-avoid-magic-numbers,
+  -cppcoreguidelines-owning-memory,
   google-*
+CheckOptions:
+  - key: readability-function-cognitive-complexity.Threshold
+    value: '35'
+ExtraArgs: ['-std=c++20']
 WarningsAsErrors: '*'
