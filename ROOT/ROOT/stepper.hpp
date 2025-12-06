@@ -28,7 +28,6 @@ class Stepper {
      */
     Eigen::Vector2d step(Eigen::Vector2d previous_step);
     Eigen::Vector2d aitken_step(Eigen::Vector2d previous_iter);
-    Stepper<T>& operator=(const Stepper<T>& stepper);
 };
 
 /**
@@ -48,10 +47,8 @@ class NewtonRaphsonStepper : public Stepper<T> {
 
   public:
     /** \brief The constructor initializes the function and the derivative*/
-    NewtonRaphsonStepper(std::function<double(double)> fun, bool aitken_mode);
-    /** \brief Takes the derivative as a string input and converts in a std::function.*/
-    void set_derivative();  // to do
-                            /** \brief x_new = x_old - f(x_old) / f'(x_old) */
+    NewtonRaphsonStepper(std::function<double(double)> fun, bool aitken_mode, std::function<double(double)> der);
+    /** \brief x_new = x_old - f(x_old) / f'(x_old) */
     Eigen::Vector2d compute_step(Eigen::Vector2d previous_iteration) override;
 };
 
@@ -64,10 +61,8 @@ class FixedPointStepper : public Stepper<T> {
 
   public:
     /** \brief The constructor initializs the function and the derivative*/
-    FixedPointStepper(std::function<double(double)> fun, bool aitken_mode);
-    /** \brief Takes the fixed point function as a string input and converts it in a std::function*/
-    void set_fixed_point_function();  // to do
-                                      /** \brief x_new = phi(x_old), where phi is the fixed point function.*/
+    FixedPointStepper(std::function<double(double)> fun, bool aitken_mode, std::function<double(double)> g_fun);
+    /** \brief x_new = phi(x_old), where phi is the fixed point function.*/
     Eigen::Vector2d compute_step(Eigen::Vector2d previous_iteration) override;
 };
 

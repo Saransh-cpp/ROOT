@@ -51,7 +51,7 @@ class Solver {
      * Caveat: could create and call the writer too.
      * Caveat: could add a method to restart the solver with a different method or whatever.
      */
-    void loop();
+    void loop(std::function<double(double)> additional_function = [](double x) {return x;});
     /** \brief Creates the stepper, calls the step computation, the error calculation and the results' saver.*/
     void while_body(int& iter, std::unique_ptr<Stepper<T>>& stepper, double& err);
     /** \brief Save the result of a step in a defined row of the results' matrix.*/
@@ -69,7 +69,7 @@ class Solver {
     /**
      * \brief Converts the generic Abstract stepper into a typed one. Right now according to user's input as string
      */
-    void convert_stepper(std::unique_ptr<Stepper<T>>& stepper);
+    void convert_stepper(std::unique_ptr<Stepper<T>>& stepper, std::function<double(double)> additional_function = [](double x) {return x;});
     /** \brief Returns the function argument of the class in order to correctly construct a Stepper object.*/
     std::function<double(double)> get_function();
     /** \brief Returns the Info argument of the class in order to use it in a Stepper object.*/

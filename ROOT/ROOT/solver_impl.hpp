@@ -22,18 +22,18 @@ Solver<double>::Solver(std::function<double(double)> fun, double initial_guess, 
 }
 
 template <typename T>
-void convert_stepper(std::unique_ptr<Stepper<T>>& stepper, const std::string& method);
+void convert_stepper(std::unique_ptr<Stepper<T>>& stepper, std::function<double(double)> additional_function = [](double x) {return x;});
 
 template <>
-void Solver<double>::convert_stepper(std::unique_ptr<Stepper<double>>& stepper) {
+void Solver<double>::convert_stepper(std::unique_ptr<Stepper<double>>& stepper, std::function<double(double)> additional_function) {
     if (method == Method::NEWTON)
-        stepper = std::make_unique<NewtonRaphsonStepper<double>>(this->function, this->aitken_requirement);
+        stepper = std::make_unique<NewtonRaphsonStepper<double>>(this->function, this->aitken_requirement, additional_function);
     if (method == Method::FIXED_POINT)
-        stepper = std::make_unique<FixedPointStepper<double>>(this->function, this->aitken_requirement);
+        stepper = std::make_unique<FixedPointStepper<double>>(this->function, this->aitken_requirement, additional_function);
 }
 
 template <>
-void Solver<Eigen::Vector2d>::convert_stepper(std::unique_ptr<Stepper<Eigen::Vector2d>>& stepper) {
+void Solver<Eigen::Vector2d>::convert_stepper(std::unique_ptr<Stepper<Eigen::Vector2d>>& stepper, std::function<double(double)> additional_function = [](double x) {return x;}) {
     if (method == Method::BISECTION)
         stepper = std::make_unique<BisectionStepper<Eigen::Vector2d>>(this->function, this->aitken_requirement,
                                                                       this->initial_guess);
@@ -80,12 +80,12 @@ std::function<double(double)> Solver<T>::get_function() {
 }
 
 template <typename T>
-void Solver<T>::loop() {
+void Solver<T>::loop(std::function<double(double)> additional_function = [](double x) {return x;}) {
     double err = 1.0;
 
     std::unique_ptr<Stepper<T>> stepper;
 
-    convert_stepper(stepper, method);
+    convert_stepper(stepper, additional_function);
 
     save_starting_point();
 

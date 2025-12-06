@@ -6,14 +6,6 @@
 
 #include "stepper.hpp"
 
-std::function<double(double)> convert_string_to_fct(std::string fct) {
-    return [](double x) { return 2 * x; };
-};
-template <>
-void NewtonRaphsonStepper<double>::set_derivative();
-template <>
-void FixedPointStepper<double>::set_fixed_point_function();
-
 template <typename T>
 Stepper<T>::Stepper(std::function<double(double)> fun, bool aitken_mode) {
     function = fun;
@@ -45,17 +37,9 @@ Eigen::Vector2d Stepper<T>::aitken_step(Eigen::Vector2d previous_iter) {
 }
 
 template <>
-NewtonRaphsonStepper<double>::NewtonRaphsonStepper(std::function<double(double)> fun, bool aitken_mode)
+NewtonRaphsonStepper<double>::NewtonRaphsonStepper(std::function<double(double)> fun, bool aitken_mode, std::function<double(double)> der)
     : Stepper<double>(fun, aitken_mode) {
-    set_derivative();
-}
-
-template <>
-void NewtonRaphsonStepper<double>::set_derivative() {
-    std::string der;
-    std::cout << "Insert the derivative: " << std::endl;
-    std::getline(std::cin, der);
-    derivative = convert_string_to_fct(der);
+    derivative = der;
 }
 
 template <>
@@ -66,17 +50,9 @@ Eigen::Vector2d NewtonRaphsonStepper<double>::compute_step(Eigen::Vector2d previ
 }
 
 template <>
-FixedPointStepper<double>::FixedPointStepper(std::function<double(double)> fun, bool aitken_mode)
+FixedPointStepper<double>::FixedPointStepper(std::function<double(double)> fun, bool aitken_mode, std::function<double(double)> g_fun)
     : Stepper<double>(fun, aitken_mode) {
-    set_fixed_point_function();
-}
-
-template <>
-void FixedPointStepper<double>::set_fixed_point_function() {
-    std::string fpf;
-    std::cout << "Insert the fixed point function: " << std::endl;
-    std::getline(std::cin, fpf);
-    fixed_point_function = convert_string_to_fct(fpf);
+    fixed_point_function = g_fun;
 }
 
 template <>
