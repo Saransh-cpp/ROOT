@@ -78,4 +78,4 @@ class Solver {
     Eigen::MatrixX2d solve(std::function<double(double)> additional_function = [](double x) { return x; });
 };
 
-#endif
+#endif  // ROOT_SOLVER_DEF_HPP

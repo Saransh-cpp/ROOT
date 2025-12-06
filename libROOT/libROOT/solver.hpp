@@ -127,4 +127,4 @@ void Solver<T>::solver_step(int& iter, std::unique_ptr<StepperBase<T>>& stepper,
 template class Solver<double>;
 template class Solver<Eigen::Vector2d>;
 
-#endif  // ROOT_SOLVER_IMPL_HPP
+#endif  // ROOT_SOLVER_HPP

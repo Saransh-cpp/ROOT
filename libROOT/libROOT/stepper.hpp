@@ -105,4 +105,4 @@ template class FixedPointStepper<double>;
 template class BisectionStepper<Eigen::Vector2d>;
 template class ChordsStepper<Eigen::Vector2d>;
 
-#endif  // ROOT_STEPPER_IMPL_HPP
+#endif  // ROOT_STEPPER_HPP

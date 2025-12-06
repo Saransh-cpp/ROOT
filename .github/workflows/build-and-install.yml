@@ -42,6 +42,6 @@ jobs:
 
       - name: Verify installation
         run: |
-          ls /usr/include/libROOT | grep -E 'solver.hpp|stepper.hpp|method.hpp|solver_impl.hpp|stepper_impl.hpp'
+          ls /usr/include/libROOT | grep -E 'solver.hpp|stepper.hpp|method.hpp|solver_def.hpp|stepper_def.hpp'
           file /usr/bin/root_cli
           root_cli --help
