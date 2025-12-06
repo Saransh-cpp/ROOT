@@ -16,7 +16,7 @@ enum WritingMethod { CONSOLE, CSV, DAT, GNUPLOT };
  */
 
 template <typename V>
-class Printer;
+class PrinterBase;
 
 /**
  * \brief Class which stores the values to write in an argument, constructs the Printer and handles the printing process
@@ -33,7 +33,7 @@ class Writer {
     void write(std::string filename = "", char sep = ',', bool overwrite = true);
     /** \brief Converts the generic Printer into a typed one for a specific output destination*/
     template <typename V>
-    void build_printer(std::unique_ptr<Printer<V>>& printer, std::string filename, char sep = ',',
+    void build_printer(std::unique_ptr<PrinterBase<V>>& printer, std::string filename, char sep = ',',
                        bool overwrite = true);
     /** \brief Helper just to print the final result of the solver process*/
     void print_final_result() const;
@@ -46,16 +46,16 @@ class Writer {
 
 /** \brief Abstract Printer class*/
 template <typename V>
-class Printer {
+class PrinterBase {
   public:
-    Printer() = default;
-    virtual ~Printer() = default;
+    PrinterBase() = default;
+    virtual ~PrinterBase() = default;
     virtual void write_values(const V& value) = 0;
 };
 
 /** \brief The class to print out the values in the output*/
 template <typename V>
-class PrinterCLI : public Printer<V> {
+class PrinterCLI : public PrinterBase<V> {
   public:
     PrinterCLI();
     /** \brief Method to actually print a given value in the output*/
@@ -64,7 +64,7 @@ class PrinterCLI : public Printer<V> {
 
 /** \brief Mother class for all the Printers which print in a file*/
 template <typename V>
-class PrinterFile : public Printer<V> {
+class PrinterFile : public PrinterBase<V> {
   protected:
     /** \brief The name of output file, without the extension*/
     std::string filename;

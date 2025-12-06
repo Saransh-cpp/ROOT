@@ -13,22 +13,22 @@
  * \brief The stepper classes compute and return the results of an iteration requested by the Solver class
  */
 template <typename T>
-class Stepper {
+class StepperBase {
   protected:
     /**	\brief function argument is got from the Solver class and is the function to compute the root of. */
     std::function<double(double)> function;
     bool aitken_requirement;
+    virtual Eigen::Vector2d compute_step(Eigen::Vector2d) = 0;
+    Eigen::Vector2d aitken_step(Eigen::Vector2d previous_iter);
 
   public:
-    Stepper(std::function<double(double)> fun, bool aitken_mode);
-    virtual ~Stepper() = default;
-    virtual Eigen::Vector2d compute_step(Eigen::Vector2d) = 0;
+    StepperBase(std::function<double(double)> fun, bool aitken_mode);
+    virtual ~StepperBase() = default;
     /** \brief Returns the result of the computation of the additional step which Aitken acceleration introduces.
      * The three parameters are the previous 3 steps of the iterative solution, required to compute the new one,
      * and are got from the Solver object which created the Stepper.
      */
     Eigen::Vector2d step(Eigen::Vector2d previous_step);
-    Eigen::Vector2d aitken_step(Eigen::Vector2d previous_iter);
 };
 
 /**
@@ -41,7 +41,7 @@ class Stepper {
  * \brief The specialized Stepper to compute the root with the Newton-Raphson method.
  */
 template <typename T>
-class NewtonRaphsonStepper : public Stepper<T> {
+class NewtonRaphsonStepper : public StepperBase<T> {
   private:
     /** \brief Stores the derivative of the function, input by the user.*/
     std::function<double(double)> derivative;
@@ -55,7 +55,7 @@ class NewtonRaphsonStepper : public Stepper<T> {
 
 /** \brief The specialized Stepper to compute the root with the Fixed Point method*/
 template <typename T>
-class FixedPointStepper : public Stepper<T> {
+class FixedPointStepper : public StepperBase<T> {
   private:
     /** \brief Stores the fixed point to use in the steps, input by the user.*/
     std::function<double(double)> fixed_point_function;
@@ -69,7 +69,7 @@ class FixedPointStepper : public Stepper<T> {
 
 /** \brief The specialized Stepper to compute the root with the Chords Method (also called Secants in literature)*/
 template <typename T>
-class ChordsStepper : public Stepper<T> {
+class ChordsStepper : public StepperBase<T> {
   private:
     /** \brief The method requires two precedent steps at each iteration, and they are saved and updated in these
      * arguments
@@ -91,7 +91,7 @@ class ChordsStepper : public Stepper<T> {
 
 /** \brief The specialized Stepper to compute the root with the Bisection Method*/
 template <typename T>
-class BisectionStepper : public Stepper<T> {
+class BisectionStepper : public StepperBase<T> {
   private:
     /** \brief The method requires an interval which we save the bounds of */
     double left_edge, right_edge;

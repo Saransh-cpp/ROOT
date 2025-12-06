@@ -153,13 +153,13 @@ int main(int argc, char** argv) {
                                         dynamic_cast<BisectionConfig*>(config.get())->final_point};
             Solver solver(config->function, interval, config->method, config->max_iterations, config->tolerance,
                           config->aitken);
-            results = solver.loop();
+            results = solver.solve();
             break;
         }
         case Method::NEWTON: {
             Solver solver(config->function, dynamic_cast<NewtonConfig*>(config.get())->initial_guess, config->method,
                           config->max_iterations, config->tolerance, config->aitken);
-            results = solver.loop(dynamic_cast<NewtonConfig*>(config.get())->derivative);
+            results = solver.solve(dynamic_cast<NewtonConfig*>(config.get())->derivative);
             break;
         }
         case Method::SECANT: {
@@ -167,13 +167,13 @@ int main(int argc, char** argv) {
                                         dynamic_cast<SecantConfig*>(config.get())->final_point};
             Solver solver(config->function, interval, config->method, config->max_iterations, config->tolerance,
                           config->aitken);
-            results = solver.loop();
+            results = solver.solve();
             break;
         }
         case Method::FIXED_POINT: {
             Solver solver(config->function, dynamic_cast<FixedPointConfig*>(config.get())->initial_guess,
                           config->method, config->max_iterations, config->tolerance, config->aitken);
-            results = solver.loop(dynamic_cast<FixedPointConfig*>(config.get())->g_function);
+            results = solver.solve(dynamic_cast<FixedPointConfig*>(config.get())->g_function);
             break;
         }
         default:
@@ -187,13 +187,13 @@ int main(int argc, char** argv) {
         if (write_to_cli) {
             Writer<Eigen::MatrixX2d> writer(results, WritingMethod::CONSOLE);
             writer.write();
-        } else if (write_to_csv != "") {
+        } else if (!write_to_csv.empty()) {
             Writer<Eigen::MatrixX2d> writer(results, WritingMethod::CSV);
             writer.write(write_to_csv, csv_sep, append_or_overwrite == 'o');
-        } else if (write_to_dat != "") {
+        } else if (!write_to_dat.empty()) {
             Writer<Eigen::MatrixX2d> writer(results, WritingMethod::DAT);
             writer.write(write_to_dat, ' ', append_or_overwrite == 'o');
-        } else if (write_with_gnuplot != "") {
+        } else if (!write_with_gnuplot.empty()) {
             Writer<Eigen::MatrixX2d> writer(results, WritingMethod::GNUPLOT);
             writer.write(write_with_gnuplot, ',', append_or_overwrite == 'o');
         }

@@ -28,7 +28,7 @@ template <>
 void Writer<Eigen::MatrixX2d>::write(std::string filename, char sep, bool overwrite) {
     print_final_result();
 
-    std::unique_ptr<Printer<Eigen::Vector2d>> printer;
+    std::unique_ptr<PrinterBase<Eigen::Vector2d>> printer;
     build_printer(printer, filename);
 
     for (int i = 0; i < this->values.rows(); i++) {
@@ -45,7 +45,8 @@ void Writer<Eigen::MatrixX2d>::write(std::string filename, char sep, bool overwr
 
 template <typename T>
 template <typename V>
-void Writer<T>::build_printer(std::unique_ptr<Printer<V>>& printer, std::string filename, char sep, bool overwrite) {
+void Writer<T>::build_printer(std::unique_ptr<PrinterBase<V>>& printer, std::string filename, char sep,
+                              bool overwrite) {
     switch (this->method) {
         case WritingMethod::CONSOLE:
             printer = std::make_unique<PrinterCLI<V>>();

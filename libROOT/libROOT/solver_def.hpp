@@ -9,7 +9,7 @@
 #include "stepper_def.hpp"
 
 template <typename T>
-class Stepper;
+class StepperBase;
 /**
  * The Solver class will handle all the methods and arguments required for managing a solving process to find
  * the root of a Non-linear function.
@@ -39,6 +39,26 @@ class Solver {
     /** \brief Stores the function to find the root of and the starting guess for the process*/
     std::function<double(double)> function;
     T initial_guess;
+    /** \brief Creates the stepper, calls the step computation, the error calculation and the results' saver.*/
+    void solver_step(int& iter, std::unique_ptr<StepperBase<T>>& stepper, double& err);
+    /** \brief Save the result of a step in a defined row of the results' matrix.*/
+    void save_results(int iter, Eigen::Vector2d result_to_save);
+    /** \brief Returns a row of the results matrix. @param step_length tells how far to go up from the bottom row */
+    Eigen::Vector2d get_previous_result(int step_length);
+    /** \brief Computes the error of the latest iteration computed*/
+    double calculate_error(double x_prev, double x_next);
+    /** \brief Saves the actual starting point in the top row of the results' matrix.
+     *
+     * It will be typed in the implementation to let the methods which require two starting points to store just
+     * one of them.
+     */
+    void save_starting_point();
+    /**
+     * \brief Converts the generic Abstract stepper into a typed one. Right now according to user's input as string
+     */
+    void convert_stepper(
+        std::unique_ptr<StepperBase<T>>& stepper,
+        std::function<double(double)> additional_function = [](double x) { return x; });
 
   public:
     /** A complete constructor for the Solver class requires the info struct to have the function and the starting
@@ -53,36 +73,7 @@ class Solver {
      * Caveat: could create and call the writer too.
      * Caveat: could add a method to restart the solver with a different method or whatever.
      */
-    Eigen::MatrixX2d loop(std::function<double(double)> additional_function = [](double x) { return x; });
-    /** \brief Creates the stepper, calls the step computation, the error calculation and the results' saver.*/
-    void while_body(int& iter, std::unique_ptr<Stepper<T>>& stepper, double& err);
-    /** \brief Save the result of a step in a defined row of the results' matrix.*/
-    void save_results(int iter, Eigen::Vector2d result_to_save);
-    /** \brief Returns a row of the results matrix. @param step_length tells how far to go up from the bottom row */
-    Eigen::Vector2d get_previous_result(int step_length);
-    /** \brief Computes the error of the latest iteration computed*/
-    double error_calculator(double x_prev, double x_next);
-    /** \brief Saves the actual starting point in the top row of the results' matrix.
-     *
-     * It will be typed in the implementation to let the methods which require two starting points to store just
-     * one of them.
-     */
-    void save_starting_point();
-    /**
-     * \brief Converts the generic Abstract stepper into a typed one. Right now according to user's input as string
-     */
-    void convert_stepper(
-        std::unique_ptr<Stepper<T>>& stepper,
-        std::function<double(double)> additional_function = [](double x) { return x; });
-    /** \brief Returns the function argument of the class in order to correctly construct a Stepper object.*/
-    std::function<double(double)> get_function();
-    /** \brief Returns the Info argument of the class in order to use it in a Stepper object.*/
-    int ask_next_action() const;
-    void clear_results();
-    void end_solver();
-    bool ask_aitken();
-    std::string ask_method();
-    Solver<T>& operator=(const Solver<T>& solver);
+    Eigen::MatrixX2d solve(std::function<double(double)> additional_function = [](double x) { return x; });
 };
 
 #endif

@@ -23,12 +23,8 @@ Solver<T>::Solver(std::function<double(double)> fun, T initial_guess, const Meth
     this->aitken_requirement = aitken_mode;
 }
 
-// template <typename T>
-// void convert_stepper(std::unique_ptr<Stepper<T>>& stepper, std::function<double(double)> additional_function =
-// [](double x) {return x;});
-
 template <>
-void Solver<double>::convert_stepper(std::unique_ptr<Stepper<double>>& stepper,
+void Solver<double>::convert_stepper(std::unique_ptr<StepperBase<double>>& stepper,
                                      std::function<double(double)> additional_function) {
     if (method == Method::NEWTON)
         stepper = std::make_unique<NewtonRaphsonStepper<double>>(this->function, this->aitken_requirement,
@@ -39,7 +35,7 @@ void Solver<double>::convert_stepper(std::unique_ptr<Stepper<double>>& stepper,
 }
 
 template <>
-void Solver<Eigen::Vector2d>::convert_stepper(std::unique_ptr<Stepper<Eigen::Vector2d>>& stepper,
+void Solver<Eigen::Vector2d>::convert_stepper(std::unique_ptr<StepperBase<Eigen::Vector2d>>& stepper,
                                               std::function<double(double)> additional_function) {
     if (method == Method::BISECTION) {
         stepper = std::make_unique<BisectionStepper<Eigen::Vector2d>>(this->function, this->aitken_requirement,
@@ -76,20 +72,15 @@ void Solver<Eigen::Vector2d>::save_starting_point() {
 }
 
 template <typename T>
-double Solver<T>::error_calculator(double x_prev, double x_next) {
+double Solver<T>::calculate_error(double x_prev, double x_next) {
     return abs(x_prev - x_next);
 }
 
 template <typename T>
-std::function<double(double)> Solver<T>::get_function() {
-    return function;
-}
-
-template <typename T>
-Eigen::MatrixX2d Solver<T>::loop(std::function<double(double)> additional_function) {
+Eigen::MatrixX2d Solver<T>::solve(std::function<double(double)> additional_function) {
     double err = 1.0;
 
-    std::unique_ptr<Stepper<T>> stepper;
+    std::unique_ptr<StepperBase<T>> stepper;
 
     convert_stepper(stepper, additional_function);
 
@@ -101,7 +92,7 @@ Eigen::MatrixX2d Solver<T>::loop(std::function<double(double)> additional_functi
 
     while (err > tolerance && abs(get_previous_result(0)(1)) > tolerance && iter < max_iterations) {
         std::cout << "x(0): " << get_previous_result(0)(0) << "; f(x0): " << get_previous_result(0)(1) << std::endl;
-        while_body(iter, stepper, err);
+        solver_step(iter, stepper, err);
     }
 
     std::cout << "Exiting program." << std::endl;
@@ -110,11 +101,11 @@ Eigen::MatrixX2d Solver<T>::loop(std::function<double(double)> additional_functi
 }
 
 template <typename T>
-void Solver<T>::while_body(int& iter, std::unique_ptr<Stepper<T>>& stepper, double& err) {
+void Solver<T>::solver_step(int& iter, std::unique_ptr<StepperBase<T>>& stepper, double& err) {
     std::cout << "Iteration " << iter << ": ";
     auto new_results = stepper->step(this->get_previous_result(0));
     save_results(iter, new_results);
-    err = error_calculator(new_results(0), this->get_previous_result(1)(0));
+    err = calculate_error(new_results(0), this->get_previous_result(1)(0));
     ++iter;
 }
 
