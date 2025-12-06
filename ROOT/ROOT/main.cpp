@@ -127,7 +127,7 @@ int main(int argc, char** argv) {
             break;
         case Method::NEWTON:
             Solver solver(config->function, dynamic_cast<NewtonConfig*>(config.get())->initial_guess, config->method,
-                config->max_iterations, config->tolerance, config->aitken);
+                          config->max_iterations, config->tolerance, config->aitken);
             std::cout << config->function(0) << std::endl;
             std::cout << dynamic_cast<NewtonConfig*>(config.get())->initial_guess << std::endl;
             std::cout << dynamic_cast<NewtonConfig*>(config.get())->derivative(3) << std::endl;
@@ -144,5 +144,5 @@ int main(int argc, char** argv) {
             break;
     }
 
-    return 0;\
+    return 0;
 }

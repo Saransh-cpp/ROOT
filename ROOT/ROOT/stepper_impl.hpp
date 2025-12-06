@@ -1,5 +1,3 @@
-#include "stepper.hpp"
-
 #include <Eigen/Dense>
 #include <functional>
 #include <iostream>
@@ -31,7 +29,8 @@ Eigen::Vector2d Stepper<T>::aitken_step(Eigen::Vector2d previous_iter) {
 }
 
 template <>
-NewtonRaphsonStepper<double>::NewtonRaphsonStepper(std::function<double(double)> fun, bool aitken_mode, std::function<double(double)> der)
+NewtonRaphsonStepper<double>::NewtonRaphsonStepper(std::function<double(double)> fun, bool aitken_mode,
+                                                   std::function<double(double)> der)
     : Stepper<double>(fun, aitken_mode) {
     derivative = der;
 }
@@ -44,7 +43,8 @@ Eigen::Vector2d NewtonRaphsonStepper<double>::compute_step(Eigen::Vector2d previ
 }
 
 template <>
-FixedPointStepper<double>::FixedPointStepper(std::function<double(double)> fun, bool aitken_mode, std::function<double(double)> g_fun)
+FixedPointStepper<double>::FixedPointStepper(std::function<double(double)> fun, bool aitken_mode,
+                                             std::function<double(double)> g_fun)
     : Stepper<double>(fun, aitken_mode) {
     fixed_point_function = g_fun;
 }
@@ -75,8 +75,7 @@ Eigen::Vector2d ChordsStepper<Eigen::Vector2d>::compute_step(Eigen::Vector2d las
 }
 
 template <>
-BisectionStepper<Eigen::Vector2d>::BisectionStepper(std::function<double(double)> fun,
-                                                    bool aitken_mode,
+BisectionStepper<Eigen::Vector2d>::BisectionStepper(std::function<double(double)> fun, bool aitken_mode,
                                                     Eigen::Vector2d _int)
     : Stepper<Eigen::Vector2d>(fun, aitken_mode) {
     auto interval = _int;

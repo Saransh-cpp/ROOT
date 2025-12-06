@@ -1,17 +1,18 @@
 #include <Eigen/Dense>
 #include <iostream>
 #include <memory>
+
+#include "config.hpp"
 #include "solver.hpp"
 #include "stepper.hpp"
 #include "writer.hpp"
-#include "config.hpp"
 
 constexpr double tol = 1e-6;
 constexpr int max_iters = 200;
 
 template <typename T>
 Solver<T>::Solver(std::function<double(double)> fun, T initial_guess, const Method method, int max_iterations,
-                       double tolerance, bool aitken_mode) {
+                  double tolerance, bool aitken_mode) {
     this->function = fun;
     this->initial_guess = initial_guess;
     this->method = method;
@@ -21,19 +22,25 @@ Solver<T>::Solver(std::function<double(double)> fun, T initial_guess, const Meth
     this->aitken_requirement = aitken_mode;
 }
 
-//template <typename T>
-//void convert_stepper(std::unique_ptr<Stepper<T>>& stepper, std::function<double(double)> additional_function = [](double x) {return x;});
+// template <typename T>
+// void convert_stepper(std::unique_ptr<Stepper<T>>& stepper, std::function<double(double)> additional_function =
+// [](double x) {return x;});
 
 template <>
-void Solver<double>::convert_stepper(std::unique_ptr<Stepper<double>>& stepper, std::function<double(double)> additional_function) {
+void Solver<double>::convert_stepper(std::unique_ptr<Stepper<double>>& stepper,
+                                     std::function<double(double)> additional_function) {
     if (method == Method::NEWTON)
-        stepper = std::make_unique<NewtonRaphsonStepper<double>>(this->function, this->aitken_requirement, additional_function);
+        stepper = std::make_unique<NewtonRaphsonStepper<double>>(this->function, this->aitken_requirement,
+                                                                 additional_function);
     if (method == Method::FIXED_POINT)
-        stepper = std::make_unique<FixedPointStepper<double>>(this->function, this->aitken_requirement, additional_function);
+        stepper =
+            std::make_unique<FixedPointStepper<double>>(this->function, this->aitken_requirement, additional_function);
 }
 
 template <>
-void Solver<Eigen::Vector2d>::convert_stepper(std::unique_ptr<Stepper<Eigen::Vector2d>>& stepper, std::function<double(double)> additional_function = [](double x) {return x;}) {
+void Solver<Eigen::Vector2d>::convert_stepper(
+    std::unique_ptr<Stepper<Eigen::Vector2d>>& stepper,
+    std::function<double(double)> additional_function = [](double x) { return x; }) {
     if (method == Method::BISECTION)
         stepper = std::make_unique<BisectionStepper<Eigen::Vector2d>>(this->function, this->aitken_requirement,
                                                                       this->initial_guess);
@@ -56,15 +63,13 @@ Eigen::Vector2d Solver<T>::get_previous_result(int step_length) {
 
 template <>
 void Solver<double>::save_starting_point() {
-    if (results.rows() == 0)
-        results.conservativeResize(1, 2);
+    if (results.rows() == 0) results.conservativeResize(1, 2);
     save_results(0, {initial_guess, function(initial_guess)});
 }
 
 template <>
 void Solver<Eigen::Vector2d>::save_starting_point() {
-    if (results.rows() == 0)
-        results.resize(1, 2);
+    if (results.rows() == 0) results.resize(1, 2);
     double to_save = initial_guess(1);
     save_results(0, {to_save, function(to_save)});
 }
@@ -80,7 +85,7 @@ std::function<double(double)> Solver<T>::get_function() {
 }
 
 template <typename T>
-void Solver<T>::loop(std::function<double(double)> additional_function = [](double x) {return x;}) {
+void Solver<T>::loop(std::function<double(double)> additional_function = [](double x) { return x; }) {
     double err = 1.0;
 
     std::unique_ptr<Stepper<T>> stepper;
