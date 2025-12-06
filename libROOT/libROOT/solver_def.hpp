@@ -32,6 +32,8 @@ class Solver {
     double tolerance;
     /** \brief True if Aitken acceleration is required, 0 otherwise*/
     bool aitken_requirement;
+    /** \brief Verbose mode flag */
+    bool verbose;
     /** \brief Stores in the first column the points computed at each step, in
      * the second the value of the function at those points.
      */
@@ -67,7 +69,7 @@ class Solver {
      * Potentially the aitken requirement could be set here, but for now we ask the user before the loop.
      */
     Solver(std::function<double(double)> fun, T initial_guess, const Method method, int max_iterations,
-           double tolerance, bool aitken_mode);
+           double tolerance, bool aitken_mode, bool verbose);
     /** \brief Calls everything required to Solve with a method.*/
     /**
      * Caveat: could create and call the writer too.

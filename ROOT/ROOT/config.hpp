@@ -32,6 +32,7 @@ class ConfigBase {
     double tolerance;                        //!< The tolerance for convergence.
     int max_iterations;                      //!< The maximum number of iterations allowed.
     bool aitken;                             //!< Indicates whether Aitken acceleration is enabled.
+    bool verbose;                            //!< Indicates whether verbose output is enabled.
     std::function<double(double)> function;  //!< The function for which the root is to be found.
 };
 
@@ -56,7 +57,7 @@ class BisectionConfig : public ConfigBase {
      * @param final_point The final point of the interval.
      */
     BisectionConfig(double tolerance, int max_iterations, bool aitken, std::function<double(double)> function,
-                    double initial_point, double final_point) {
+                    double initial_point, double final_point, bool verbose) {
         this->tolerance = tolerance;
         this->max_iterations = max_iterations;
         this->aitken = aitken;
@@ -64,6 +65,7 @@ class BisectionConfig : public ConfigBase {
         this->initial_point = initial_point;
         this->final_point = final_point;
         this->method = Method::BISECTION;
+        this->verbose = verbose;
     }
 };
 
@@ -88,7 +90,7 @@ class NewtonConfig : public ConfigBase {
      * @param initial_guess The initial guess for the root.
      */
     NewtonConfig(double tolerance, int max_iterations, bool aitken, std::function<double(double)> function,
-                 std::function<double(double)> derivative, double initial_guess) {
+                 std::function<double(double)> derivative, double initial_guess, bool verbose) {
         this->tolerance = tolerance;
         this->max_iterations = max_iterations;
         this->aitken = aitken;
@@ -96,6 +98,7 @@ class NewtonConfig : public ConfigBase {
         this->derivative = derivative;
         this->initial_guess = initial_guess;
         this->method = Method::NEWTON;
+        this->verbose = verbose;
     }
 };
 
@@ -120,7 +123,7 @@ class SecantConfig : public ConfigBase {
      * @param final_point The final point of the interval.
      */
     SecantConfig(double tolerance, int max_iterations, bool aitken, std::function<double(double)> function,
-                 double initial_point, double final_point) {
+                 double initial_point, double final_point, bool verbose) {
         this->tolerance = tolerance;
         this->max_iterations = max_iterations;
         this->aitken = aitken;
@@ -128,6 +131,7 @@ class SecantConfig : public ConfigBase {
         this->initial_point = initial_point;
         this->final_point = final_point;
         this->method = Method::SECANT;
+        this->verbose = verbose;
     }
 };
 
@@ -152,7 +156,7 @@ class FixedPointConfig : public ConfigBase {
      * @param g_function The g function for the Fixed Point method.
      */
     FixedPointConfig(double tolerance, int max_iterations, bool aitken, std::function<double(double)> function,
-                     double initial_guess, std::function<double(double)> g_function) {
+                     double initial_guess, std::function<double(double)> g_function, bool verbose) {
         this->tolerance = tolerance;
         this->max_iterations = max_iterations;
         this->aitken = aitken;
@@ -160,6 +164,7 @@ class FixedPointConfig : public ConfigBase {
         this->initial_guess = initial_guess;
         this->g_function = g_function;
         this->method = Method::FIXED_POINT;
+        this->verbose = verbose;
     }
 };
 

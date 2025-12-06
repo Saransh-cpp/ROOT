@@ -62,7 +62,7 @@ class ReaderBase {
      * @param app The CLI app subcommand containing the options for a specific input type.
      * @return A unique pointer to a ConfigBase object representing the read configuration.
      */
-    virtual std::unique_ptr<ConfigBase> read(CLI::App* app) = 0;
+    virtual std::unique_ptr<ConfigBase> read(CLI::App* app, bool verbose) = 0;
 
   protected:
     /**
@@ -127,7 +127,7 @@ class ReaderCSV : public ReaderBase {
      * @param app The CLI app subcommand containing the options for the CSV input.
      * @return A unique pointer to a ConfigBase object representing the read configuration.
      */
-    std::unique_ptr<ConfigBase> read(CLI::App* app) override;
+    std::unique_ptr<ConfigBase> read(CLI::App* app, bool verbose) override;
 
   private:
     /**
@@ -152,7 +152,7 @@ class ReaderDAT : public ReaderBase {
      * @param app The CLI app subcommand containing the options for the DAT input.
      * @return A unique pointer to a ConfigBase object representing the read configuration.
      */
-    std::unique_ptr<ConfigBase> read(CLI::App* app) override;
+    std::unique_ptr<ConfigBase> read(CLI::App* app, bool verbose) override;
 };
 
 /**
@@ -168,7 +168,7 @@ class ReaderCLI : public ReaderBase {
      * @param app The CLI app subcommand containing the options for the CLI input.
      * @return A unique pointer to a ConfigBase object representing the read configuration.
      */
-    std::unique_ptr<ConfigBase> read(CLI::App* app) override;
+    std::unique_ptr<ConfigBase> read(CLI::App* app, bool verbose) override;
 };
 
 #endif  // READER_HPP

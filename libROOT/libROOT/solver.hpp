@@ -13,7 +13,7 @@ constexpr int max_iters = 200;
 
 template <typename T>
 Solver<T>::Solver(std::function<double(double)> fun, T initial_guess, const Method method, int max_iterations,
-                  double tolerance, bool aitken_mode) {
+                  double tolerance, bool aitken_mode, bool verbose) {
     this->function = fun;
     this->initial_guess = initial_guess;
     this->method = method;
@@ -21,6 +21,7 @@ Solver<T>::Solver(std::function<double(double)> fun, T initial_guess, const Meth
     this->tolerance = tolerance;
     this->results = Eigen::MatrixX2d(0, 2);
     this->aitken_requirement = aitken_mode;
+    this->verbose = verbose;
 }
 
 template <>
@@ -86,23 +87,37 @@ Eigen::MatrixX2d Solver<T>::solve(std::function<double(double)> additional_funct
 
     save_starting_point();
 
-    std::cout << "x(0): " << get_previous_result(0)(0) << "; f(x0): " << get_previous_result(0)(1) << std::endl;
+    if (verbose) {
+        std::cout << "x(0): " << get_previous_result(0)(0) << "; f(x0): " << get_previous_result(0)(1) << std::endl;
+    }
 
     int iter = 1;
 
     while (err > tolerance && abs(get_previous_result(0)(1)) > tolerance && iter < max_iterations) {
-        std::cout << "x(0): " << get_previous_result(0)(0) << "; f(x0): " << get_previous_result(0)(1) << std::endl;
+        if (verbose) {
+            std::cout << "x(0): " << get_previous_result(0)(0) << "; f(x0): " << get_previous_result(0)(1) << std::endl;
+        }
         solver_step(iter, stepper, err);
     }
 
-    std::cout << "Exiting program." << std::endl;
+    if (verbose) {
+        if (err <= tolerance || abs(get_previous_result(0)(1)) <= tolerance) {
+            std::cout << "Converged in " << iter - 1 << " iterations." << std::endl;
+        } else {
+            std::cout << "Did not converge in " << max_iterations << " iterations." << std::endl;
+        }
+    }
+    std::cout << "Final estimate: x = " << get_previous_result(0)(0) << "; f(x) = " << get_previous_result(0)(1)
+              << "; error = " << err << std::endl;
 
     return results;
 }
 
 template <typename T>
 void Solver<T>::solver_step(int& iter, std::unique_ptr<StepperBase<T>>& stepper, double& err) {
-    std::cout << "Iteration " << iter << ": ";
+    if (verbose) {
+        std::cout << "Iteration " << iter << ": ";
+    }
     auto new_results = stepper->step(this->get_previous_result(0));
     save_results(iter, new_results);
     err = calculate_error(new_results(0), this->get_previous_result(1)(0));

@@ -26,9 +26,28 @@ int main(int argc, char** argv) {
     CLI::App app{"ROOT Command Line Interface"};
     app.require_subcommand(1);
 
-    // Global options shared across methods
     bool verbose = false;
-    app.add_flag("-v,--verbose", verbose, "Enable verbose output (applies to all methods)")->capture_default_str();
+    app.add_flag("-v,--verbose", verbose, "Enable verbose output")->capture_default_str();
+
+    bool write_to_cli = false;
+    app.add_flag("--wcli,--write-to-cli", write_to_cli, "Write results to command line")->capture_default_str();
+
+    std::string write_to_csv;
+    char w_csv_sep = ',';
+    app.add_option("--wcsv,--write-to-csv", write_to_csv, "Write results to CSV file");
+    app.add_option("--ocsvsep,--output-csv-sep", w_csv_sep, "Separator character for CSV output")
+        ->capture_default_str();
+
+    std::string write_to_dat;
+    app.add_option("--wdat,--write-to-dat", write_to_dat, "Write results to DAT file");
+    std::string write_with_gnuplot;
+    app.add_option("--wgnuplot,--write-to-gnuplot", write_with_gnuplot, "Write results to file formatted for Gnuplot");
+
+    char append_or_overwrite = 'o';
+    app.add_option("--ofmode,--output-file-mode", append_or_overwrite,
+                   "Append or overwrite output file: 'a' for append, 'o' for overwrite")
+        ->check(CLI::IsMember({'a', 'o'}))
+        ->capture_default_str();
 
     // Subcommands for different input methods
     // CSV
@@ -59,29 +78,6 @@ int main(int argc, char** argv) {
     int max_iterations = 100;
     cli->add_option("-n,--max-iterations", max_iterations, "Maximum number of iterations")
         ->check(CLI::PositiveNumber)
-        ->capture_default_str();
-
-    bool write_to_cli = false;
-    cli->add_flag("--wcli,--write-to-cli", write_to_cli, "Write output to CLI")->capture_default_str();
-
-    std::string write_to_csv;
-    cli->add_option("--wcsv,--write-to-csv", write_to_csv, "Filename for CSV output")->capture_default_str();
-
-    std::string write_to_dat;
-    cli->add_option("--wdat,--write-to-dat", write_to_dat, "Filename for DAT output")->capture_default_str();
-
-    std::string write_with_gnuplot;
-    cli->add_option("--wgnuplot,--write-with-gnuplot", write_with_gnuplot,
-                    "Filename for DAT output with GNU plot formatting")
-        ->capture_default_str();
-
-    char csv_sep = ',';
-    cli->add_option("--wcsv-sep,--write-to-csv-sep", csv_sep, "Separator character for CSV output")
-        ->capture_default_str();
-
-    char append_or_overwrite = 'o';
-    cli->add_option("--w-mode,--write-mode", append_or_overwrite, "Append (a) or Overwrite (o) output file")
-        ->check(CLI::IsMember({'a', 'o'}))
         ->capture_default_str();
 
     cli->require_subcommand(1);
@@ -135,13 +131,13 @@ int main(int argc, char** argv) {
     // ------------------------------------------------------------
     if (*csv) {
         reader = std::make_unique<ReaderCSV>();
-        config = reader->read(csv);
+        config = reader->read(csv, verbose);
     } else if (*dat) {
         reader = std::make_unique<ReaderDAT>();
-        config = reader->read(dat);
+        config = reader->read(dat, verbose);
     } else if (*cli) {
         reader = std::make_unique<ReaderCLI>();
-        config = reader->read(cli);
+        config = reader->read(cli, verbose);
     }
 
     // ------------------------------------------------------------
@@ -152,13 +148,13 @@ int main(int argc, char** argv) {
             Eigen::Vector2d interval = {dynamic_cast<BisectionConfig*>(config.get())->initial_point,
                                         dynamic_cast<BisectionConfig*>(config.get())->final_point};
             Solver solver(config->function, interval, config->method, config->max_iterations, config->tolerance,
-                          config->aitken);
+                          config->aitken, config->verbose);
             results = solver.solve();
             break;
         }
         case Method::NEWTON: {
             Solver solver(config->function, dynamic_cast<NewtonConfig*>(config.get())->initial_guess, config->method,
-                          config->max_iterations, config->tolerance, config->aitken);
+                          config->max_iterations, config->tolerance, config->aitken, config->verbose);
             results = solver.solve(dynamic_cast<NewtonConfig*>(config.get())->derivative);
             break;
         }
@@ -166,13 +162,13 @@ int main(int argc, char** argv) {
             Eigen::Vector2d interval = {dynamic_cast<SecantConfig*>(config.get())->initial_point,
                                         dynamic_cast<SecantConfig*>(config.get())->final_point};
             Solver solver(config->function, interval, config->method, config->max_iterations, config->tolerance,
-                          config->aitken);
+                          config->aitken, config->verbose);
             results = solver.solve();
             break;
         }
         case Method::FIXED_POINT: {
             Solver solver(config->function, dynamic_cast<FixedPointConfig*>(config.get())->initial_guess,
-                          config->method, config->max_iterations, config->tolerance, config->aitken);
+                          config->method, config->max_iterations, config->tolerance, config->aitken, config->verbose);
             results = solver.solve(dynamic_cast<FixedPointConfig*>(config.get())->g_function);
             break;
         }
@@ -183,20 +179,18 @@ int main(int argc, char** argv) {
     // ------------------------------------------------------------
     // Writer execution
     // ------------------------------------------------------------
-    if (*cli) {
-        if (write_to_cli) {
-            Writer<Eigen::MatrixX2d> writer(results, WritingMethod::CONSOLE);
-            writer.write();
-        } else if (!write_to_csv.empty()) {
-            Writer<Eigen::MatrixX2d> writer(results, WritingMethod::CSV);
-            writer.write(write_to_csv, csv_sep, append_or_overwrite == 'o');
-        } else if (!write_to_dat.empty()) {
-            Writer<Eigen::MatrixX2d> writer(results, WritingMethod::DAT);
-            writer.write(write_to_dat, ' ', append_or_overwrite == 'o');
-        } else if (!write_with_gnuplot.empty()) {
-            Writer<Eigen::MatrixX2d> writer(results, WritingMethod::GNUPLOT);
-            writer.write(write_with_gnuplot, ',', append_or_overwrite == 'o');
-        }
+    if (write_to_cli) {
+        Writer<Eigen::MatrixX2d> writer(results, WritingMethod::CONSOLE);
+        writer.write();
+    } else if (!write_to_csv.empty()) {
+        Writer<Eigen::MatrixX2d> writer(results, WritingMethod::CSV);
+        writer.write(write_to_csv, w_csv_sep, append_or_overwrite == 'o');
+    } else if (!write_to_dat.empty()) {
+        Writer<Eigen::MatrixX2d> writer(results, WritingMethod::DAT);
+        writer.write(write_to_dat, ' ', append_or_overwrite == 'o');
+    } else if (!write_with_gnuplot.empty()) {
+        Writer<Eigen::MatrixX2d> writer(results, WritingMethod::GNUPLOT);
+        writer.write(write_with_gnuplot, ',', append_or_overwrite == 'o');
     }
 
     return 0;
