@@ -42,7 +42,6 @@ jobs:
 
       - name: Verify installation
         run: |
-          ls /usr/include/libROOT | grep -E 'root.hpp|dummy_class.hpp'
+          ls /usr/include/libROOT | grep -E 'solver.hpp|stepper.hpp|method.hpp|solver_def.hpp|stepper_def.hpp'
           file /usr/bin/root_cli
-          file /usr/lib/libROOT.so
-          root_cli
+          root_cli --help

@@ -1,0 +1,153 @@
+#ifndef ROOT_WRITER_HPP
+#define ROOT_WRITER_HPP
+
+#include <Eigen/Dense>
+#include <fstream>
+#include <iostream>
+#include <memory>
+#include <ranges>
+#include <string>
+
+#include "writer_def.hpp"
+
+template <>
+void PrinterGNUPlot<Eigen::Vector2d>::generate_gnuplot_script() const;
+
+template <>
+Writer<Eigen::MatrixX2d>::Writer(const Eigen::MatrixX2d& vals_to_write, WritingMethod write_method) {
+    this->values = vals_to_write;
+    this->method = write_method;
+}
+
+template <>
+void Writer<Eigen::MatrixX2d>::print_final_result() const {
+    std::cout << "The found root is " << this->values.row(this->values.rows() - 1)(0) << std::endl;
+}
+
+template <>
+void Writer<Eigen::MatrixX2d>::write(std::string filename, char sep, bool overwrite) {
+    print_final_result();
+
+    std::unique_ptr<PrinterBase<Eigen::Vector2d>> printer;
+    build_printer(printer, filename);
+
+    for (int i = 0; i < this->values.rows(); i++) {
+        Eigen::Vector2d row = this->values.row(i);
+        printer->write_values(row);
+    }
+
+    // LLM
+    if (auto gp = dynamic_cast<PrinterGNUPlot<Eigen::Vector2d>*>(printer.get())) {
+        gp->generate_gnuplot_script();
+        std::cout << "Gnuplot script generated: plot.plt\n";
+    }
+}
+
+template <typename T>
+template <typename V>
+void Writer<T>::build_printer(std::unique_ptr<PrinterBase<V>>& printer, std::string filename, char sep,
+                              bool overwrite) {
+    switch (this->method) {
+        case WritingMethod::CONSOLE:
+            printer = std::make_unique<PrinterCLI<V>>();
+            break;
+        case WritingMethod::CSV:
+            printer = std::make_unique<PrinterCSV<V>>(filename, sep, overwrite);
+            break;
+        case WritingMethod::DAT:
+            printer = std::make_unique<PrinterDAT<V>>(filename, overwrite);
+            break;
+        case WritingMethod::GNUPLOT:
+            printer = std::make_unique<PrinterGNUPlot<V>>(filename, overwrite);
+            break;
+        default:
+            throw std::runtime_error("Unknown writing method");
+    }
+}
+
+template <typename V>
+PrinterCLI<V>::PrinterCLI() {
+    std::cout << "Here are the iterations of the method: " << std::endl;
+}
+
+template <>
+void PrinterCLI<Eigen::Vector2d>::write_values(const Eigen::Vector2d& value) {
+    std::cout << "x = " << value(0) << " --- f(x) = " << value(1) << std::endl;
+}
+
+template <typename V>
+PrinterFile<V>::PrinterFile(const std::string& fname, bool ow_mode) {
+    this->filename = fname;
+    this->append = ow_mode;
+    if (this->append) {
+        file.open(this->filename, std::ios::trunc);
+    } else {
+        file.open(this->filename, std::ios::app);
+        file << std::endl;
+    }
+
+    if (!file.is_open()) {
+        throw std::runtime_error("File could not be opened");
+    }
+}
+
+template <typename V>
+PrinterCSV<V>::PrinterCSV(const std::string& fname, char sep, bool ow_mode) : PrinterFile<V>(fname + ".csv", ow_mode) {
+    this->separator = sep;
+}
+
+template <>
+void PrinterCSV<Eigen::Vector2d>::write_values(const Eigen::Vector2d& value) {
+    file << value(0) << this->separator << value(1) << std::endl;
+}
+
+template <typename V>
+PrinterDAT<V>::PrinterDAT(const std::string& fname, bool ow_mode) : PrinterFile<V>(fname + ".dat", ow_mode) {}
+
+template <>
+void PrinterDAT<Eigen::Vector2d>::write_values(const Eigen::Vector2d& value) {
+    file << value(0) << " " << value(1) << std::endl;
+}
+
+template <typename V>
+PrinterGNUPlot<V>::PrinterGNUPlot(const std::string& fname, bool ow_mode) : PrinterDAT<V>(fname, ow_mode) {}
+
+template <>
+void PrinterGNUPlot<Eigen::Vector2d>::generate_gnuplot_script() const {
+    std::string base_name = this->filename;
+    size_t last_dot = base_name.find_last_of(".");
+    if (last_dot != std::string::npos) {
+        base_name = base_name.substr(0, last_dot);
+    }
+
+    std::string png_file = base_name + ".png";  // PNG output
+    std::string plt_file = base_name + ".plt";  // Gnuplot script
+
+    std::ofstream script(plt_file);
+    if (!script.is_open()) {
+        std::cerr << "Error: could not open gnuplot script file.\n";
+        return;
+    }
+    // LLM
+    script << "# Auto-generated gnuplot script\n"
+           << "set terminal pngcairo size 1000,800 enhanced font 'Arial,12'\n"
+           << "set output '" << png_file << "'\n"
+           << "set title 'Root-Finding Iterations'\n"
+           << "set xlabel 'x'\n"
+           << "set ylabel 'f(x)'\n"
+           << "set grid\n"
+           << "plot '" << this->filename
+           << "' using 1:2 with linespoints lt rgb 'blue' pt 7 lw 2 title 'Iteration Path'\n";
+
+    script.close();
+
+    // Check if gnuplot exists before calling it
+    if (std::system("which gnuplot > /dev/null 2>&1") == 0) {
+        std::system(("gnuplot " + plt_file).c_str());
+        std::cout << "Gnuplot image generated: " << png_file << std::endl;
+    } else {
+        std::cerr << "Warning: gnuplot not found. Script generated but PNG not created.\n";
+    }
+}
+
+#endif  // ROOT_WRITER_IMPL_HPP

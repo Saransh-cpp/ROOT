@@ -1,0 +1,6 @@
+#ifndef LIBROOT_METHOD_HPP
+#define LIBROOT_METHOD_HPP
+
+enum Method { BISECTION, NEWTON, SECANT, FIXED_POINT };
+
+#endif
