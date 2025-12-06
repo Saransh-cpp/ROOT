@@ -13,12 +13,6 @@ Stepper<T>::Stepper(std::function<double(double)> fun, bool aitken_mode) {
 }
 
 template <typename T>
-Stepper<T>& Stepper<T>::operator=(const Stepper<T>& stepper) {
-    function = stepper.function;
-    return *this;
-}
-
-template <typename T>
 Eigen::Vector2d Stepper<T>::step(Eigen::Vector2d previous_step) {
     if (!aitken_requirement) {
         return compute_step(previous_step);

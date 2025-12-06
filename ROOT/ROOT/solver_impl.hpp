@@ -9,8 +9,8 @@
 constexpr double tol = 1e-6;
 constexpr int max_iters = 200;
 
-template <>
-Solver<double>::Solver(std::function<double(double)> fun, double initial_guess, const Method method, int max_iterations,
+template <typename T>
+Solver<T>::Solver(std::function<double(double)> fun, T initial_guess, const Method method, int max_iterations,
                        double tolerance, bool aitken_mode) {
     this->function = fun;
     this->initial_guess = initial_guess;
@@ -21,8 +21,8 @@ Solver<double>::Solver(std::function<double(double)> fun, double initial_guess, 
     this->aitken_requirement = aitken_mode;
 }
 
-template <typename T>
-void convert_stepper(std::unique_ptr<Stepper<T>>& stepper, std::function<double(double)> additional_function = [](double x) {return x;});
+//template <typename T>
+//void convert_stepper(std::unique_ptr<Stepper<T>>& stepper, std::function<double(double)> additional_function = [](double x) {return x;});
 
 template <>
 void Solver<double>::convert_stepper(std::unique_ptr<Stepper<double>>& stepper, std::function<double(double)> additional_function) {

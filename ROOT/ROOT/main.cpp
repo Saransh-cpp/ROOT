@@ -7,6 +7,12 @@
 #include "config.hpp"
 #include "function_parser.hpp"
 #include "reader.hpp"
+#include "solver.hpp"
+#include "solver_impl.hpp"
+#include "stepper.hpp"
+#include "stepper_impl.hpp"
+#include "writer.hpp"
+#include "writer_impl.hpp"
 
 int main(int argc, char** argv) {
     // ------------------------------------------------------------
@@ -120,6 +126,8 @@ int main(int argc, char** argv) {
             std::cout << config->max_iterations << std::endl;
             break;
         case Method::NEWTON:
+            Solver solver(config->function, dynamic_cast<NewtonConfig*>(config.get())->initial_guess, config->method,
+                config->max_iterations, config->tolerance, config->aitken);
             std::cout << config->function(0) << std::endl;
             std::cout << dynamic_cast<NewtonConfig*>(config.get())->initial_guess << std::endl;
             std::cout << dynamic_cast<NewtonConfig*>(config.get())->derivative(3) << std::endl;
