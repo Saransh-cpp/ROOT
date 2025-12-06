@@ -6,13 +6,8 @@
 
 #include "config.hpp"
 #include "function_parser.hpp"
+#include "libROOT/solver_impl.hpp"
 #include "reader.hpp"
-#include "solver.hpp"
-#include "solver_impl.hpp"
-#include "stepper.hpp"
-#include "stepper_impl.hpp"
-#include "writer.hpp"
-#include "writer_impl.hpp"
 
 int main(int argc, char** argv) {
     // ------------------------------------------------------------

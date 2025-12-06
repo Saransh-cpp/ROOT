@@ -105,6 +105,4 @@ class BisectionStepper : public Stepper<T> {
     Eigen::Vector2d compute_step(Eigen::Vector2d previous_iteration) override;
 };
 
-#include "stepper_impl.hpp"
-
 #endif  // ROOT_STEPPER_HPP

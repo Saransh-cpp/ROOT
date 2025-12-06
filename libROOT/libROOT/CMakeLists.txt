@@ -1,11 +1,10 @@
 include(GNUInstallDirs)
 
-add_library(libROOT SHARED root_lib.cpp
-        dummy_class.cpp)
+add_library(libROOT INTERFACE)
 
 
 target_include_directories(libROOT
-  PUBLIC
+  INTERFACE
     # when building from source, this directory is used
     $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/libROOT>
     # when installed, consumers should include from <libROOT/...>

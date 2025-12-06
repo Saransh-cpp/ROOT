@@ -5,7 +5,7 @@
 #include <functional>
 #include <string>
 
-#include "config.hpp"
+#include "method.hpp"
 #include "stepper.hpp"
 
 template <typename T>
@@ -84,7 +84,5 @@ class Solver {
     std::string ask_method();
     Solver<T>& operator=(const Solver<T>& solver);
 };
-
-#include "solver_impl.hpp"
 
 #endif

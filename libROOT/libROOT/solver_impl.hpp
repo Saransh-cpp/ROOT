@@ -4,10 +4,11 @@
 #include <iostream>
 #include <memory>
 
-#include "config.hpp"
 #include "solver.hpp"
-#include "stepper.hpp"
-#include "writer.hpp"
+#include "stepper_impl.hpp"
+// #include "writer.hpp"
+
+#include "method.hpp"
 
 constexpr double tol = 1e-6;
 constexpr int max_iters = 200;
@@ -104,8 +105,8 @@ void Solver<T>::loop(std::function<double(double)> additional_function) {
         while_body(iter, stepper, err);
     }
 
-    auto writer = std::make_unique<Writer<Eigen::MatrixX2d>>(results);
-    writer->writing_process();
+    // auto writer = std::make_unique<Writer<Eigen::MatrixX2d>>(results);
+    // writer->writing_process();
 
     std::cout << "Exiting program." << std::endl;
 }

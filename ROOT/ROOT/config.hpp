@@ -14,11 +14,7 @@
 
 #include <functional>
 
-/**
- * @brief Method enum representing the root-finding method to be used.
- *
- */
-enum class Method { BISECTION, NEWTON, SECANT, FIXED_POINT };
+#include "libROOT/method.hpp"
 
 /**
  * @brief Base (shared) configuration (data) class for root-finding methods.
