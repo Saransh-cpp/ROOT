@@ -1,3 +1,6 @@
+#ifndef ROOT_WRITER_IMPL_HPP
+#define ROOT_WRITER_IMPL_HPP
+
 #include <Eigen/Dense>
 #include <fstream>
 #include <iostream>
@@ -157,3 +160,5 @@ void GnuplotPrinter<Eigen::Vector2d>::generate_gnuplot_script() const {
         std::cerr << "Warning: gnuplot not found. Script generated but PNG not created.\n";
     }
 }
+
+#endif  // ROOT_WRITER_IMPL_HPP

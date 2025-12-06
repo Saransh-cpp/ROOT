@@ -1,3 +1,5 @@
+#ifndef ROOT_SOLVER_IMPL_HPP
+#define ROOT_SOLVER_IMPL_HPP
 #include <Eigen/Dense>
 #include <iostream>
 #include <memory>
@@ -38,9 +40,8 @@ void Solver<double>::convert_stepper(std::unique_ptr<Stepper<double>>& stepper,
 }
 
 template <>
-void Solver<Eigen::Vector2d>::convert_stepper(
-    std::unique_ptr<Stepper<Eigen::Vector2d>>& stepper,
-    std::function<double(double)> additional_function = [](double x) { return x; }) {
+void Solver<Eigen::Vector2d>::convert_stepper(std::unique_ptr<Stepper<Eigen::Vector2d>>& stepper,
+                                              std::function<double(double)> additional_function) {
     if (method == Method::BISECTION)
         stepper = std::make_unique<BisectionStepper<Eigen::Vector2d>>(this->function, this->aitken_requirement,
                                                                       this->initial_guess);
@@ -85,7 +86,7 @@ std::function<double(double)> Solver<T>::get_function() {
 }
 
 template <typename T>
-void Solver<T>::loop(std::function<double(double)> additional_function = [](double x) { return x; }) {
+void Solver<T>::loop(std::function<double(double)> additional_function) {
     double err = 1.0;
 
     std::unique_ptr<Stepper<T>> stepper;
@@ -99,6 +100,7 @@ void Solver<T>::loop(std::function<double(double)> additional_function = [](doub
     int iter = 1;
 
     while (err > tolerance && abs(get_previous_result(0)(1)) > tolerance && iter < max_iterations) {
+        std::cout << "x(0): " << get_previous_result(0)(0) << "; f(x0): " << get_previous_result(0)(1) << std::endl;
         while_body(iter, stepper, err);
     }
 
@@ -118,3 +120,5 @@ void Solver<T>::while_body(int& iter, std::unique_ptr<Stepper<T>>& stepper, doub
 
 template class Solver<double>;
 template class Solver<Eigen::Vector2d>;
+
+#endif  // ROOT_SOLVER_IMPL_HPP

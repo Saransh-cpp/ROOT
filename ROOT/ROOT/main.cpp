@@ -31,7 +31,7 @@ int main(int argc, char** argv) {
 
     // Global options shared across methods
     bool verbose = false;
-    app.add_flag("-v,--verbose", verbose, "Enable verbose output (applies to all methods)");
+    app.add_flag("-v,--verbose", verbose, "Enable verbose output (applies to all methods)")->capture_default_str();
 
     // Subcommands for different input methods
     // CSV
@@ -52,13 +52,17 @@ int main(int argc, char** argv) {
         ->required();
 
     bool aitken = false;
-    cli->add_flag("-a,--aitken", aitken, "Enable Aitken acceleration");
+    cli->add_flag("-a,--aitken", aitken, "Enable Aitken acceleration")->capture_default_str();
 
-    double tolerance = 1e-5;
-    cli->add_option("-t,--tolerance", tolerance, "Tolerance for convergence")->check(CLI::PositiveNumber);
+    double tolerance{1e-5};
+    cli->add_option("-t,--tolerance", tolerance, "Tolerance for convergence")
+        ->check(CLI::PositiveNumber)
+        ->capture_default_str();
 
     int max_iterations = 100;
-    cli->add_option("-n,--max-iterations", max_iterations, "Maximum number of iterations")->check(CLI::PositiveNumber);
+    cli->add_option("-n,--max-iterations", max_iterations, "Maximum number of iterations")
+        ->check(CLI::PositiveNumber)
+        ->capture_default_str();
 
     cli->require_subcommand(1);
 
@@ -125,13 +129,12 @@ int main(int argc, char** argv) {
         case Method::BISECTION:
             std::cout << config->max_iterations << std::endl;
             break;
-        case Method::NEWTON:
+        case Method::NEWTON: {
             Solver solver(config->function, dynamic_cast<NewtonConfig*>(config.get())->initial_guess, config->method,
                           config->max_iterations, config->tolerance, config->aitken);
-            std::cout << config->function(0) << std::endl;
-            std::cout << dynamic_cast<NewtonConfig*>(config.get())->initial_guess << std::endl;
-            std::cout << dynamic_cast<NewtonConfig*>(config.get())->derivative(3) << std::endl;
+            solver.loop(dynamic_cast<NewtonConfig*>(config.get())->derivative);
             break;
+        }
         case Method::SECANT:
             std::cout << config->function(0) << std::endl;
             std::cout << dynamic_cast<SecantConfig*>(config.get())->final_point << std::endl;

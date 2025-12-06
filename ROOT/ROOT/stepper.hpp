@@ -21,6 +21,7 @@ class Stepper {
 
   public:
     Stepper(std::function<double(double)> fun, bool aitken_mode);
+    virtual ~Stepper() = default;
     virtual Eigen::Vector2d compute_step(Eigen::Vector2d) = 0;
     /** \brief Returns the result of the computation of the additional step which Aitken acceleration introduces.
      * The three parameters are the previous 3 steps of the iterative solution, required to compute the new one,
