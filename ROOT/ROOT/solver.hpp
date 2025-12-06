@@ -49,7 +49,8 @@ class Solver {
      */
     Eigen::MatrixX2d results;
     /** \brief Stores the function to find the root of and the starting guess for the process*/
-    Info<T> info;
+    std::function<double(double)> function;
+    T initial_guess;
 
   public:
     /** A complete constructor for the Solver class requires the info struct to have the function and the starting
@@ -57,12 +58,7 @@ class Solver {
      * are not given, default values (constexpr) will be assigned to them (max_iterations = 200, tolerance = 1e-6).
      * Potentially the aitken requirement could be set here, but for now we ask the user before the loop.
      */
-    Solver();
-    Solver(Info<T> info, int max_iterations, double tolerance);
-    Solver(Info<T> info, int max_iterations);
-    Solver(Info<T> info, double tolerance);
-    /** \brief Sets the info, could be eventually deleted if not needed (wait for the reader to be finished)*/
-    void set_info(Info<T> info);
+    Solver(std::function<double(double)> fun, T initial_guess, std::string& method, int max_iterations, double tolerance);
     /** \brief Calls everything required to Solve with a method.*/
     /**
      * Caveat: could create and call the writer too.
@@ -86,11 +82,11 @@ class Solver {
     /**
      * \brief Converts the generic Abstract stepper into a typed one. Right now according to user's input as string
      */
-    void convert_stepper(std::unique_ptr<Stepper<T>>& stepper, const std::string& method);
+    void convert_stepper(std::unique_ptr<Stepper<T>>& stepper);
     /** \brief Returns the function argument of the class in order to correctly construct a Stepper object.*/
     std::function<double(double)> get_function();
     /** \brief Returns the Info argument of the class in order to use it in a Stepper object.*/
-    Info<T> get_info();
+    Info<T> get_function();
     int ask_next_action() const;
     void clear_results();
     void end_solver();
