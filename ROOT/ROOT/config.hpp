@@ -110,8 +110,8 @@ class NewtonConfig : public ConfigBase {
  */
 class ChordsConfig : public ConfigBase {
   public:
-    double initial_point;  //!< The initial point of the interval.
-    double final_point;    //!< The final point of the interval.
+    double initial_point1;  //!< The initial point of the interval.
+    double initial_point2;    //!< The final point of the interval.
     /**
      * @brief Constructor for SecantConfig.
      *
@@ -128,8 +128,8 @@ class ChordsConfig : public ConfigBase {
         this->max_iterations = max_iterations;
         this->aitken = aitken;
         this->function = function;
-        this->initial_point = initial_point;
-        this->final_point = final_point;
+        this->initial_point1 = initial_point;
+        this->initial_point2 = final_point;
         this->method = Method::CHORDS;
         this->verbose = verbose;
     }

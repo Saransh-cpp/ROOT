@@ -159,8 +159,8 @@ int main(int argc, char** argv) {
             break;
         }
         case Method::CHORDS: {
-            Eigen::Vector2d interval = {dynamic_cast<ChordsConfig*>(config.get())->initial_point,
-                                        dynamic_cast<ChordsConfig*>(config.get())->final_point};
+            Eigen::Vector2d interval = {dynamic_cast<ChordsConfig*>(config.get())->initial_point1,
+                                        dynamic_cast<ChordsConfig*>(config.get())->initial_point2};
             Solver solver(config->function, interval, config->method, config->max_iterations, config->tolerance,
                           config->aitken, config->verbose);
             results = solver.solve();
