@@ -66,6 +66,18 @@ class BisectionConfig : public ConfigBase {
         this->final_point = final_point;
         this->method = Method::BISECTION;
         this->verbose = verbose;
+        // validation
+        double f_a = function(initial_point);
+        double f_b = function(final_point);
+        if (f_a * f_b > 0) {
+            std::cerr << "ERROR: For Chords method, function values at initial points must have opposite signs.\n";
+            std::cerr << "f(" << initial_point << ") = " << f_a << "\n";
+            std::cerr << "f(" << final_point << ") = " << f_b << "\n";
+            std::cerr << "Try different points and check whether the function positive everywhere.\n";
+            std::cerr << "Program terminated.\n";
+            //LLM
+            std::exit(EXIT_FAILURE);
+        }
     }
 };
 
