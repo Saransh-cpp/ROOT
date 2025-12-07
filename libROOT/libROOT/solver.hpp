@@ -100,13 +100,18 @@ Eigen::MatrixX2d Solver<T>::solve(std::function<double(double)> additional_funct
         solver_step(iter, stepper, err);
     }
 
-    if (verbose) {
-        if (err <= tolerance || abs(get_previous_result(0)(1)) <= tolerance) {
-            std::cout << "Converged in " << iter - 1 << " iterations." << std::endl;
-        } else {
-            std::cout << "Did not converge in " << max_iterations << " iterations." << std::endl;
+    try {
+        if (iter == max_iterations && err > tolerance) {throw std::runtime_error("The solution did not converge");}
+        if (verbose) {
+            if (err <= tolerance || abs(get_previous_result(0)(1)) <= tolerance) {
+                std::cout << "Converged in " << iter - 1 << " iterations." << std::endl;
+            }
         }
     }
+    catch (std::runtime_error& e) {
+        std::cerr << "\033[31m" << e.what() << " in " << max_iterations << " iterations\033[0m" << std::endl;
+    }
+
     std::cout << "Final estimate: x = " << get_previous_result(0)(0) << "; f(x) = " << get_previous_result(0)(1)
               << "; error = " << err << std::endl;
 
