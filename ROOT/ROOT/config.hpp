@@ -75,7 +75,7 @@ class BisectionConfig : public ConfigBase {
             std::cerr << "f(" << final_point << ") = " << f_b << "\n";
             std::cerr << "Try different points and check whether the function positive everywhere.\n";
             std::cerr << "Program terminated.\n";
-            //LLM
+            // LLM
             std::exit(EXIT_FAILURE);
         }
     }
@@ -123,7 +123,7 @@ class NewtonConfig : public ConfigBase {
 class ChordsConfig : public ConfigBase {
   public:
     double initial_point1;  //!< The initial point of the interval.
-    double initial_point2;    //!< The final point of the interval.
+    double initial_point2;  //!< The final point of the interval.
     /**
      * @brief Constructor for SecantConfig.
      *
