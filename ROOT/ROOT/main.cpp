@@ -90,19 +90,19 @@ int main(int argc, char** argv) {
     newton->add_option("--initial", newton_initial, "Initial guess x0 for Newton's method")->required();
     newton->add_option("--derivative", derivative_function, "Derivative of the function (optional)")->required();
 
-    // secant
-    auto* secant = cli->add_subcommand("secant", "Use Secant method");
-    double secant_x0 = 0.0;
-    double secant_x1 = 1.0;
-    secant->add_option("--x0", secant_x0, "First initial guess x0")->required();
-    secant->add_option("--x1", secant_x1, "Second initial guess x1")->required();
+    // chords
+    auto* chords = cli->add_subcommand("chords", "Use Chords method");
+    double chords_x0 = 0.0;
+    double chords_x1 = 1.0;
+    chords->add_option("--x0", chords_x0, "First initial guess x0")->required();
+    chords->add_option("--x1", chords_x1, "Second initial guess x1")->required();
 
-    // iterative (fixed-point)
-    auto* iterative = cli->add_subcommand("iterative", "Use fixed-point iterative method");
-    double iterative_initial = 0.0;
+    // fixed-point
+    auto* fixed_point = cli->add_subcommand("fixed_point", "Use fixed-point iterative method");
+    double fixed_point_initial = 0.0;
     std::string function_g;
-    iterative->add_option("--initial", iterative_initial, "Initial guess x0 for iterative method")->required();
-    iterative->add_option("--g-function", function_g, "g(x) for fixed-point iteration")->required();
+    fixed_point->add_option("--initial", fixed_point_initial, "Initial guess x0 for foxed point method")->required();
+    fixed_point->add_option("--g-function", function_g, "g(x) for fixed-point iteration")->required();
 
     // bisection
     auto* bisection = cli->add_subcommand("bisection", "Use Bisection method");
@@ -158,9 +158,9 @@ int main(int argc, char** argv) {
             results = solver.solve(dynamic_cast<NewtonConfig*>(config.get())->derivative);
             break;
         }
-        case Method::SECANT: {
-            Eigen::Vector2d interval = {dynamic_cast<SecantConfig*>(config.get())->initial_point,
-                                        dynamic_cast<SecantConfig*>(config.get())->final_point};
+        case Method::CHORDS: {
+            Eigen::Vector2d interval = {dynamic_cast<ChordsConfig*>(config.get())->initial_point,
+                                        dynamic_cast<ChordsConfig*>(config.get())->final_point};
             Solver solver(config->function, interval, config->method, config->max_iterations, config->tolerance,
                           config->aitken, config->verbose);
             results = solver.solve();

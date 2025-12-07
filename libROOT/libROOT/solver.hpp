@@ -42,7 +42,7 @@ void Solver<Eigen::Vector2d>::convert_stepper(std::unique_ptr<StepperBase<Eigen:
         stepper = std::make_unique<BisectionStepper<Eigen::Vector2d>>(this->function, this->aitken_requirement,
                                                                       this->initial_guess);
     }
-    if (method == Method::SECANT)
+    if (method == Method::CHORDS)
         stepper = std::make_unique<ChordsStepper<Eigen::Vector2d>>(this->function, this->aitken_requirement,
                                                                    this->initial_guess);
 }
