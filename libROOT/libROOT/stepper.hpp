@@ -95,14 +95,14 @@ template <>
 Eigen::Vector2d ChordsStepper<Eigen::Vector2d>::compute_step(Eigen::Vector2d last_iter) {
     double numerator = this->iter_zero - this->iter_minus_1;
     double denominator = last_iter(1) - this->function(this->iter_minus_1);
-      if (denominator == 0) {
-          std::cerr << "\033[31mCaught error: Division by 0. The method will diverge\033[0m" << std::endl;
-      }
-      double new_point = this->iter_zero - last_iter(1) * numerator / denominator;
-      this->iter_minus_1 = this->iter_zero;
-      this->iter_zero = new_point;
-      return {new_point, this->function(new_point)};
-  }
+    if (denominator == 0) {
+        std::cerr << "\033[31mCaught error: Division by 0. The method will diverge\033[0m" << std::endl;
+    }
+    double new_point = this->iter_zero - last_iter(1) * numerator / denominator;
+    this->iter_minus_1 = this->iter_zero;
+    this->iter_zero = new_point;
+    return {new_point, this->function(new_point)};
+}
 }
 
 template <>
