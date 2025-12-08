@@ -25,6 +25,8 @@
  * data from various file formats (e.g., CSV, DAT) and produce ConfigBase objects.
  */
 class ReaderBase {
+  private:
+    friend class ReaderTester;  //!< For unit testing purposes.
   public:
     std::string filename;  //!< The input filename to read from.
     char sep;              //!< Field separator character.
