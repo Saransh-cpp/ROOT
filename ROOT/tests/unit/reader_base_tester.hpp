@@ -1,5 +1,6 @@
+#include <gtest/gtest.h>
+
 #include "ROOT/reader.hpp"
-#include "gtest/gtest.h"
 
 /**
  * @brief Test fixture class for ReaderBase unit tests.
