@@ -6,7 +6,10 @@
  * @author andreasaporito
  *
  * The stepper classes will store the required functions, derivatives, and booleans to define how to compute the
- * step
+ * step.
+ * Each inherited class specializes the abstract Stepper to a real Stepper of a certain method.
+ * The computation step is overridden in each class, and some additional arguments are saved depending on the
+ * method. The generic Stepper constructor is inherited and the new specialized object will type the templated one.
  */
 #ifndef ROOT_STEPPER_DEF_HPP
 #define ROOT_STEPPER_DEF_HPP
@@ -35,85 +38,115 @@ class StepperBase {
     Eigen::Vector2d aitken_step(Eigen::Vector2d previous_iter);
 
   public:
+    /**
+     * @brief Constructor for virtual Stepper class, which will be inherited by the daughters
+     *
+     * @param fun Function to compute the root of
+     * @param aitken_mode Option to apply or not the Aitken's acceleration
+     */
     StepperBase(std::function<double(double)> fun, bool aitken_mode);
     virtual ~StepperBase() = default;
-    /** \brief Returns the result of the computation of the additional step which Aitken acceleration introduces.
-     * The three parameters are the previous 3 steps of the iterative solution, required to compute the new one,
-     * and are got from the Solver object which created the Stepper.
+    /**
+     * @brief Method handling all the steps involved in computing the new guess
+     *
+     * @param previous_step 2-dimensional vector storing x(i-1) and f(x(i-1)) previous guesses of the method
+     * @return 2-dimensional vector storing x(i) and f(x(i)) new guesses of the method
      */
     Eigen::Vector2d step(Eigen::Vector2d previous_step);
 };
 
 /**
- * Each inherited class specializes the abstract Stepper to a real Stepper of a certain method.
- * The computation step is overridden in each class, and some additional arguments are saved depending on the
- * method. The generic Stepper constructor is inherited and the new specialized object will type the templated one.
- */
-
-/**
- * \brief The specialized Stepper to compute the root with the Newton-Raphson method.
+ * @brief The specialized Stepper to compute a step with the Newton-Raphson method.
  */
 template <typename T>
 class NewtonRaphsonStepper : public StepperBase<T> {
   private:
-    /** \brief Stores the derivative of the function, input by the user.*/
-    std::function<double(double)> derivative;
+    std::function<double(double)> derivative; //!< Stores the derivative of the function
 
-  public:
-    /** \brief The constructor initializes the function and the derivative*/
+public:
+    /** @brief The specialized constructor - initializes the function and the derivative
+     *
+     * @param fun The function to compute the root of
+     * @param aitken_mode Option to use Aitken's acceleration
+     * @param der The derivative of the function, needed for NR method
+     */
     NewtonRaphsonStepper(std::function<double(double)> fun, bool aitken_mode, std::function<double(double)> der);
-    /** \brief x_new = x_old - f(x_old) / f'(x_old) */
+    /** @brief Specialized method to compute and return a new step with NR
+     *
+     * @param previous_iteration 2-dimensional vector storing x(i-1) and f(x(i-1)) - previous guesses
+     * @returns 2-dimensional vector storing x(i) = x(i-1) - f(x(i-1)) / f'(x(i-1)) and f(x(i)) - new guesses
+     */
     Eigen::Vector2d compute_step(Eigen::Vector2d previous_iteration) override;
 };
 
-/** \brief The specialized Stepper to compute the root with the Fixed Point method*/
+/** @brief The specialized Stepper to compute a step with the Fixed Point method*/
 template <typename T>
 class FixedPointStepper : public StepperBase<T> {
   private:
-    /** \brief Stores the fixed point to use in the steps, input by the user.*/
-    std::function<double(double)> fixed_point_function;
+    std::function<double(double)> fixed_point_function; //!< tores the fixed point to use in the steps
 
   public:
-    /** \brief The constructor initializs the function and the derivative*/
+    /** @brief The specialized constructor - initializes the function and the fixed point function
+     *
+     * @param fun The function to compute the root of
+     * @param aitken_mode Option to use Aitken's acceleration
+     * @param g_fun The fixed point function such that g_fun(x) = x, needed for FP method
+     */
     FixedPointStepper(std::function<double(double)> fun, bool aitken_mode, std::function<double(double)> g_fun);
-    /** \brief x_new = phi(x_old), where phi is the fixed point function.*/
+    /**
+     * @brief Specialized method to compute and return a new step with FP
+     *
+     * @param previous_iteration 2-dimensional vector storing x(i-1) and f(x(i-1)) - previous guesses
+     * @return 2-dimensional vector storing x(i) = g_fun(x(i-1)) - where g_fun is the fixed point function - and f(x(i))
+     */
     Eigen::Vector2d compute_step(Eigen::Vector2d previous_iteration) override;
 };
 
-/** \brief The specialized Stepper to compute the root with the Chords Method (also called Secants in literature)*/
+/** \brief The specialized Stepper to compute a step with the Chords Method (also called Secants in literature)*/
 template <typename T>
 class ChordsStepper : public StepperBase<T> {
   private:
-    /** \brief The method requires two precedent steps at each iteration, and they are saved and updated in these
-     * arguments
-     *
-     * It could seem a bit redundant because the latest iteration is input in the compute_step method too, passed from
-     * the Solver class, but it was more important to unify the compute_step calling with just one syntax.
-     */
-    double iter_minus_1, iter_zero;
-
+    double iter_minus_1, iter_zero; //!< The two previous guesses required at each iteration
+    // It could seem a bit redundant because the latest iteration is input in the compute_step method too, passed from
+    // the Solver class, but it was more important to unify the compute_step calling with just one syntax.
   public:
-    /** \brief The arguments are initialized from the Solver info*/
-    ChordsStepper(std::function<double(double)> fun, bool aitken_mode, Eigen::Vector2d _int);
-    /** \brief x_2 = x_1 - (x_1 - x_0) / (f(x_1) - f(x_0)) * f(x_1)
+    /** @brief Constructor for the ChordsStepper class
      *
-     * Before the computation, the two arguments are then updated for the next step.
+     * @param fun The function to compute the root of
+     * @param aitken_mode Option to use Aitken's acceleration
+     * @param _int 2-dimensional vector storing the two initial guesses x(-1) and x(0)
+     */
+    ChordsStepper(std::function<double(double)> fun, bool aitken_mode, Eigen::Vector2d _int);
+    /** @brief Specialized method to compute and return a new step with Chords.
+     *
+     * After the computation, the two previous guesses are then updated for the next step.
+     *
+     * @param previous_iteration 2-dimensional vector storing x(i-1) and f(x(i-1)) - old guesses
+     * @return 2-dimensional vector storing x(i) = x(i-1) - (x(i-1) - x(i-2)) / (f(x(i-1)) - f(x(i-2))) * f(x(i-1)) and f(x(i)) - new guesses
      */
     Eigen::Vector2d compute_step(Eigen::Vector2d previous_iteration) override;
 };
 
-/** \brief The specialized Stepper to compute the root with the Bisection Method*/
+/** @brief The specialized Stepper to compute a step with the Bisection Method*/
 template <typename T>
 class BisectionStepper : public StepperBase<T> {
   private:
-    /** \brief The method requires an interval which we save the bounds of */
-    double left_edge, right_edge;
+    double left_edge, right_edge; //!< Bounds of the interval to use (updated at each step)
 
   public:
-    /** The arguments are initialized by the Solver info*/
+    /** @brief Constructor of a BisectionStepper object
+     *
+     * @param fun The function to find the root of
+     * @param aitken_mode Option to use Aitken's acceleration
+     * @param _int Initial interval such that f(_int(0))*f(_int(1)) < 0
+     */
     BisectionStepper(std::function<double(double)> fun, bool aitken_mode, Eigen::Vector2d _int);
-    /** \brief We have an interval [a,b] such that f(a)*f(b) < 0; We compute x_new = (a+b)/2; if f(a)*f(x_new) < 0 then
-     * a_new = a, b_new = x_new, otherwise a_new = x_new, b_new = b.
+    /** @brief Specialized method to compute and return a new step with Bisection.
+     * Let left_edge = a, right_edge = b; then we have an interval [a,b] such that f(a)*f(b) < 0; We compute x_new = (a+b)/2; if f(a)*f(x_new) < 0 then
+     * a_new = a, b_new = x_new, otherwise a_new = x_new, b_new = b -> left_edge = a_new, right_edge = b_new.
+     *
+     * @param previous_iteration 2-dimensional vector storing x(i-1) and f(x(i-1)) - old guesses
+     * @return 2-dimensional vector storing x(i) = (left_edge + right_edge) / 2 and f(x(i)) - new guesses
      */
     Eigen::Vector2d compute_step(Eigen::Vector2d previous_iteration) override;
 };
