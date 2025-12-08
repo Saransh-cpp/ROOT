@@ -1,5 +1,5 @@
 if(BUILD_TESTING)
-    add_executable(test_root solver_tester.cpp)
+    add_executable(test_root test_root.cpp)
     target_link_libraries(test_root PRIVATE GTest::gtest_main libROOT)
     include(GoogleTest)
     gtest_discover_tests(test_root)
