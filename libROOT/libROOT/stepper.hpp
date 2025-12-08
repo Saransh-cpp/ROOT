@@ -28,8 +28,8 @@ Eigen::Vector2d StepperBase<T>::aitken_step(Eigen::Vector2d previous_iter) {
     Eigen::Vector2d iter_two = this->compute_step(iter_one);
     double denominator = (iter_two(0) - iter_one(0)) / (iter_one(0) - previous_iter(0));
     if (denominator == 0) {
-          std::cerr << "\033[31mCaught error: Division by 0. The method will diverge\033[0m" << std::endl;
-      }
+        std::cerr << "\033[31mCaught error: Division by 0. The method will diverge\033[0m" << std::endl;
+    }
     double new_point = iter_two(0) - (pow(iter_two(0) - iter_one(0), 2) / denominator);
     return {new_point, function(new_point)};
 }
@@ -45,7 +45,7 @@ template <>
 Eigen::Vector2d NewtonRaphsonStepper<double>::compute_step(Eigen::Vector2d previous_iteration) {
     double denominator = derivative(previous_iteration(0));
     if (denominator == 0) {
-          std::cerr << "\033[31mCaught error: Division by 0. The method will diverge\033[0m" << std::endl;
+        std::cerr << "\033[31mCaught error: Division by 0. The method will diverge\033[0m" << std::endl;
     }
     double new_point = previous_iteration(0) - previous_iteration(1) / denominator;
     double new_eval = this->function(new_point);
