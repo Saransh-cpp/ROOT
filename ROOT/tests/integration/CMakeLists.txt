@@ -1,0 +1,7 @@
+if(BUILD_TESTING)
+    add_executable(test_root_integration test_cli.cpp)
+    target_include_directories(test_root_integration PRIVATE ${CMAKE_SOURCE_DIR}/external/eigen)
+    target_link_libraries(test_root_integration PRIVATE GTest::gtest_main)
+    include(GoogleTest)
+    gtest_discover_tests(test_root_integration)
+endif()
