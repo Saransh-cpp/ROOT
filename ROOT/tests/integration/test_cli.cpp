@@ -29,8 +29,72 @@ static std::string exec_command(const std::string& cmd) {
     return result;
 }
 
+TEST(NewtonMethodWithReaderCSV, QuadraticConvergesToMinus2) {
+    std::string filename = "../../../../ROOT/tests/test_data/config.csv";
+    std::string exe = "../../ROOT/root_cli";
+
+    std::string cmd = exe +
+                      " --wcli csv"
+                      " --file " +
+                      filename;
+
+    std::string output = exec_command(cmd);
+
+    ASSERT_FALSE(output.empty());
+
+    // Look for the line: "The found root is -2"
+    const std::string token = "The found root is ";
+    auto pos = output.find(token);
+
+    ASSERT_NE(pos, std::string::npos) << "Output did not contain expected root line.\n"
+                                      << "Output was:\n"
+                                      << output;
+
+    pos += token.size();
+
+    // Extract the number after the token -> LLM
+    std::stringstream ss(output.substr(pos));
+    double root = 0.0;
+    ss >> root;
+
+    // Validate the root value
+    EXPECT_NEAR(root, -2.0, 1e-4);
+}
+
+TEST(NewtonMethodWithReaderDAT, QuadraticConvergesToMinus2) {
+    std::string filename = "../../../../ROOT/tests/test_data/config.dat";
+    std::string exe = "../../ROOT/root_cli";
+
+    std::string cmd = exe +
+                      " --wcli dat"
+                      " --file " +
+                      filename;
+
+    std::string output = exec_command(cmd);
+
+    ASSERT_FALSE(output.empty());
+
+    // Look for the line: "The found root is -2"
+    const std::string token = "The found root is ";
+    auto pos = output.find(token);
+
+    ASSERT_NE(pos, std::string::npos) << "Output did not contain expected root line.\n"
+                                      << "Output was:\n"
+                                      << output;
+
+    pos += token.size();
+
+    // Extract the number after the token -> LLM
+    std::stringstream ss(output.substr(pos));
+    double root = 0.0;
+    ss >> root;
+
+    // Validate the root value
+    EXPECT_NEAR(root, -2.0, 1e-4);
+}
+
 TEST(NewtonMethod, QuadraticConvergesToMinus2) {
-    std::string exe = "../../../../build/ROOT/ROOT/root_cli";
+    std::string exe = "../../ROOT/root_cli";
 
     std::string cmd = exe +
                       " --wcli cli"
@@ -63,7 +127,7 @@ TEST(NewtonMethod, QuadraticConvergesToMinus2) {
 }
 
 TEST(NewtonMethod, DerivativeZeroError) {
-    std::string exe = "../../../../build/ROOT/ROOT/root_cli";
+    std::string exe = "../../ROOT/root_cli";
 
     std::string cmd = exe +
                       " --wcli cli"
@@ -86,7 +150,7 @@ TEST(NewtonMethod, DerivativeZeroError) {
 }
 
 TEST(NewtonMethod, SinusoidConvergesToZero) {
-    std::string exe = "../../../../build/ROOT/ROOT/root_cli";
+    std::string exe = "../../ROOT/root_cli";
 
     std::string cmd = exe +
                       " --wcli cli"
@@ -116,7 +180,7 @@ TEST(NewtonMethod, SinusoidConvergesToZero) {
 }
 
 TEST(BisectionMethod, QuadraticConvergesToOne) {
-    std::string exe = "../../../../build/ROOT/ROOT/root_cli";
+    std::string exe = "../../ROOT/root_cli";
 
     std::string cmd = exe +
                       " --wcli cli"
@@ -145,7 +209,7 @@ TEST(BisectionMethod, QuadraticConvergesToOne) {
 }
 
 TEST(BisectionMethod, InvalidInterval) {
-    std::string exe = "../../../../build/ROOT/ROOT/root_cli";
+    std::string exe = "../../ROOT/root_cli";
 
     std::string cmd = exe +
                       " --wcli cli"
@@ -168,7 +232,7 @@ TEST(BisectionMethod, InvalidInterval) {
 }
 
 TEST(ChordsMethod, CubicConvergesToTwo) {
-    std::string exe = "../../../../build/ROOT/ROOT/root_cli";
+    std::string exe = "../../ROOT/root_cli";
 
     std::string cmd = exe +
                       " --wcli cli"
@@ -197,7 +261,7 @@ TEST(ChordsMethod, CubicConvergesToTwo) {
 }
 
 TEST(ChordsMethod, DivisionByZeroChords) {
-    std::string exe = "../../../../build/ROOT/ROOT/root_cli";
+    std::string exe = "../../ROOT/root_cli";
 
     std::string cmd = exe +
                       " --wcli cli"
@@ -219,7 +283,7 @@ TEST(ChordsMethod, DivisionByZeroChords) {
 }
 
 TEST(FixedPointMethod, CosineConvergence) {
-    std::string exe = "../../../../build/ROOT/ROOT/root_cli";
+    std::string exe = "../../ROOT/root_cli";
 
     std::string cmd = exe +
                       " --wcli cli"
@@ -249,7 +313,7 @@ TEST(FixedPointMethod, CosineConvergence) {
 }
 
 TEST(FixedPointMethod, DivergentFP) {
-    std::string exe = "../../../../build/ROOT/ROOT/root_cli";
+    std::string exe = "../../ROOT/root_cli";
 
     std::string cmd = exe +
                       " --wcli cli"
@@ -272,7 +336,7 @@ TEST(FixedPointMethod, DivergentFP) {
 }
 
 TEST(FixedPointMethod, AitkenSpeed) {
-    std::string exe = "../../../../build/ROOT/ROOT/root_cli";
+    std::string exe = "../../ROOT/root_cli";
 
     std::string cmd1 = exe +
                        " --wcli --verbose cli"
@@ -319,7 +383,7 @@ TEST(FixedPointMethod, AitkenSpeed) {
 }
 
 TEST(FixedPointMethod, ToleranceEffectiveness) {
-    std::string exe = "../../../../build/ROOT/ROOT/root_cli";
+    std::string exe = "../../ROOT/root_cli";
 
     std::string cmd1 = exe +
                        " --wcli --verbose cli"
@@ -367,7 +431,7 @@ TEST(FixedPointMethod, ToleranceEffectiveness) {
 }
 
 TEST(NewtonMethod, SlowConvergence) {
-    std::string exe = "../../../../build/ROOT/ROOT/root_cli";
+    std::string exe = "../../ROOT/root_cli";
 
     std::string cmd = exe +
                       " --wcli cli"
@@ -399,7 +463,7 @@ TEST(NewtonMethod, SlowConvergence) {
 }
 
 TEST(BisectionMethod, QuadraticConvergesToEdge) {
-    std::string exe = "../../../../build/ROOT/ROOT/root_cli";
+    std::string exe = "../../ROOT/root_cli";
 
     std::string cmd = exe +
                       " --wcli cli"

@@ -23,6 +23,7 @@
  */
 class FunctionParserBase {
   public:
+    virtual ~FunctionParserBase() = default;
     /**
      * @brief Pure virtual method to parse the function string.
      *

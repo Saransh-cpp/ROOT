@@ -34,14 +34,14 @@ int main(int argc, char** argv) {
 
     std::string write_to_csv;
     char w_csv_sep = ',';
-    app.add_option("--wcsv,--write-to-csv", write_to_csv, "Write results to CSV file");
+    app.add_option("--wcsv,--write-to-csv", write_to_csv, "Path for writing results to CSV file");
     app.add_option("--ocsvsep,--output-csv-sep", w_csv_sep, "Separator character for CSV output")
         ->capture_default_str();
 
     std::string write_to_dat;
-    app.add_option("--wdat,--write-to-dat", write_to_dat, "Write results to DAT file");
+    app.add_option("--wdat,--write-to-dat", write_to_dat, "Path for writing results to DAT file");
     std::string write_with_gnuplot;
-    app.add_option("--wgnuplot,--write-to-gnuplot", write_with_gnuplot, "Write results to file formatted for Gnuplot");
+    app.add_option("--wgnuplot,--write-to-gnuplot", write_with_gnuplot, "Path for writing results to Gnuplot file");
 
     char append_or_overwrite = 'o';
     app.add_option("--ofmode,--output-file-mode", append_or_overwrite,
@@ -53,7 +53,7 @@ int main(int argc, char** argv) {
     // CSV
     auto* csv = app.add_subcommand("csv", "Use CSV input");
     std::string csv_file;
-    csv->add_option("--file", csv_file, "Path to CSV file containing input data")->required();
+    csv->add_option("--file", csv_file, "Path to CSV file containing input data")->required()->check(CLI::ExistingFile);
 
     char csv_sep = ',';
     csv->add_option("--sep", csv_sep, "Separator character for CSV file")->capture_default_str();
@@ -65,7 +65,7 @@ int main(int argc, char** argv) {
     // DAT
     auto* dat = app.add_subcommand("dat", "Use DAT input");
     std::string dat_file;
-    dat->add_option("--file", dat_file, "Path to DAT file containing input data")->required();
+    dat->add_option("--file", dat_file, "Path to DAT file containing input data")->required()->check(CLI::ExistingFile);
 
     char dat_sep = ' ';
     dat->add_option("--sep", dat_sep, "Separator character for DAT file")->capture_default_str();

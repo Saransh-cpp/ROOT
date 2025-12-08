@@ -1,2 +1,2 @@
-function,method,initial_point,final_point,tolerance,max_iterations,aitken,verbose
-x^2-4,bisection,0,5,1e-5,100,true,true
+function,method,initial_guess,tolerance,max_iterations,derivative
+x^2-4,newton,-1,1e-5,100,2*x

@@ -125,8 +125,8 @@ void PrinterGNUPlot<Eigen::Vector2d>::generate_gnuplot_script() const {
 
     std::ofstream script(plt_file);
     if (!script.is_open()) {
-        std::cerr << "Error: could not open gnuplot script file.\n";
-        return;
+        std::cerr << "\033[31mError: could not open gnuplot script file.\033[0m\n";
+        std::exit(EXIT_FAILURE);
     }
     // LLM
     script << "# Auto-generated gnuplot script\n"
@@ -146,7 +146,8 @@ void PrinterGNUPlot<Eigen::Vector2d>::generate_gnuplot_script() const {
         std::system(("gnuplot " + plt_file).c_str());
         std::cout << "Gnuplot image generated: " << png_file << std::endl;
     } else {
-        std::cerr << "Warning: gnuplot not found. Script generated but PNG not created.\n";
+        std::cerr << "\033[33mWarning: gnuplot not found. Script generated but PNG not created.\033[0m\n";
+        std::exit(EXIT_FAILURE);
     }
 }
 
