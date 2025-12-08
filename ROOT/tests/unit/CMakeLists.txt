@@ -4,7 +4,7 @@ if(BUILD_TESTING)
         ${CMAKE_SOURCE_DIR}/ROOT/ROOT/function_parser.cpp
     )
     set(TEST_FILES
-        ${CMAKE_SOURCE_DIR}/ROOT/tests/test_reader.cpp
+        ${CMAKE_SOURCE_DIR}/ROOT/tests/unit/test_reader.cpp
     )
 
     add_executable(test_root_unit ${TEST_FILES} ${ROOT_FILES})
