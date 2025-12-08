@@ -2,6 +2,8 @@
  * @file writer_def.hpp
  * @brief Contains definitions for classes Writer and Printer to Write on different output destinations
  *
+ * @author andreasaporito
+ *
  * These classes themselves could be used for other kinds of writing, and do not have any relationship
  * with the solver process.
  * The Writer class handles the writing outer process, meanwhile the printers effectively write on the output or
