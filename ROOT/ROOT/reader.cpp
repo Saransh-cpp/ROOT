@@ -221,8 +221,8 @@ std::vector<std::string> ReaderCSV::splitCsvLine(const std::string& line) const 
     std::vector<std::string> fields;
     std::string cur;
     bool in_quote = false;
-    char sep = options.sep;
-    char quote = options.quote;
+    char sep = this->sep;
+    char quote = this->quote;
     for (size_t i = 0; i < line.size(); ++i) {
         char character = line[i];
         if (in_quote) {
@@ -252,7 +252,10 @@ std::vector<std::string> ReaderCSV::splitCsvLine(const std::string& line) const 
 }
 
 std::unique_ptr<ConfigBase> ReaderCSV::read(CLI::App* app, bool verbose) {
-    auto filename = app->get_option("--file")->as<std::string>();
+    this->filename = app->get_option("--file")->as<std::string>();
+    this->sep = app->get_option("--sep")->as<char>();
+    this->quote = app->get_option("--quote")->as<char>();
+    this->has_header = app->get_option("--header")->as<bool>();
     std::ifstream ifs(filename);
     if (!ifs) {
         std::cerr << "ReaderCSV: failed to open file: " << filename << "\n";
@@ -262,7 +265,7 @@ std::unique_ptr<ConfigBase> ReaderCSV::read(CLI::App* app, bool verbose) {
     std::string headerLine;
     std::string valueLine;
 
-    if (options.has_header) {
+    if (this->has_header) {
         if (!std::getline(ifs, headerLine)) {
             std::cerr << "ReaderCSV: empty file (expecting header)\n";
             return nullptr;
@@ -280,13 +283,14 @@ std::unique_ptr<ConfigBase> ReaderCSV::read(CLI::App* app, bool verbose) {
     }
 
     std::vector<std::string> headers;
-    if (options.has_header) {
+    if (this->has_header) {
         headers = splitCsvLine(headerLine);
         for (auto& header : headers) {
             header = trim(header);
         }
-    } else if (!options.headers.empty()) {
-        headers = options.headers;  // user supplied header names
+    } else {
+        std::cerr << "ReaderCSV: no headers provided\n";
+        std::exit(EXIT_FAILURE);
     }
 
     auto values = splitCsvLine(valueLine);
@@ -330,7 +334,10 @@ std::unique_ptr<ConfigBase> ReaderCSV::read(CLI::App* app, bool verbose) {
 }
 
 std::unique_ptr<ConfigBase> ReaderDAT::read(CLI::App* app, bool verbose) {
-    auto filename = app->get_option("--file")->as<std::string>();
+    this->filename = app->get_option("--file")->as<std::string>();
+    this->sep = app->get_option("--sep")->as<char>();
+    this->quote = app->get_option("--quote")->as<char>();
+    this->has_header = app->get_option("--header")->as<bool>();
     std::ifstream ifs(filename);
     if (!ifs) {
         std::cerr << "ReaderDAT: failed to open file: " << filename << "\n";

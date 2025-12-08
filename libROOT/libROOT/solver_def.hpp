@@ -34,6 +34,8 @@ class Solver {
     double tolerance;         //!< Stores the tolerance below which the process ends
     bool aitken_requirement;  //!< True if Aitken acceleration is required, 0 otherwise
     bool verbose;             //!< Verbose mode flag
+    std::function<double(double)>
+        derivative_or_function_g;  //!< Stores the derivative or g_function of the function if needed
     /** \brief Stores in the first column the points computed at each step, in
      * the second the value of the function at those points.
      */
@@ -78,9 +80,7 @@ class Solver {
      * @param stepper The original abstract stepper to be converted
      * @param additional_function An additional function which could be needed for certain methods
      */
-    void convert_stepper(
-        std::unique_ptr<StepperBase<T>>& stepper,
-        std::function<double(double)> additional_function = [](double x) { return x; });
+    void convert_stepper(std::unique_ptr<StepperBase<T>>& stepper);
 
   public:
     /**
@@ -95,11 +95,13 @@ class Solver {
      */
     Solver(std::function<double(double)> fun, T initial_guess, const Method method, int max_iterations,
            double tolerance, bool aitken_mode, bool verbose);
+    Solver(std::function<double(double)> fun, T initial_guess, const Method method, int max_iterations,
+           double tolerance, bool aitken_mode, bool verbose, std::function<double(double)> derivative_or_function_g);
     /** @brief Calls everything required to Solve with a method.
      *
      * @return Matrix storing in the first column x(i) for each iteration i, in the second column f(x(i))
      */
-    Eigen::MatrixX2d solve(std::function<double(double)> additional_function = [](double x) { return x; });
+    Eigen::MatrixX2d solve();
 };
 
 #endif  // ROOT_SOLVER_DEF_HPP
