@@ -87,7 +87,6 @@ Eigen::Vector2d ChordsStepper<Eigen::Vector2d>::compute_step(Eigen::Vector2d las
     return {new_point, this->function(new_point)};
 }
 
-
 template <>
 BisectionStepper<Eigen::Vector2d>::BisectionStepper(std::function<double(double)> fun, bool aitken_mode,
                                                     Eigen::Vector2d _int)
