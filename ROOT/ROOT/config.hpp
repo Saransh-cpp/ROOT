@@ -70,7 +70,8 @@ class BisectionConfig : public ConfigBase {
         double f_a = function(initial_point);
         double f_b = function(final_point);
         if (f_a * f_b > 0) {
-            std::cerr << "033[31Caught error: For Bisection method, function values at initial points must have opposite signs.\n";
+            std::cerr << "033[31Caught error: For Bisection method, function values at initial points must have "
+                         "opposite signs.\n";
             std::cerr << "033[31f(" << initial_point << ") = " << f_a << "\n";
             std::cerr << "033[31f(" << final_point << ") = " << f_b << "\n";
             // LLM
