@@ -437,3 +437,35 @@ TEST(NewtonMethod, SlowConvergence) {
     // Validate the root value
     EXPECT_NEAR(root, 0.0, 1e-2);
 }
+
+TEST(BisectionMethod, QuadraticConvergesToEdge) {
+    std::string exe = "../../../build/ROOT/ROOT/root_cli";
+
+    std::string cmd =
+        exe +
+        " --wcli cli"
+        " --function x^2-1"
+        " bisection"
+        " --interval_a 1 --interval_b 2";
+
+    std::string output = exec_command(cmd);
+
+    ASSERT_FALSE(output.empty());
+
+    const std::string token = "The found root is ";
+    auto pos = output.find(token);
+
+    ASSERT_NE(pos, std::string::npos)
+        << "Output did not contain expected root line.\nOutput was:\n"
+        << output;
+
+    pos += token.size();
+
+    // Extract the number after the token
+    std::stringstream ss(output.substr(pos));
+    double root = 0.0;
+    ss >> root;
+
+    // Validate the root value
+    EXPECT_NEAR(root, 1.0, 1e-4);
+}
