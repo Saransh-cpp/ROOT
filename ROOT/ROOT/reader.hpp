@@ -25,6 +25,8 @@
  * data from various file formats (e.g., CSV, DAT) and produce ConfigBase objects.
  */
 class ReaderBase {
+  private:
+    friend class ReaderBaseTester;  //!< For unit testing purposes.
   public:
     std::string filename;  //!< The input filename to read from.
     char sep;              //!< Field separator character.
@@ -109,6 +111,7 @@ class ReaderCSV : public ReaderBase {
     std::unique_ptr<ConfigBase> read(CLI::App* app, bool verbose) override;
 
   private:
+    friend class ReaderCSVTester;  //!< For unit testing purposes.
     /**
      * @brief Helper method to split a CSV line into individual fields.
      *
