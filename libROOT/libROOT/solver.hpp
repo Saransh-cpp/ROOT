@@ -23,28 +23,55 @@ Solver<T>::Solver(std::function<double(double)> fun, T initial_guess, const Meth
     this->aitken_requirement = aitken_mode;
     this->verbose = verbose;
 }
-
-template <>
-void Solver<double>::convert_stepper(std::unique_ptr<StepperBase<double>>& stepper,
-                                     std::function<double(double)> additional_function) {
-    if (method == Method::NEWTON)
-        stepper = std::make_unique<NewtonRaphsonStepper<double>>(this->function, this->aitken_requirement,
-                                                                 additional_function);
-    if (method == Method::FIXED_POINT)
-        stepper =
-            std::make_unique<FixedPointStepper<double>>(this->function, this->aitken_requirement, additional_function);
+template <typename T>
+Solver<T>::Solver(std::function<double(double)> fun, T initial_guess, const Method method, int max_iterations,
+                  double tolerance, bool aitken_mode, bool verbose,
+                  std::function<double(double)> derivative_or_function_g) {
+    this->function = fun;
+    this->initial_guess = initial_guess;
+    this->method = method;
+    this->max_iterations = max_iterations;
+    this->tolerance = tolerance;
+    this->results = Eigen::MatrixX2d(0, 2);
+    this->aitken_requirement = aitken_mode;
+    this->verbose = verbose;
+    this->derivative_or_function_g = derivative_or_function_g;
 }
 
 template <>
-void Solver<Eigen::Vector2d>::convert_stepper(std::unique_ptr<StepperBase<Eigen::Vector2d>>& stepper,
-                                              std::function<double(double)> additional_function) {
-    if (method == Method::BISECTION) {
-        stepper = std::make_unique<BisectionStepper<Eigen::Vector2d>>(this->function, this->aitken_requirement,
-                                                                      this->initial_guess);
+void Solver<double>::convert_stepper(std::unique_ptr<StepperBase<double>>& stepper) {
+    switch (this->method) {
+        case Method::NEWTON:
+            stepper = std::make_unique<NewtonRaphsonStepper<double>>(this->function, this->aitken_requirement,
+                                                                     this->derivative_or_function_g);
+            break;
+        case Method::FIXED_POINT:
+            stepper = std::make_unique<FixedPointStepper<double>>(this->function, this->aitken_requirement,
+                                                                  this->derivative_or_function_g);
+            break;
+        default:
+            std::cerr << "\033[31mCaught error: Selected method is not compatible with scalar initial guess\033[0m"
+                      << std::endl;
+            break;
     }
-    if (method == Method::CHORDS)
-        stepper = std::make_unique<ChordsStepper<Eigen::Vector2d>>(this->function, this->aitken_requirement,
-                                                                   this->initial_guess);
+}
+
+template <>
+void Solver<Eigen::Vector2d>::convert_stepper(std::unique_ptr<StepperBase<Eigen::Vector2d>>& stepper) {
+    switch (this->method) {
+        case Method::BISECTION:
+            stepper = std::make_unique<BisectionStepper<Eigen::Vector2d>>(this->function, this->aitken_requirement,
+                                                                          this->initial_guess);
+            break;
+        case Method::CHORDS:
+            stepper = std::make_unique<ChordsStepper<Eigen::Vector2d>>(this->function, this->aitken_requirement,
+                                                                       this->initial_guess);
+            break;
+        default:
+            std::cerr << "\033[31mCaught error: Selected method is not compatible with vector initial guess\033[0m"
+                      << std::endl;
+            break;
+    }
 }
 
 template <typename T>
@@ -78,12 +105,12 @@ double Solver<T>::calculate_error(double x_prev, double x_next) {
 }
 
 template <typename T>
-Eigen::MatrixX2d Solver<T>::solve(std::function<double(double)> additional_function) {
+Eigen::MatrixX2d Solver<T>::solve() {
     double err = 1.0;
 
     std::unique_ptr<StepperBase<T>> stepper;
 
-    convert_stepper(stepper, additional_function);
+    convert_stepper(stepper);
 
     save_starting_point();
 

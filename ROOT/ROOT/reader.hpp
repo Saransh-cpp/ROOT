@@ -19,33 +19,6 @@
 #include "config.hpp"
 
 /**
- * @brief All options for Reader classes.
- *
- * This struct encapsulates all configurable options for Reader classes,
- * including field separator, quote character, header presence, and explicit headers.
- */
-struct ReaderOptions {
-    char sep = ',';                    //!< field separator char: commonly ','
-    char quote = '"';                  //!< quote/delimitor char: commonly '"'
-    bool has_header = true;            //!< whether first row is a header row
-    std::vector<std::string> headers;  //!< optional explicit header names (used if has_header == false)
-    /**
-     * @brief Default constructor for ReaderOptions.
-     *
-     */
-    ReaderOptions() = default;
-    /**
-     * @brief Constructor for ReaderOptions.
-     *
-     * @param sep_ Field separator character.
-     * @param quote_ Quote/delimiter character.
-     * @param has_header_ Indicates whether the first row is a header row.
-     */
-    ReaderOptions(char sep_, char quote_, bool has_header_ = true)
-        : sep(sep_), quote(quote_), has_header(has_header_) {}
-};
-
-/**
  * @brief Base class for Reader classes.
  *
  * This abstract base class defines the interface for Reader classes that read configuration
@@ -53,8 +26,14 @@ struct ReaderOptions {
  */
 class ReaderBase {
   public:
-    std::string filename;   //!< The input filename to read from.
-    ReaderOptions options;  //!< Options for reading the file.
+    std::string filename;  //!< The input filename to read from.
+    char sep;              //!< Field separator character.
+    char quote;            //!< Quote/delimiter character.
+    bool has_header;       //!< Indicates whether the first row is a header row.
+    /**
+     * @brief Virtual destructor for ReaderBase.
+     *
+     */
     virtual ~ReaderBase() = default;
     /**
      * @brief Read the configuration from the input.
