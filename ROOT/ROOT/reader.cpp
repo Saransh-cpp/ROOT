@@ -70,12 +70,12 @@ bool ReaderBase::parseMethod(const std::string& method_str, Method& out) {
         out = Method::NEWTON;
         return true;
     }
-    if (method_str_copy == "secant" || method_str_copy == "secantmethod") {
-        out = Method::SECANT;
+    if (method_str_copy == "chords" || method_str_copy == "chordsmethod") {
+        out = Method::CHORDS;
         return true;
     }
     if (method_str_copy == "fixed_point" || method_str_copy == "fixedpoint" || method_str_copy == "fixed-point" ||
-        method_str_copy == "iterative") {
+        method_str_copy == "fixed_point") {
         out = Method::FIXED_POINT;
         return true;
     }
@@ -183,20 +183,20 @@ std::unique_ptr<ConfigBase> ReaderBase::make_config_from_map(
                                                   initial_guess, verbose);
         }
 
-        case Method::SECANT: {
-            auto it_x0 = config_map.find("initial_point");
-            auto it_x1 = config_map.find("final_point");
+        case Method::CHORDS: {
+            auto it_x0 = config_map.find("initial_point1");
+            auto it_x1 = config_map.find("initial_point2");
             if (it_x0 == config_map.end() || it_x1 == config_map.end()) {
-                std::cerr << "make_config_from_map: secant requires initial_point and final_point\n";
+                std::cerr << "make_config_from_map: chords requires two initial points\n";
                 return nullptr;
             }
-            double initial_point = 0.0;
-            double final_point = 0.0;
-            if (!parseDouble(it_x0->second, initial_point) || !parseDouble(it_x1->second, final_point)) {
-                std::cerr << "make_config_from_map: invalid secant initial points\n";
+            double initial_point1 = 0.0;
+            double initial_point2 = 0.0;
+            if (!parseDouble(it_x0->second, initial_point1) || !parseDouble(it_x1->second, initial_point2)) {
+                std::cerr << "make_config_from_map: invalid chords initial points\n";
                 return nullptr;
             }
-            return std::make_unique<SecantConfig>(tolerance, max_iter, aitken, function, initial_point, final_point,
+            return std::make_unique<ChordsConfig>(tolerance, max_iter, aitken, function, initial_point1, initial_point2,
                                                   verbose);
         }
 
@@ -399,31 +399,31 @@ std::unique_ptr<ConfigBase> ReaderCLI::read(CLI::App* app, bool verbose) {
             std::cout << "  initial_guess = " << app->get_subcommand("newton")->get_option("--initial")->as<double>()
                       << "\n";
         }
-    } else if (*app->get_subcommand("secant")) {
-        config = std::make_unique<SecantConfig>(
+    } else if (*app->get_subcommand("chords")) {
+        config = std::make_unique<ChordsConfig>(
             app->get_option("--tolerance")->as<double>(), app->get_option("--max-iterations")->as<int>(),
             app->get_option("--aitken")->as<bool>(),
             FunctionParserBase::parseFunction(app->get_option("--function")->as<std::string>()),
-            app->get_subcommand("secant")->get_option("--x0")->as<double>(),
-            app->get_subcommand("secant")->get_option("--x1")->as<double>(), verbose);
+            app->get_subcommand("chords")->get_option("--x0")->as<double>(),
+            app->get_subcommand("chords")->get_option("--x1")->as<double>(), verbose);
         if (verbose) {
-            std::cout << "  x0 = " << app->get_subcommand("secant")->get_option("--x0")->as<double>() << "\n";
-            std::cout << "  x1 = " << app->get_subcommand("secant")->get_option("--x1")->as<double>() << "\n";
+            std::cout << "  x0 = " << app->get_subcommand("chords")->get_option("--x0")->as<double>() << "\n";
+            std::cout << "  x1 = " << app->get_subcommand("chords")->get_option("--x1")->as<double>() << "\n";
         }
-    } else if (*app->get_subcommand("iterative")) {
+    } else if (*app->get_subcommand("fixed_point")) {
         config = std::make_unique<FixedPointConfig>(
             app->get_option("--tolerance")->as<double>(), app->get_option("--max-iterations")->as<int>(),
             app->get_option("--aitken")->as<bool>(),
             FunctionParserBase::parseFunction(app->get_option("--function")->as<std::string>()),
-            app->get_subcommand("iterative")->get_option("--initial")->as<double>(),
+            app->get_subcommand("fixed_point")->get_option("--initial")->as<double>(),
             FunctionParserBase::parseFunction(
-                app->get_subcommand("iterative")->get_option("--g-function")->as<std::string>()),
+                app->get_subcommand("fixed_point")->get_option("--g-function")->as<std::string>()),
             verbose);
         if (verbose) {
             std::cout << "  g_function = "
-                      << app->get_subcommand("iterative")->get_option("--g-function")->as<std::string>() << "\n";
-            std::cout << "  initial_guess = " << app->get_subcommand("iterative")->get_option("--initial")->as<double>()
-                      << "\n";
+                      << app->get_subcommand("fixed_point")->get_option("--g-function")->as<std::string>() << "\n";
+            std::cout << "  initial_guess = "
+                      << app->get_subcommand("fixed_point")->get_option("--initial")->as<double>() << "\n";
         }
     } else if (*app->get_subcommand("bisection")) {
         config = std::make_unique<BisectionConfig>(

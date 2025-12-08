@@ -66,6 +66,17 @@ class BisectionConfig : public ConfigBase {
         this->final_point = final_point;
         this->method = Method::BISECTION;
         this->verbose = verbose;
+        // validation
+        double f_a = function(initial_point);
+        double f_b = function(final_point);
+        if (f_a * f_b > 0) {
+            std::cerr << "033[31Caught error: For Bisection method, function values at initial points must have "
+                         "opposite signs.\n";
+            std::cerr << "033[31f(" << initial_point << ") = " << f_a << "\n";
+            std::cerr << "033[31f(" << final_point << ") = " << f_b << "\n";
+            // LLM
+            std::exit(EXIT_FAILURE);
+        }
     }
 };
 
@@ -108,10 +119,10 @@ class NewtonConfig : public ConfigBase {
  * This class extends ConfigBase and includes specific parameters for the Secant method,
  * such as the initial and final points.
  */
-class SecantConfig : public ConfigBase {
+class ChordsConfig : public ConfigBase {
   public:
-    double initial_point;  //!< The initial point of the interval.
-    double final_point;    //!< The final point of the interval.
+    double initial_point1;  //!< The initial point of the interval.
+    double initial_point2;  //!< The final point of the interval.
     /**
      * @brief Constructor for SecantConfig.
      *
@@ -122,15 +133,15 @@ class SecantConfig : public ConfigBase {
      * @param initial_point The initial point of the interval.
      * @param final_point The final point of the interval.
      */
-    SecantConfig(double tolerance, int max_iterations, bool aitken, std::function<double(double)> function,
+    ChordsConfig(double tolerance, int max_iterations, bool aitken, std::function<double(double)> function,
                  double initial_point, double final_point, bool verbose) {
         this->tolerance = tolerance;
         this->max_iterations = max_iterations;
         this->aitken = aitken;
         this->function = function;
-        this->initial_point = initial_point;
-        this->final_point = final_point;
-        this->method = Method::SECANT;
+        this->initial_point1 = initial_point;
+        this->initial_point2 = final_point;
+        this->method = Method::CHORDS;
         this->verbose = verbose;
     }
 };

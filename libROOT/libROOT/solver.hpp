@@ -42,7 +42,7 @@ void Solver<Eigen::Vector2d>::convert_stepper(std::unique_ptr<StepperBase<Eigen:
         stepper = std::make_unique<BisectionStepper<Eigen::Vector2d>>(this->function, this->aitken_requirement,
                                                                       this->initial_guess);
     }
-    if (method == Method::SECANT)
+    if (method == Method::CHORDS)
         stepper = std::make_unique<ChordsStepper<Eigen::Vector2d>>(this->function, this->aitken_requirement,
                                                                    this->initial_guess);
 }
@@ -100,11 +100,12 @@ Eigen::MatrixX2d Solver<T>::solve(std::function<double(double)> additional_funct
         solver_step(iter, stepper, err);
     }
 
+    if (iter == max_iterations && err > tolerance) {
+        std::cerr << "033[31mThe solution did not converge in" << max_iterations << " iterations\033[0m" << std::endl;
+    }
     if (verbose) {
         if (err <= tolerance || abs(get_previous_result(0)(1)) <= tolerance) {
             std::cout << "Converged in " << iter - 1 << " iterations." << std::endl;
-        } else {
-            std::cout << "Did not converge in " << max_iterations << " iterations." << std::endl;
         }
     }
     std::cout << "Final estimate: x = " << get_previous_result(0)(0) << "; f(x) = " << get_previous_result(0)(1)
