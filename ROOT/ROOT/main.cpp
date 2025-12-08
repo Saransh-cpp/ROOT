@@ -55,10 +55,24 @@ int main(int argc, char** argv) {
     std::string csv_file;
     csv->add_option("--file", csv_file, "Path to CSV file containing input data")->required();
 
+    char csv_sep = ',';
+    csv->add_option("--sep", csv_sep, "Separator character for CSV file")->capture_default_str();
+    char csv_quote = '"';
+    csv->add_option("--quote", csv_quote, "Quote/delimiter character for CSV file")->capture_default_str();
+    bool csv_header = true;
+    csv->add_option("--header", csv_header, "Indicates whether the first row is a header row")->capture_default_str();
+
     // DAT
     auto* dat = app.add_subcommand("dat", "Use DAT input");
     std::string dat_file;
     dat->add_option("--file", dat_file, "Path to DAT file containing input data")->required();
+
+    char dat_sep = ' ';
+    dat->add_option("--sep", dat_sep, "Separator character for DAT file")->capture_default_str();
+    char dat_quote = '"';
+    dat->add_option("--quote", dat_quote, "Quote/delimiter character for DAT file")->capture_default_str();
+    bool dat_header = true;
+    dat->add_option("--header", dat_header, "Indicates whether the first row is a header row")->capture_default_str();
 
     // CLI
     auto* cli = app.add_subcommand("cli", "Use CLI input");
@@ -154,8 +168,9 @@ int main(int argc, char** argv) {
         }
         case Method::NEWTON: {
             Solver solver(config->function, dynamic_cast<NewtonConfig*>(config.get())->initial_guess, config->method,
-                          config->max_iterations, config->tolerance, config->aitken, config->verbose);
-            results = solver.solve(dynamic_cast<NewtonConfig*>(config.get())->derivative);
+                          config->max_iterations, config->tolerance, config->aitken, config->verbose,
+                          dynamic_cast<NewtonConfig*>(config.get())->derivative);
+            results = solver.solve();
             break;
         }
         case Method::CHORDS: {
@@ -168,8 +183,9 @@ int main(int argc, char** argv) {
         }
         case Method::FIXED_POINT: {
             Solver solver(config->function, dynamic_cast<FixedPointConfig*>(config.get())->initial_guess,
-                          config->method, config->max_iterations, config->tolerance, config->aitken, config->verbose);
-            results = solver.solve(dynamic_cast<FixedPointConfig*>(config.get())->g_function);
+                          config->method, config->max_iterations, config->tolerance, config->aitken, config->verbose,
+                          dynamic_cast<FixedPointConfig*>(config.get())->g_function);
+            results = solver.solve();
             break;
         }
         default:
