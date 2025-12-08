@@ -28,8 +28,8 @@ class PrinterBase;
 template <typename T>
 class Writer {
   protected:
-    T values; //!< Templated values to write to allow different usage of the class
-    WritingMethod method; //!< Method to write with - defined thanks to @author Saransh-cpp config
+    T values;              //!< Templated values to write to allow different usage of the class
+    WritingMethod method;  //!< Method to write with - defined thanks to @author Saransh-cpp config
 
   public:
     /**
@@ -86,9 +86,10 @@ class PrinterCLI : public PrinterBase<V> {
 template <typename V>
 class PrinterFile : public PrinterBase<V> {
   protected:
-    std::string filename; //!< The name of output file, without the extension
-    bool append; //!< Boolean which defines whether at a new Writing process the output file (if already existent), has to be overwritten or not
-    std::ofstream file; //!< The actual file, saved in order not to access it at each printing iteration
+    std::string filename;  //!< The name of output file, without the extension
+    bool append;  //!< Boolean which defines whether at a new Writing process the output file (if already existent), has
+                  //!< to be overwritten or not
+    std::ofstream file;  //!< The actual file, saved in order not to access it at each printing iteration
 
   public:
     /** @brief The constructor for PrinterFile class
@@ -120,7 +121,7 @@ class PrinterDAT : public PrinterFile<V> {
 template <typename V>
 class PrinterCSV : public PrinterFile<V> {
   private:
-    char separator; //!< Separator for the .csv output file, given at construction time
+    char separator;  //!< Separator for the .csv output file, given at construction time
 
   public:
     /** @brief Constructor of the PrinterCSV class

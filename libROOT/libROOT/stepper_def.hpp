@@ -23,8 +23,8 @@
 template <typename T>
 class StepperBase {
   protected:
-    std::function<double(double)> function; //!< Function to compute the root of
-    bool aitken_requirement; //!< Option to use Aitken's acceleration
+    std::function<double(double)> function;  //!< Function to compute the root of
+    bool aitken_requirement;                 //!< Option to use Aitken's acceleration
     /**
      * @brief Virtual function to compute the step for the method -> overridden by all the methods
      */
@@ -61,9 +61,9 @@ class StepperBase {
 template <typename T>
 class NewtonRaphsonStepper : public StepperBase<T> {
   private:
-    std::function<double(double)> derivative; //!< Stores the derivative of the function
+    std::function<double(double)> derivative;  //!< Stores the derivative of the function
 
-public:
+  public:
     /** @brief The specialized constructor - initializes the function and the derivative
      *
      * @param fun The function to compute the root of
@@ -83,7 +83,7 @@ public:
 template <typename T>
 class FixedPointStepper : public StepperBase<T> {
   private:
-    std::function<double(double)> fixed_point_function; //!< tores the fixed point to use in the steps
+    std::function<double(double)> fixed_point_function;  //!< tores the fixed point to use in the steps
 
   public:
     /** @brief The specialized constructor - initializes the function and the fixed point function
@@ -106,7 +106,7 @@ class FixedPointStepper : public StepperBase<T> {
 template <typename T>
 class ChordsStepper : public StepperBase<T> {
   private:
-    double iter_minus_1, iter_zero; //!< The two previous guesses required at each iteration
+    double iter_minus_1, iter_zero;  //!< The two previous guesses required at each iteration
     // It could seem a bit redundant because the latest iteration is input in the compute_step method too, passed from
     // the Solver class, but it was more important to unify the compute_step calling with just one syntax.
   public:
@@ -122,7 +122,8 @@ class ChordsStepper : public StepperBase<T> {
      * After the computation, the two previous guesses are then updated for the next step.
      *
      * @param previous_iteration 2-dimensional vector storing x(i-1) and f(x(i-1)) - old guesses
-     * @return 2-dimensional vector storing x(i) = x(i-1) - (x(i-1) - x(i-2)) / (f(x(i-1)) - f(x(i-2))) * f(x(i-1)) and f(x(i)) - new guesses
+     * @return 2-dimensional vector storing x(i) = x(i-1) - (x(i-1) - x(i-2)) / (f(x(i-1)) - f(x(i-2))) * f(x(i-1)) and
+     * f(x(i)) - new guesses
      */
     Eigen::Vector2d compute_step(Eigen::Vector2d previous_iteration) override;
 };
@@ -131,7 +132,7 @@ class ChordsStepper : public StepperBase<T> {
 template <typename T>
 class BisectionStepper : public StepperBase<T> {
   private:
-    double left_edge, right_edge; //!< Bounds of the interval to use (updated at each step)
+    double left_edge, right_edge;  //!< Bounds of the interval to use (updated at each step)
 
   public:
     /** @brief Constructor of a BisectionStepper object
@@ -142,8 +143,9 @@ class BisectionStepper : public StepperBase<T> {
      */
     BisectionStepper(std::function<double(double)> fun, bool aitken_mode, Eigen::Vector2d _int);
     /** @brief Specialized method to compute and return a new step with Bisection.
-     * Let left_edge = a, right_edge = b; then we have an interval [a,b] such that f(a)*f(b) < 0; We compute x_new = (a+b)/2; if f(a)*f(x_new) < 0 then
-     * a_new = a, b_new = x_new, otherwise a_new = x_new, b_new = b -> left_edge = a_new, right_edge = b_new.
+     * Let left_edge = a, right_edge = b; then we have an interval [a,b] such that f(a)*f(b) < 0; We compute x_new =
+     * (a+b)/2; if f(a)*f(x_new) < 0 then a_new = a, b_new = x_new, otherwise a_new = x_new, b_new = b -> left_edge =
+     * a_new, right_edge = b_new.
      *
      * @param previous_iteration 2-dimensional vector storing x(i-1) and f(x(i-1)) - old guesses
      * @return 2-dimensional vector storing x(i) = (left_edge + right_edge) / 2 and f(x(i)) - new guesses

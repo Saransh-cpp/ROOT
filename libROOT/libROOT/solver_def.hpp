@@ -29,17 +29,19 @@ class StepperBase;
 template <typename T>
 class Solver {
   private:
-    Method method; //!< Method which will be used - defined thanks to @author Saransh-ccp's Reader
-    int max_iterations; //!< Stores the maximum iterations for the method
-    double tolerance; //!< Stores the tolerance below which the process ends
-    bool aitken_requirement; //!< True if Aitken acceleration is required, 0 otherwise
-    bool verbose; //!< Verbose mode flag
+    Method method;            //!< Method which will be used - defined thanks to @author Saransh-ccp's Reader
+    int max_iterations;       //!< Stores the maximum iterations for the method
+    double tolerance;         //!< Stores the tolerance below which the process ends
+    bool aitken_requirement;  //!< True if Aitken acceleration is required, 0 otherwise
+    bool verbose;             //!< Verbose mode flag
     /** \brief Stores in the first column the points computed at each step, in
      * the second the value of the function at those points.
      */
-    Eigen::MatrixX2d results; //!< Stores in the first column the points computed at each step, in the second the value of the function at those points.
-    std::function<double(double)> function; //!< Stores the function to find the root of and the starting guess for the process
-    T initial_guess; //!< Templated initial_guess for the method, whose type changes depending on the method itself
+    Eigen::MatrixX2d results;  //!< Stores in the first column the points computed at each step, in the second the value
+                               //!< of the function at those points.
+    std::function<double(double)>
+        function;     //!< Stores the function to find the root of and the starting guess for the process
+    T initial_guess;  //!< Templated initial_guess for the method, whose type changes depending on the method itself
     /** @brief Creates the stepper, calls the step computation, the error calculation and the results' saver.
      *
      * @param iter Reference to the current iteration, which will be increased once the step is computed
