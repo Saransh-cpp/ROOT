@@ -5,7 +5,7 @@
  * @brief Test fixture class for ReaderBase unit tests.
  *
  */
-class ReaderTester : public ::testing::Test {
+class ReaderBaseTester : public ::testing::Test {
   public:
     /**
      * @brief Test the trim method of ReaderBase.
