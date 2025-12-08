@@ -1,6 +1,6 @@
 /**
  * @file solver_def.hpp
- * @brief Contains definition of class Solver
+ * @brief Contains definition of class Solver to find the root of a non-linear equation with some numerical methods
  *
  * @author andreasaporito
  *
@@ -56,12 +56,14 @@ class Solver {
     /** @brief Returns a row of the results' matrix.
      *
      * @param step_length tells how far to go up from the bottom row
+     * @return 2-dimensional vector storing x(end - step_length) and f(x(end - step_length))
      */
     Eigen::Vector2d get_previous_result(int step_length);
-    /** @brief Computes the error of the latest iteration computed like |x(i) - x(i-1)|
+    /** @brief Computes the error of the latest iteration
      *
      * @param x_next The new guess x(i)
      * @param x_prev The old guess x(i-1)
+     * @return |x_next - x_prev|
      */
     double calculate_error(double x_prev, double x_next);
     /** @brief Saves the actual initial guess in the top row of the results' matrix, no matter what type will be the
@@ -91,7 +93,10 @@ class Solver {
      */
     Solver(std::function<double(double)> fun, T initial_guess, const Method method, int max_iterations,
            double tolerance, bool aitken_mode, bool verbose);
-    /** @brief Calls everything required to Solve with a method. */
+    /** @brief Calls everything required to Solve with a method.
+     *
+     * @return Matrix storing in the first column x(i) for each iteration i, in the second column f(x(i))
+     */
     Eigen::MatrixX2d solve(std::function<double(double)> additional_function = [](double x) { return x; });
 };
 

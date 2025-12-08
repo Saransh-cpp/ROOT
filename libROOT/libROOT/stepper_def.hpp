@@ -1,24 +1,37 @@
+/**
+ * @file stepper_def.hpp
+ * @brief Contains definitions for all the Classes Stepper to compute steps of numerical methods to find the root
+ * of non-linear equations
+ *
+ * @author andreasaporito
+ *
+ * The stepper classes will store the required functions, derivatives, and booleans to define how to compute the
+ * step
+ */
 #ifndef ROOT_STEPPER_DEF_HPP
 #define ROOT_STEPPER_DEF_HPP
 
 #include <Eigen/Dense>
 #include <functional>
-/**
- * The stepper class is a mother class, in which the Stepper is just initialized, but not computed. Despite this, the
- * aitken step is in common for all the methods and its method is defined here as a consequence, and the same
- * applies for the function argument
- */
 
 /**
- * \brief The stepper classes compute and return the results of an iteration requested by the Solver class
+ * @brief The virtual mother stepper class which defines constructor and method in common for all the methods.
  */
 template <typename T>
 class StepperBase {
   protected:
-    /**	\brief function argument is got from the Solver class and is the function to compute the root of. */
-    std::function<double(double)> function;
-    bool aitken_requirement;
+    std::function<double(double)> function; //!< Function to compute the root of
+    bool aitken_requirement; //!< Option to use Aitken's acceleration
+    /**
+     * @brief Virtual function to compute the step for the method -> overridden by all the methods
+     */
     virtual Eigen::Vector2d compute_step(Eigen::Vector2d) = 0;
+    /**
+     * @brief Method to handle the computation of a step using Aitken's acceleration
+     *
+     * @param previous_iter 2-dimensional vector storing x(i-1) and f(x(i-1))
+     * @return 2-dimensional vector storing x(i) - computed with the 3 Aitken's steps - and f(x(i))
+     */
     Eigen::Vector2d aitken_step(Eigen::Vector2d previous_iter);
 
   public:
