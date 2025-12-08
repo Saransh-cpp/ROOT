@@ -422,8 +422,8 @@ std::unique_ptr<ConfigBase> ReaderCLI::read(CLI::App* app, bool verbose) {
         if (verbose) {
             std::cout << "  g_function = "
                       << app->get_subcommand("fixed_point")->get_option("--g-function")->as<std::string>() << "\n";
-            std::cout << "  initial_guess = " << app->get_subcommand("fixed_point")->get_option("--initial")->as<double>()
-                      << "\n";
+            std::cout << "  initial_guess = "
+                      << app->get_subcommand("fixed_point")->get_option("--initial")->as<double>() << "\n";
         }
     } else if (*app->get_subcommand("bisection")) {
         config = std::make_unique<BisectionConfig>(
