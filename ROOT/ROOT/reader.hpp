@@ -26,7 +26,7 @@
  */
 class ReaderBase {
   private:
-    friend class ReaderBaseTester;  //!< For unit testing purposes.
+    friend class ReaderBaseTester;  //!< Friend test fixture class for unit testing.
   public:
     std::string filename;  //!< The input filename to read from.
     char sep;              //!< Field separator character.
@@ -111,7 +111,7 @@ class ReaderCSV : public ReaderBase {
     std::unique_ptr<ConfigBase> read(CLI::App* app, bool verbose) override;
 
   private:
-    friend class ReaderCSVTester;  //!< For unit testing purposes.
+    friend class ReaderCSVTester;  //!< Friend test fixture class for unit testing.
     /**
      * @brief Helper method to split a CSV line into individual fields.
      *
@@ -135,6 +135,9 @@ class ReaderDAT : public ReaderBase {
      * @return A unique pointer to a ConfigBase object representing the read configuration.
      */
     std::unique_ptr<ConfigBase> read(CLI::App* app, bool verbose) override;
+
+  private:
+    friend class ReaderDATTester;  //!< Friend test fixture class for unit testing.
 };
 
 /**
@@ -151,6 +154,9 @@ class ReaderCLI : public ReaderBase {
      * @return A unique pointer to a ConfigBase object representing the read configuration.
      */
     std::unique_ptr<ConfigBase> read(CLI::App* app, bool verbose) override;
+
+  private:
+    friend class ReaderCLITester;  //!< Friend test fixture class for unit testing.
 };
 
 #endif  // READER_HPP

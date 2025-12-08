@@ -64,7 +64,7 @@ std::vector<std::string> FunctionParserBase::splitSignTokens(const std::string& 
 }
 
 std::pair<double, std::string> FunctionParserBase::parseOptionalCoefficient(const std::string& token) {
-    std::regex coeff_regex(R"(^([0-9]*\.?[0-9]+)\*?(.*)$)");
+    std::regex coeff_regex(R"(^([+-]?[0-9]*\.?[0-9]+)\*?(.*)$)");
     std::smatch match;
 
     if (std::regex_match(token, match, coeff_regex)) {
