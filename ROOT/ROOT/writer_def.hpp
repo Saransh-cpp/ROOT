@@ -32,6 +32,9 @@ class Writer {
   protected:
     T values;              //!< Templated values to write to allow different usage of the class
     WritingMethod method;  //!< Method to write with - defined thanks to @author Saransh-cpp config
+    char separator;        //!< Separator for .csv files
+    bool overwrite;        //!< Option to overwrite or append the output file
+    std::string filename;  //!< Name of the output file
 
   public:
     /**
@@ -39,25 +42,21 @@ class Writer {
      *
      * @param vals_to_write Values to be written, which will be stored in values argument
      * @param write_method Method to be used, which will be stored in method argument
-     */
-    Writer(const T& vals_to_write, WritingMethod write_method);
-    /** @brief Method to run the printing loop and correctly initialize the Printer
-     *
-     * @param filename Name of the file to write on (optional)
-     * @param sep Separator for .csv extension files (optional)
+     * @param separator Separator for .csv extension files (optional)
      * @param overwrite Option to overwrite or append to the file (optional)
      */
-    void write(std::string filename = "", char sep = ',', bool overwrite = true);
+    Writer(const T& vals_to_write, WritingMethod write_method, std::string filename = "output", char separator = ',',
+           bool overwrite = true);
+    /** @brief Method to run the printing loop and correctly initialize the Printer
+     *
+     */
+    void write();
     /** @brief Method to convert the generic Printer into a typed one for a specific output destination
      *
      * @param printer The original abstract printer
-     * @param filename The file to write on
-     * @param sep The separator for .csv files
-     * @param overwrite Option to overwrite or append the file
      */
     template <typename V>
-    void build_printer(std::unique_ptr<PrinterBase<V>>& printer, std::string filename, char sep = ',',
-                       bool overwrite = true);
+    void build_printer(std::unique_ptr<PrinterBase<V>>& printer);
     /** @brief Helper just to print the final result of the solver process*/
     void print_final_result() const;
 };

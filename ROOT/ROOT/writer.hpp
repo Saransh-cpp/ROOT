@@ -14,9 +14,13 @@ template <>
 void PrinterGNUPlot<Eigen::Vector2d>::generate_gnuplot_script() const;
 
 template <>
-Writer<Eigen::MatrixX2d>::Writer(const Eigen::MatrixX2d& vals_to_write, WritingMethod write_method) {
+Writer<Eigen::MatrixX2d>::Writer(const Eigen::MatrixX2d& vals_to_write, WritingMethod write_method,
+                                 std::string filename, char separator, bool overwrite) {
     this->values = vals_to_write;
     this->method = write_method;
+    this->separator = separator;
+    this->overwrite = overwrite;
+    this->filename = filename;
 }
 
 template <>
@@ -25,11 +29,11 @@ void Writer<Eigen::MatrixX2d>::print_final_result() const {
 }
 
 template <>
-void Writer<Eigen::MatrixX2d>::write(std::string filename, char sep, bool overwrite) {
+void Writer<Eigen::MatrixX2d>::write() {
     print_final_result();
 
     std::unique_ptr<PrinterBase<Eigen::Vector2d>> printer;
-    build_printer(printer, filename);
+    build_printer(printer);
 
     for (int i = 0; i < this->values.rows(); i++) {
         Eigen::Vector2d row = this->values.row(i);
@@ -45,20 +49,19 @@ void Writer<Eigen::MatrixX2d>::write(std::string filename, char sep, bool overwr
 
 template <typename T>
 template <typename V>
-void Writer<T>::build_printer(std::unique_ptr<PrinterBase<V>>& printer, std::string filename, char sep,
-                              bool overwrite) {
+void Writer<T>::build_printer(std::unique_ptr<PrinterBase<V>>& printer) {
     switch (this->method) {
         case WritingMethod::CONSOLE:
             printer = std::make_unique<PrinterCLI<V>>();
             break;
         case WritingMethod::CSV:
-            printer = std::make_unique<PrinterCSV<V>>(filename, sep, overwrite);
+            printer = std::make_unique<PrinterCSV<V>>(this->filename, this->separator, this->overwrite);
             break;
         case WritingMethod::DAT:
-            printer = std::make_unique<PrinterDAT<V>>(filename, overwrite);
+            printer = std::make_unique<PrinterDAT<V>>(this->filename, this->overwrite);
             break;
         case WritingMethod::GNUPLOT:
-            printer = std::make_unique<PrinterGNUPlot<V>>(filename, overwrite);
+            printer = std::make_unique<PrinterGNUPlot<V>>(this->filename, this->overwrite);
             break;
         default:
             throw std::runtime_error("Unknown writing method");
