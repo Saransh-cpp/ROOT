@@ -29,6 +29,9 @@ class PrinterBase;
  */
 template <typename T>
 class Writer {
+  private:
+    friend class WriterBaseTester;
+
   protected:
     T values;              //!< Templated values to write to allow different usage of the class
     WritingMethod method;  //!< Method to write with - defined thanks to @author Saransh-cpp config

@@ -1,6 +1,0 @@
-function = x^2-4
-method = newton
-initial_guess = -1
-tolerance = 1e-5
-max_iterations = 100
-derivative = 2*x

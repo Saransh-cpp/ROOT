@@ -6,7 +6,7 @@
 #include <sstream>
 #include <string>
 
-#include "libROOT/solver.hpp"
+#include "../../../../libROOT/libROOT/solver.hpp"
 
 // TO DO:
 // Right now the tests are just checking whether the root is near its computed respective within a given tolerance,

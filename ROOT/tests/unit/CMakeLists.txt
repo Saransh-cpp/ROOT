@@ -8,6 +8,7 @@ if(BUILD_TESTING)
         ${CMAKE_SOURCE_DIR}/ROOT/tests/unit/test_function_parser.cpp
         ${CMAKE_SOURCE_DIR}/ROOT/tests/unit/test_polynomial_parser.cpp
         ${CMAKE_SOURCE_DIR}/ROOT/tests/unit/test_trigonometric_parser.cpp
+        ${CMAKE_SOURCE_DIR}/ROOT/tests/unit/test_writer_base.cpp
     )
 
     add_executable(test_root_unit ${TEST_FILES} ${ROOT_FILES})
