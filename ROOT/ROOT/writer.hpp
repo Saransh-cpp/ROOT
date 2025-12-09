@@ -24,16 +24,11 @@ Writer<Eigen::MatrixX2d>::Writer(const Eigen::MatrixX2d& vals_to_write, WritingM
 }
 
 template <>
-void Writer<Eigen::MatrixX2d>::print_final_result() const {
-    std::cout << "The found root is " << this->values.row(this->values.rows() - 1)(0) << std::endl;
-}
-
-template <>
 void Writer<Eigen::MatrixX2d>::write() {
-    print_final_result();
+    std::cout << "The found root is " << this->values.row(this->values.rows() - 1)(0) << std::endl;
 
     std::unique_ptr<PrinterBase<Eigen::Vector2d>> printer;
-    build_printer(printer);
+    this->build_printer(printer);
 
     for (int i = 0; i < this->values.rows(); i++) {
         Eigen::Vector2d row = this->values.row(i);

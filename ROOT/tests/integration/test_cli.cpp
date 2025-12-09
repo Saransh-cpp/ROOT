@@ -3,10 +3,12 @@
 #include <array>
 #include <cstdio>
 #include <cstdlib>
+#include <filesystem>
+#include <fstream>
 #include <sstream>
 #include <string>
 
-#include "../../../../libROOT/libROOT/solver.hpp"
+#include "libROOT/solver.hpp"
 
 // TO DO:
 // Right now the tests are just checking whether the root is near its computed respective within a given tolerance,
@@ -29,7 +31,91 @@ static std::string exec_command(const std::string& cmd) {
     return result;
 }
 
-TEST(NewtonMethodWithReaderCSV, QuadraticConvergesToMinus2) {
+TEST(NewtonMethodWithReaderCSVWriterCSV, QuadraticConvergesToMinus2) {
+    std::string filename = "../../../../ROOT/tests/test_data/config.csv";
+    std::string exe = "../../ROOT/root_cli";
+
+    std::string cmd = exe +
+                      " --wcsv result"
+                      " csv --file " +
+                      filename;
+
+    std::string output = exec_command(cmd);
+
+    ASSERT_FALSE(output.empty());
+
+    // check CSV file created
+    std::ifstream file("result.csv");
+    ASSERT_TRUE(file.is_open()) << "CSV output file was not created.";
+
+    file.close();
+    std::filesystem::remove("result.csv");
+}
+
+TEST(NewtonMethodWithReaderCSVWriterDAT, QuadraticConvergesToMinus2) {
+    std::string filename = "../../../../ROOT/tests/test_data/config.csv";
+    std::string exe = "../../ROOT/root_cli";
+
+    std::string cmd = exe +
+                      " --wdat result"
+                      " csv --file " +
+                      filename;
+
+    std::string output = exec_command(cmd);
+
+    ASSERT_FALSE(output.empty());
+
+    // check DAT file created
+    std::ifstream file("result.dat");
+    ASSERT_TRUE(file.is_open()) << "DAT output file was not created.";
+
+    file.close();
+    std::filesystem::remove("result.dat");
+}
+
+TEST(NewtonMethodWithReaderDATWriterCSV, QuadraticConvergesToMinus2) {
+    std::string filename = "../../../../ROOT/tests/test_data/config.dat";
+    std::string exe = "../../ROOT/root_cli";
+
+    std::string cmd = exe +
+                      " --wcsv result"
+                      " dat --file " +
+                      filename;
+
+    std::string output = exec_command(cmd);
+
+    ASSERT_FALSE(output.empty());
+
+    // check CSV file created
+    std::ifstream file("result.csv");
+    ASSERT_TRUE(file.is_open()) << "CSV output file was not created.";
+
+    file.close();
+    std::filesystem::remove("result.csv");
+}
+
+TEST(NewtonMethodWithReaderDATWriterDAT, QuadraticConvergesToMinus2) {
+    std::string filename = "../../../../ROOT/tests/test_data/config.dat";
+    std::string exe = "../../ROOT/root_cli";
+
+    std::string cmd = exe +
+                      " --wdat result"
+                      " dat --file " +
+                      filename;
+
+    std::string output = exec_command(cmd);
+
+    ASSERT_FALSE(output.empty());
+
+    // check DAT file created
+    std::ifstream file("result.dat");
+    ASSERT_TRUE(file.is_open()) << "DAT output file was not created.";
+
+    file.close();
+    std::filesystem::remove("result.dat");
+}
+
+TEST(NewtonMethodWithReaderCSVWriterCLI, QuadraticConvergesToMinus2) {
     std::string filename = "../../../../ROOT/tests/test_data/config.csv";
     std::string exe = "../../ROOT/root_cli";
 
@@ -61,7 +147,7 @@ TEST(NewtonMethodWithReaderCSV, QuadraticConvergesToMinus2) {
     EXPECT_NEAR(root, -2.0, 1e-4);
 }
 
-TEST(NewtonMethodWithReaderDAT, QuadraticConvergesToMinus2) {
+TEST(NewtonMethodWithReaderDATWriterCLI, QuadraticConvergesToMinus2) {
     std::string filename = "../../../../ROOT/tests/test_data/config.dat";
     std::string exe = "../../ROOT/root_cli";
 
@@ -93,7 +179,7 @@ TEST(NewtonMethodWithReaderDAT, QuadraticConvergesToMinus2) {
     EXPECT_NEAR(root, -2.0, 1e-4);
 }
 
-TEST(NewtonMethod, QuadraticConvergesToMinus2) {
+TEST(NewtonMethodReaderCLIWriterCLI, QuadraticConvergesToMinus2) {
     std::string exe = "../../ROOT/root_cli";
 
     std::string cmd = exe +
@@ -126,7 +212,7 @@ TEST(NewtonMethod, QuadraticConvergesToMinus2) {
     EXPECT_NEAR(root, -2.0, 1e-4);
 }
 
-TEST(NewtonMethod, DerivativeZeroError) {
+TEST(NewtonMethodReaderCLIWriterCLI, DerivativeZeroError) {
     std::string exe = "../../ROOT/root_cli";
 
     std::string cmd = exe +
@@ -149,7 +235,7 @@ TEST(NewtonMethod, DerivativeZeroError) {
                                                              << output;
 }
 
-TEST(NewtonMethod, SinusoidConvergesToZero) {
+TEST(NewtonMethodReaderCLIWriterCLI, SinusoidConvergesToZero) {
     std::string exe = "../../ROOT/root_cli";
 
     std::string cmd = exe +
@@ -179,7 +265,7 @@ TEST(NewtonMethod, SinusoidConvergesToZero) {
     EXPECT_NEAR(root, 0.0, 1e-4);
 }
 
-TEST(BisectionMethod, QuadraticConvergesToOne) {
+TEST(BisectionMethodReaderCLIWriterCLI, QuadraticConvergesToOne) {
     std::string exe = "../../ROOT/root_cli";
 
     std::string cmd = exe +
@@ -208,7 +294,7 @@ TEST(BisectionMethod, QuadraticConvergesToOne) {
     EXPECT_NEAR(root, 1.0, 1e-4);
 }
 
-TEST(BisectionMethod, InvalidInterval) {
+TEST(BisectionMethodReaderCLIWriterCLI, InvalidInterval) {
     std::string exe = "../../ROOT/root_cli";
 
     std::string cmd = exe +
@@ -231,7 +317,7 @@ TEST(BisectionMethod, InvalidInterval) {
                                                              << output;
 }
 
-TEST(ChordsMethod, CubicConvergesToTwo) {
+TEST(ChordsMethodReaderCLIWriterCLI, CubicConvergesToTwo) {
     std::string exe = "../../ROOT/root_cli";
 
     std::string cmd = exe +
@@ -260,7 +346,7 @@ TEST(ChordsMethod, CubicConvergesToTwo) {
     EXPECT_NEAR(root, 2.0, 1e-4);
 }
 
-TEST(ChordsMethod, DivisionByZeroChords) {
+TEST(ChordsMethodReaderCLIWriterCLI, DivisionByZeroChords) {
     std::string exe = "../../ROOT/root_cli";
 
     std::string cmd = exe +
@@ -282,7 +368,7 @@ TEST(ChordsMethod, DivisionByZeroChords) {
                                                              << output;
 }
 
-TEST(FixedPointMethod, CosineConvergence) {
+TEST(FixedPointMethodReaderCLIWriterCLI, CosineConvergence) {
     std::string exe = "../../ROOT/root_cli";
 
     std::string cmd = exe +
@@ -312,7 +398,7 @@ TEST(FixedPointMethod, CosineConvergence) {
     EXPECT_NEAR(root, 0.739, 1e-4);
 }
 
-TEST(FixedPointMethod, DivergentFP) {
+TEST(FixedPointMethodReaderCLIWriterCLI, DivergentFP) {
     std::string exe = "../../ROOT/root_cli";
 
     std::string cmd = exe +
@@ -335,7 +421,7 @@ TEST(FixedPointMethod, DivergentFP) {
                                                              << output;
 }
 
-TEST(FixedPointMethod, AitkenSpeed) {
+TEST(FixedPointMethodReaderCLIWriterCLI, AitkenSpeed) {
     std::string exe = "../../ROOT/root_cli";
 
     std::string cmd1 = exe +
@@ -382,7 +468,7 @@ TEST(FixedPointMethod, AitkenSpeed) {
     EXPECT_TRUE(iter2 < iter1);
 }
 
-TEST(FixedPointMethod, ToleranceEffectiveness) {
+TEST(FixedPointMethodReaderCLIWriterCLI, ToleranceEffectiveness) {
     std::string exe = "../../ROOT/root_cli";
 
     std::string cmd1 = exe +
@@ -430,7 +516,7 @@ TEST(FixedPointMethod, ToleranceEffectiveness) {
     EXPECT_TRUE(iter2 < iter1);
 }
 
-TEST(NewtonMethod, SlowConvergence) {
+TEST(NewtonMethodReaderCLIWriterCLI, SlowConvergence) {
     std::string exe = "../../ROOT/root_cli";
 
     std::string cmd = exe +
@@ -462,7 +548,7 @@ TEST(NewtonMethod, SlowConvergence) {
     EXPECT_NEAR(root, 0.0, 1e-2);
 }
 
-TEST(BisectionMethod, QuadraticConvergesToEdge) {
+TEST(BisectionMethodReaderCLIWriterCLI, QuadraticConvergesToEdge) {
     std::string exe = "../../ROOT/root_cli";
 
     std::string cmd = exe +
