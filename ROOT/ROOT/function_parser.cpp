@@ -64,7 +64,7 @@ std::vector<std::string> FunctionParserBase::splitSignTokens(const std::string& 
 }
 
 std::pair<double, std::string> FunctionParserBase::parseOptionalCoefficient(const std::string& token) {
-    std::regex coeff_regex(R"(^([0-9]*\.?[0-9]+)\*?(.*)$)");
+    std::regex coeff_regex(R"(^([+-]?[0-9]*\.?[0-9]+)\*?(.*)$)");
     std::smatch match;
 
     if (std::regex_match(token, match, coeff_regex)) {
@@ -138,8 +138,8 @@ std::function<double(double)> PolynomialParser::parse() {
     for (const auto& token : tokens) {
         std::function<double(double)> term;
         if (!parseTokenAsPolyTerm(token, term)) {
-            std::cerr << "Unsupported polynomial token: '" << token << "'\n";
-            return [](double) { return 0.0; };
+            std::cerr << "\033[31mUnsupported polynomial token: '" << token << "'\033[0m\n";
+            std::exit(EXIT_FAILURE);
         }
         terms.push_back(term);
     }
@@ -216,8 +216,8 @@ std::function<double(double)> TrigonometricParser::parse() {
     for (const auto& token : tokens) {
         std::function<double(double)> term;
         if (!parseTokenAsTrigTerm(token, term)) {
-            std::cerr << "Unsupported trig token: '" << token << "'\n";
-            return [](double) { return 0.0; };
+            std::cerr << "\033[31mUnsupported trig token: '" << token << "'\033[0m\n";
+            std::exit(EXIT_FAILURE);
         }
         terms.push_back(term);
     }
@@ -232,15 +232,15 @@ std::function<double(double)> TrigonometricParser::parse() {
 }
 
 std::function<double(double)> FunctionParserBase::parseFunction(const std::string& function_str) {
+    std::unique_ptr<FunctionParserBase> parser;
     if (isPolynomial(function_str)) {
-        PolynomialParser parser(function_str);
-        return parser.parse();
-    }
-    if (isTrigonometric(function_str)) {
-        TrigonometricParser parser(function_str);
-        return parser.parse();
+        parser = std::make_unique<PolynomialParser>(function_str);
+    } else if (isTrigonometric(function_str)) {
+        parser = std::make_unique<TrigonometricParser>(function_str);
+    } else {
+        std::cerr << "\033[31mUnsupported function type: '" << function_str << "'\033[0m\n";
+        std::exit(EXIT_FAILURE);
     }
 
-    std::cerr << "Unsupported function type: '" << function_str << "'\n";
-    return [](double) { return 0.0; };
+    return parser->parse();
 }

@@ -98,6 +98,12 @@ BisectionStepper<Eigen::Vector2d>::BisectionStepper(std::function<double(double)
 
 template <>
 Eigen::Vector2d BisectionStepper<Eigen::Vector2d>::compute_step(Eigen::Vector2d last_iter) {
+    if (this->function(left_edge) == 0) {
+        return {left_edge, this->function(left_edge)};
+    }
+    if (this->function(right_edge) == 0) {
+        return {right_edge, this->function(right_edge)};
+    }
     double x_new = (this->left_edge + this->right_edge) / 2;
     if (this->function(x_new) * this->function(this->left_edge) < 0) {
         this->right_edge = x_new;

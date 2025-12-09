@@ -1,0 +1,6 @@
+if(BUILD_TESTING)
+    add_executable(test_root_integration test_cli.cpp)
+    target_link_libraries(test_root_integration PRIVATE GTest::gtest_main Eigen3::Eigen libROOT)
+    include(GoogleTest)
+    gtest_discover_tests(test_root_integration)
+endif()

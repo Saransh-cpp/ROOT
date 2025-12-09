@@ -78,7 +78,6 @@ class Solver {
      * @brief Converts the generic Abstract stepper into a typed one
      *
      * @param stepper The original abstract stepper to be converted
-     * @param additional_function An additional function which could be needed for certain methods
      */
     void convert_stepper(std::unique_ptr<StepperBase<T>>& stepper);
 

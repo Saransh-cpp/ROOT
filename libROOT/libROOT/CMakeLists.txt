@@ -10,14 +10,7 @@ target_include_directories(libROOT
     # when installed, consumers should include from <libROOT/...>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/libROOT>
 )
-target_include_directories(libROOT
-  INTERFACE
-    # when building from source, this directory is used
-    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/external/eigen>
-    # when installed, consumers should have eigen3 in their include path
-    # this is a common convention for Eigen installations
-    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/eigen3>
-)
+target_link_libraries(libROOT INTERFACE Eigen3::Eigen)
 
 set_target_properties(libROOT PROPERTIES PREFIX "")
 install(TARGETS libROOT

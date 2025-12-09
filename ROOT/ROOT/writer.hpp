@@ -24,16 +24,11 @@ Writer<Eigen::MatrixX2d>::Writer(const Eigen::MatrixX2d& vals_to_write, WritingM
 }
 
 template <>
-void Writer<Eigen::MatrixX2d>::print_final_result() const {
-    std::cout << "The found root is " << this->values.row(this->values.rows() - 1)(0) << std::endl;
-}
-
-template <>
 void Writer<Eigen::MatrixX2d>::write() {
-    print_final_result();
+    std::cout << "The found root is " << this->values.row(this->values.rows() - 1)(0) << std::endl;
 
     std::unique_ptr<PrinterBase<Eigen::Vector2d>> printer;
-    build_printer(printer);
+    this->build_printer(printer);
 
     for (int i = 0; i < this->values.rows(); i++) {
         Eigen::Vector2d row = this->values.row(i);
@@ -128,8 +123,8 @@ void PrinterGNUPlot<Eigen::Vector2d>::generate_gnuplot_script() const {
 
     std::ofstream script(plt_file);
     if (!script.is_open()) {
-        std::cerr << "Error: could not open gnuplot script file.\n";
-        return;
+        std::cerr << "\033[31mError: could not open gnuplot script file.\033[0m\n";
+        std::exit(EXIT_FAILURE);
     }
     // LLM
     script << "# Auto-generated gnuplot script\n"
@@ -149,7 +144,8 @@ void PrinterGNUPlot<Eigen::Vector2d>::generate_gnuplot_script() const {
         std::system(("gnuplot " + plt_file).c_str());
         std::cout << "Gnuplot image generated: " << png_file << std::endl;
     } else {
-        std::cerr << "Warning: gnuplot not found. Script generated but PNG not created.\n";
+        std::cerr << "\033[33mWarning: gnuplot not found. Script generated but PNG not created.\033[0m\n";
+        std::exit(EXIT_FAILURE);
     }
 }
 

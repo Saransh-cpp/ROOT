@@ -23,6 +23,7 @@
  */
 class FunctionParserBase {
   public:
+    virtual ~FunctionParserBase() = default;
     /**
      * @brief Pure virtual method to parse the function string.
      *
@@ -93,6 +94,9 @@ class FunctionParserBase {
      * @return A pair containing the coefficient and the remaining string.
      */
     static std::pair<double, std::string> parseOptionalCoefficient(const std::string& token);
+
+  private:
+    friend class FunctionParserBaseTester;  //!< Friend test fixture class for unit testing.
 };
 
 /**
@@ -116,6 +120,7 @@ class PolynomialParser : public FunctionParserBase {
     std::function<double(double)> parse() override;
 
   private:
+    friend class PolynomialParserTester;  //!< Friend test fixture class for unit testing.
     /**
      * @brief Helper static method to parse a token as a polynomial term.
      *
@@ -147,6 +152,7 @@ class TrigonometricParser : public FunctionParserBase {
     std::function<double(double)> parse() override;
 
   private:
+    friend class TrigonometricParserTester;  //!< Friend test fixture class for unit testing.
     /**
      * @brief Helper static method to parse a token as a trigonometric term.
      *

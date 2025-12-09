@@ -87,13 +87,13 @@ std::unique_ptr<ConfigBase> ReaderBase::make_config_from_map(
     // method is required
     auto itm = config_map.find("method");
     if (itm == config_map.end()) {
-        std::cerr << "make_config_from_map: required field 'method' missing\n";
-        return nullptr;
+        std::cerr << "\033[31mmake_config_from_map: required field 'method' missing\033[0m\n";
+        std::exit(EXIT_FAILURE);
     }
     Method method;  // NOLINT(cppcoreguidelines-init-variables)
     if (!parseMethod(itm->second, method)) {
-        std::cerr << "make_config_from_map: unknown method: " << itm->second << "\n";
-        return nullptr;
+        std::cerr << "\033[31mmake_config_from_map: unknown method: " << itm->second << "\033[0m\n";
+        std::exit(EXIT_FAILURE);
     }
 
     // shared optional params
@@ -101,8 +101,8 @@ std::unique_ptr<ConfigBase> ReaderBase::make_config_from_map(
     auto it_tol = config_map.find("tolerance");
     if (it_tol != config_map.end()) {
         if (!parseDouble(it_tol->second, tolerance)) {
-            std::cerr << "make_config_from_map: invalid tolerance: " << it_tol->second << "\n";
-            return nullptr;
+            std::cerr << "\033[31mmake_config_from_map: invalid tolerance: " << it_tol->second << "\033[0m\n";
+            std::exit(EXIT_FAILURE);
         }
     }
 
@@ -110,8 +110,8 @@ std::unique_ptr<ConfigBase> ReaderBase::make_config_from_map(
     auto it_max = config_map.find("max_iterations");
     if (it_max != config_map.end()) {
         if (!parseInt(it_max->second, max_iter)) {
-            std::cerr << "make_config_from_map: invalid max_iterations: " << it_max->second << "\n";
-            return nullptr;
+            std::cerr << "\033[31mmake_config_from_map: invalid max_iterations: " << it_max->second << "\033[0m\n";
+            std::exit(EXIT_FAILURE);
         }
     }
 
@@ -119,16 +119,16 @@ std::unique_ptr<ConfigBase> ReaderBase::make_config_from_map(
     auto it_ait = config_map.find("aitken");
     if (it_ait != config_map.end()) {
         if (!parseBool(it_ait->second, aitken)) {
-            std::cerr << "make_config_from_map: invalid aitken: " << it_ait->second << "\n";
-            return nullptr;
+            std::cerr << "\033[31mmake_config_from_map: invalid aitken: " << it_ait->second << "\033[0m\n";
+            std::exit(EXIT_FAILURE);
         }
     }
 
     // functions
     auto it_fun = config_map.find("function");
     if (it_fun == config_map.end()) {
-        std::cerr << "make_config_from_map: required field 'function' missing\n";
-        return nullptr;
+        std::cerr << "\033[31mmake_config_from_map: required field 'function' missing\033[0m\n";
+        std::exit(EXIT_FAILURE);
     }
     std::string function_str = it_fun->second;
     auto function = FunctionParserBase::parseFunction(function_str);
@@ -138,8 +138,8 @@ std::unique_ptr<ConfigBase> ReaderBase::make_config_from_map(
     bool verbose = false;
     if (it_verb != config_map.end()) {
         if (!parseBool(it_verb->second, verbose)) {
-            std::cerr << "make_config_from_map: invalid verbose: " << it_verb->second << "\n";
-            return nullptr;
+            std::cerr << "\033[31mmake_config_from_map: invalid verbose: " << it_verb->second << "\033[0m\n";
+            std::exit(EXIT_FAILURE);
         }
     }
 
@@ -149,14 +149,14 @@ std::unique_ptr<ConfigBase> ReaderBase::make_config_from_map(
             auto it_a = config_map.find("initial_point");
             auto it_b = config_map.find("final_point");
             if (it_a == config_map.end() || it_b == config_map.end()) {
-                std::cerr << "make_config_from_map: bisection requires initial_point and final_point\n";
-                return nullptr;
+                std::cerr << "\033[31mmake_config_from_map: bisection requires initial_point and final_point\033[0m\n";
+                std::exit(EXIT_FAILURE);
             }
             double initial_point = 0.0;
             double final_point = 0.0;
             if (!parseDouble(it_a->second, initial_point) || !parseDouble(it_b->second, final_point)) {
-                std::cerr << "make_config_from_map: invalid bisection endpoints\n";
-                return nullptr;
+                std::cerr << "\033[31mmake_config_from_map: invalid bisection endpoints\033[0m\n";
+                std::exit(EXIT_FAILURE);
             }
             return std::make_unique<BisectionConfig>(tolerance, max_iter, aitken, function, initial_point, final_point,
                                                      verbose);
@@ -165,18 +165,18 @@ std::unique_ptr<ConfigBase> ReaderBase::make_config_from_map(
         case Method::NEWTON: {
             auto it_x0 = config_map.find("initial_guess");
             if (it_x0 == config_map.end()) {
-                std::cerr << "make_config_from_map: newton requires initial_guess\n";
-                return nullptr;
+                std::cerr << "\033[31mmake_config_from_map: newton requires initial_guess\033[0m\n";
+                std::exit(EXIT_FAILURE);
             }
             double initial_guess = 0.0;
             if (!parseDouble(it_x0->second, initial_guess)) {
-                std::cerr << "make_config_from_map: invalid initial_guess\n";
-                return nullptr;
+                std::cerr << "\033[31mmake_config_from_map: invalid initial_guess\033[0m\n";
+                std::exit(EXIT_FAILURE);
             }
             auto it_df = config_map.find("derivative");
             if (it_df == config_map.end()) {
-                std::cerr << "make_config_from_map: newton requires derivative function\n";
-                return nullptr;
+                std::cerr << "\033[31mmake_config_from_map: newton requires derivative function\033[0m\n";
+                std::exit(EXIT_FAILURE);
             }
             std::function<double(double)> function_derivative = FunctionParserBase::parseFunction(it_df->second);
             return std::make_unique<NewtonConfig>(tolerance, max_iter, aitken, function, function_derivative,
@@ -187,14 +187,14 @@ std::unique_ptr<ConfigBase> ReaderBase::make_config_from_map(
             auto it_x0 = config_map.find("initial_point1");
             auto it_x1 = config_map.find("initial_point2");
             if (it_x0 == config_map.end() || it_x1 == config_map.end()) {
-                std::cerr << "make_config_from_map: chords requires two initial points\n";
-                return nullptr;
+                std::cerr << "\033[31mmake_config_from_map: chords requires two initial points\033[0m\n";
+                std::exit(EXIT_FAILURE);
             }
             double initial_point1 = 0.0;
             double initial_point2 = 0.0;
             if (!parseDouble(it_x0->second, initial_point1) || !parseDouble(it_x1->second, initial_point2)) {
-                std::cerr << "make_config_from_map: invalid chords initial points\n";
-                return nullptr;
+                std::cerr << "\033[31mmake_config_from_map: invalid chords initial points\033[0m\n";
+                std::exit(EXIT_FAILURE);
             }
             return std::make_unique<ChordsConfig>(tolerance, max_iter, aitken, function, initial_point1, initial_point2,
                                                   verbose);
@@ -204,8 +204,8 @@ std::unique_ptr<ConfigBase> ReaderBase::make_config_from_map(
             auto it_x0 = config_map.find("initial_guess");
             auto it_g = config_map.find("function_g");
             if (it_x0 == config_map.end() || it_g == config_map.end()) {
-                std::cerr << "make_config_from_map: fixed_point requires initial_guess and function_g\n";
-                return nullptr;
+                std::cerr << "\033[31mmake_config_from_map: fixed_point requires initial_guess and function_g\033[0m\n";
+                std::exit(EXIT_FAILURE);
             }
             double initial_guess = 0.0;
             auto function_g = FunctionParserBase::parseFunction(it_g->second);
@@ -258,8 +258,8 @@ std::unique_ptr<ConfigBase> ReaderCSV::read(CLI::App* app, bool verbose) {
     this->has_header = app->get_option("--header")->as<bool>();
     std::ifstream ifs(filename);
     if (!ifs) {
-        std::cerr << "ReaderCSV: failed to open file: " << filename << "\n";
-        return nullptr;
+        std::cerr << "\033[31mReaderCSV: failed to open file: " << filename << "\033[0m\n";
+        std::exit(EXIT_FAILURE);
     }
 
     std::string headerLine;
@@ -267,17 +267,17 @@ std::unique_ptr<ConfigBase> ReaderCSV::read(CLI::App* app, bool verbose) {
 
     if (this->has_header) {
         if (!std::getline(ifs, headerLine)) {
-            std::cerr << "ReaderCSV: empty file (expecting header)\n";
-            return nullptr;
+            std::cerr << "\033[31mReaderCSV: empty file (expecting header)\033[0m\n";
+            std::exit(EXIT_FAILURE);
         }
         if (!std::getline(ifs, valueLine)) {
-            std::cerr << "ReaderCSV: missing value row\n";
-            return nullptr;
+            std::cerr << "\033[31mReaderCSV: missing value row\033[0m\n";
+            std::exit(EXIT_FAILURE);
         }
     } else {
         if (!std::getline(ifs, valueLine)) {
-            std::cerr << "ReaderCSV: empty file\n";
-            return nullptr;
+            std::cerr << "\033[31mReaderCSV: empty file\033[0m\n";
+            std::exit(EXIT_FAILURE);
         }
         headerLine.clear();
     }
@@ -289,7 +289,7 @@ std::unique_ptr<ConfigBase> ReaderCSV::read(CLI::App* app, bool verbose) {
             header = trim(header);
         }
     } else {
-        std::cerr << "ReaderCSV: no headers provided\n";
+        std::cerr << "\033[31mReaderCSV: no headers provided\033[0m\n";
         std::exit(EXIT_FAILURE);
     }
 
@@ -301,8 +301,8 @@ std::unique_ptr<ConfigBase> ReaderCSV::read(CLI::App* app, bool verbose) {
     std::unordered_map<std::string, std::string> config_map;
     if (!headers.empty()) {
         if (headers.size() != values.size()) {
-            std::cerr << "ReaderCSV: header/value columns mismatch\n";
-            return nullptr;
+            std::cerr << "\033[31mReaderCSV: header/value columns mismatch\033[0m\n";
+            std::exit(EXIT_FAILURE);
         }
         for (size_t i = 0; i < headers.size(); ++i) {
             std::string key = headers[i];
@@ -340,8 +340,8 @@ std::unique_ptr<ConfigBase> ReaderDAT::read(CLI::App* app, bool verbose) {
     this->has_header = app->get_option("--header")->as<bool>();
     std::ifstream ifs(filename);
     if (!ifs) {
-        std::cerr << "ReaderDAT: failed to open file: " << filename << "\n";
-        return nullptr;
+        std::cerr << "\033[31mReaderDAT: failed to open file: " << filename << "\033[0m\n";
+        std::exit(EXIT_FAILURE);
     }
 
     std::unordered_map<std::string, std::string> config_map;
@@ -359,8 +359,8 @@ std::unique_ptr<ConfigBase> ReaderDAT::read(CLI::App* app, bool verbose) {
 
         auto equals = line.find('=');
         if (equals == std::string::npos) {
-            std::cerr << "ReaderDAT: malformed line " << lineno << " (no '=')\n";
-            return nullptr;
+            std::cerr << "\033[31mReaderDAT: malformed line " << lineno << " (no '=')\033[0m\n";
+            std::exit(EXIT_FAILURE);
         }
         std::string key = trim(line.substr(0, equals));
         std::string val = trim(line.substr(equals + 1));

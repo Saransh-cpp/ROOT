@@ -14,6 +14,7 @@
  */
 #ifndef ROOT_WRITER_DEF_HPP
 #define ROOT_WRITER_DEF_HPP
+
 #include <Eigen/Dense>
 #include <fstream>
 #include <iostream>
@@ -29,6 +30,15 @@ class PrinterBase;
  */
 template <typename T>
 class Writer {
+  private:
+    friend class WriterBaseTester;  //<! Friend test fixture class for unit testing.
+    /** @brief Method to convert the generic Printer into a typed one for a specific output destination
+     *
+     * @param printer The original abstract printer
+     */
+    template <typename V>
+    void build_printer(std::unique_ptr<PrinterBase<V>>& printer);
+
   protected:
     T values;              //!< Templated values to write to allow different usage of the class
     WritingMethod method;  //!< Method to write with - defined thanks to @author Saransh-cpp config
@@ -51,14 +61,6 @@ class Writer {
      *
      */
     void write();
-    /** @brief Method to convert the generic Printer into a typed one for a specific output destination
-     *
-     * @param printer The original abstract printer
-     */
-    template <typename V>
-    void build_printer(std::unique_ptr<PrinterBase<V>>& printer);
-    /** @brief Helper just to print the final result of the solver process*/
-    void print_final_result() const;
 };
 
 /** @brief Abstract Printer class*/
