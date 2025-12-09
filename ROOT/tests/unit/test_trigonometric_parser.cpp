@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
 
+#include <cmath>
+
 #include "trigonometric_parser_tester.hpp"
 
 TEST_F(TrigonometricParserTester, ParseTokenAsTrigTerm) {
