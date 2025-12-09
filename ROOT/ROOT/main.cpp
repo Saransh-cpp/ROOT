@@ -199,14 +199,16 @@ int main(int argc, char** argv) {
         Writer<Eigen::MatrixX2d> writer(results, WritingMethod::CONSOLE);
         writer.write();
     } else if (!write_to_csv.empty()) {
-        Writer<Eigen::MatrixX2d> writer(results, WritingMethod::CSV);
-        writer.write(write_to_csv, w_csv_sep, append_or_overwrite == 'o');
+        Writer<Eigen::MatrixX2d> writer(results, WritingMethod::CSV, write_to_csv, w_csv_sep,
+                                        append_or_overwrite == 'o');
+        writer.write();
     } else if (!write_to_dat.empty()) {
-        Writer<Eigen::MatrixX2d> writer(results, WritingMethod::DAT);
-        writer.write(write_to_dat, ' ', append_or_overwrite == 'o');
+        Writer<Eigen::MatrixX2d> writer(results, WritingMethod::DAT, write_to_dat, ' ', append_or_overwrite == 'o');
+        writer.write();
     } else if (!write_with_gnuplot.empty()) {
-        Writer<Eigen::MatrixX2d> writer(results, WritingMethod::GNUPLOT);
-        writer.write(write_with_gnuplot, ',', append_or_overwrite == 'o');
+        Writer<Eigen::MatrixX2d> writer(results, WritingMethod::GNUPLOT, write_with_gnuplot, ',',
+                                        append_or_overwrite == 'o');
+        writer.write();
     }
 
     return 0;
