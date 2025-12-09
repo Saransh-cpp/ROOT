@@ -1,6 +1,5 @@
 #include <gtest/gtest.h>
 
-#include "../../ROOT/writer.hpp"
 #include "writer_base_tester.hpp"
 
 // constructor test

@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
 
+#include <cmath>
+
 #include "function_parser_base_tester.hpp"
 
 TEST_F(FunctionParserBaseTester, IsPolynomial) {
@@ -52,7 +54,7 @@ TEST_F(FunctionParserBaseTester, ParseFunction) {
     }
     // Test trigonometric function
     {
-        std::function<double(double)> expected = [](double x) { return -2 * sin(x) + 3 * cos(x); };
+        std::function<double(double)> expected = [](double x) { return -2 * std::sin(x) + 3 * std::cos(x); };
         testParseFunction("-2*sin(x) + 3*cos(x)", expected, 0.0, 5e-6);
     }
 }

@@ -10,8 +10,8 @@
  */
 #include <gtest/gtest.h>
 
-#include "../../ROOT/writer.hpp"
-#include "../../ROOT/writer_def.hpp"
+#include "ROOT/writer.hpp"
+#include "ROOT/writer_def.hpp"
 /**
  * @brief Tester class for Writer class unit tests
  */
