@@ -1,3 +1,6 @@
+#ifndef POLYNOMIAL_PARSER_TESTER_HPP
+#define POLYNOMIAL_PARSER_TESTER_HPP
+
 #include <gtest/gtest.h>
 
 #include "ROOT/function_parser.hpp"
@@ -44,3 +47,5 @@ class PolynomialParserTester : public ::testing::Test {
         }
     }
 };
+
+#endif  // POLYNOMIAL_PARSER_TESTER_HPP

@@ -1,3 +1,6 @@
+#ifndef READER_BASE_TESTER_HPP
+#define READER_BASE_TESTER_HPP
+
 #include <gtest/gtest.h>
 
 #include "ROOT/reader.hpp"
@@ -66,3 +69,5 @@ class ReaderBaseTester : public ::testing::Test {
         EXPECT_EQ(method, expected);
     }
 };
+
+#endif  // READER_BASE_TESTER_HPP

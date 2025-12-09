@@ -1,3 +1,6 @@
+#ifndef TRIGONOMETRIC_PARSER_TESTER_HPP
+#define TRIGONOMETRIC_PARSER_TESTER_HPP
+
 #include <gtest/gtest.h>
 
 #include "ROOT/function_parser.hpp"
@@ -44,3 +47,5 @@ class TrigonometricParserTester : public ::testing::Test {
         }
     }
 };
+
+#endif  // TRIGONOMETRIC_PARSER_TESTER_HPP

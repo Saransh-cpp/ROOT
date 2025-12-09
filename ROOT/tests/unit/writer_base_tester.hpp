@@ -19,7 +19,7 @@
 /**
  * @brief Tester class for Writer class unit tests
  */
-class WriterBaseTester {
+class WriterBaseTester : public ::testing::Test {
   public:
     template <typename T>
     void testBuildPrinter(const T& values, WritingMethod method,
@@ -68,9 +68,11 @@ class WriterBaseTester {
             case WritingMethod::GNUPLOT:
                 // check if the method is GNUPLOT file is created and gnuplot script is generated
                 EXPECT_TRUE(std::filesystem::exists("output.dat"));
-                EXPECT_TRUE(std::filesystem::exists("plot.plt"));
                 std::filesystem::remove("output.dat");
-                std::filesystem::remove("plot.plt");
+                EXPECT_TRUE(std::filesystem::exists("output.plt"));
+                std::filesystem::remove("output.plt");
+                EXPECT_TRUE(std::filesystem::exists("output.png"));
+                std::filesystem::remove("output.png");
                 break;
             default:
                 FAIL() << "Unknown WritingMethod";

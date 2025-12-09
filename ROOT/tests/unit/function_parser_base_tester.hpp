@@ -1,3 +1,6 @@
+#ifndef FUNCTION_PARSER_BASE_TESTER_HPP
+#define FUNCTION_PARSER_BASE_TESTER_HPP
+
 #include <gtest/gtest.h>
 
 #include "ROOT/function_parser.hpp"
@@ -91,3 +94,5 @@ class FunctionParserBaseTester : public ::testing::Test {
         EXPECT_NEAR(result_value, expected_value, tolerance);
     }
 };
+
+#endif  // FUNCTION_PARSER_BASE_TESTER_HPP

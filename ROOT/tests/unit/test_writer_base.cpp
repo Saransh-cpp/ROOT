@@ -1,59 +1,63 @@
-// #include <gtest/gtest.h>
+#include <gtest/gtest.h>
 
-// #include "writer_base_tester.hpp"
+#include "writer_base_tester.hpp"
 
-// // constructor test
-// TEST(WriterTest, ConstructorStoresValuesAndMethod) {
-//     Eigen::MatrixX2d M(2, 2);
-//     M << 1, 10, 2, 20;
+TEST_F(WriterBaseTester, BuildPrinterCLI) {
+    Eigen::MatrixX2d values(3, 2);
+    values << 0, 1, 1, 0, 2, -1;
 
-//     Writer<Eigen::MatrixX2d> w(M, WritingMethod::CSV);
+    std::unique_ptr<PrinterBase<Eigen::Vector2d>> printer;
+    this->testBuildPrinter(values, WritingMethod::CONSOLE, printer);
+}
 
-//     WriterBaseTester::testConstructor(w, M, WritingMethod::CSV);
-// }
+TEST_F(WriterBaseTester, BuildPrinterCSV) {
+    Eigen::MatrixX2d values(3, 2);
+    values << 0, 1, 1, 0, 2, -1;
 
-// // cli
-// TEST(WriterTest, BuildPrinterCLI) {
-//     Eigen::MatrixX2d M(1, 2);
-//     M << 0.0, 1.0;
+    std::unique_ptr<PrinterBase<Eigen::Vector2d>> printer;
+    this->testBuildPrinter(values, WritingMethod::CSV, printer);
+}
 
-//     Writer<Eigen::MatrixX2d> w(M, WritingMethod::CONSOLE);
+TEST_F(WriterBaseTester, BuildPrinterDAT) {
+    Eigen::MatrixX2d values(3, 2);
+    values << 0, 1, 1, 0, 2, -1;
 
-//     WriterBaseTester::testBuildPrinterConsole(w);
-// }
+    std::unique_ptr<PrinterBase<Eigen::Vector2d>> printer;
+    this->testBuildPrinter(values, WritingMethod::DAT, printer);
+}
 
-// // csv
-// TEST(WriterTest, BuildPrinterCSV) {
-//     Eigen::MatrixX2d M(1, 2);
-//     M << 0.0, 1.0;
+TEST_F(WriterBaseTester, BuildPrinterGNUPLOT) {
+    Eigen::MatrixX2d values(3, 2);
+    values << 0, 1, 1, 0, 2, -1;
 
-//     Writer<Eigen::MatrixX2d> w(M, WritingMethod::CSV);
+    std::unique_ptr<PrinterBase<Eigen::Vector2d>> printer;
+    this->testBuildPrinter(values, WritingMethod::GNUPLOT, printer);
+}
 
-//     WriterBaseTester::testBuildPrinterCSV(w);
-// }
+TEST_F(WriterBaseTester, WriteCLI) {
+    Eigen::MatrixX2d values(3, 2);
+    values << 0, 1, 1, 0, 2, -1;
 
-// // dat
-// TEST(WriterTest, BuildPrinterDAT) {
-//     Eigen::MatrixX2d M(1, 2);
-//     M << 0.0, 1.0;
+    this->testWrite(values, WritingMethod::CONSOLE);
+}
 
-//     Writer<Eigen::MatrixX2d> w(M, WritingMethod::DAT);
+TEST_F(WriterBaseTester, WriteCSV) {
+    Eigen::MatrixX2d values(3, 2);
+    values << 0, 1, 1, 0, 2, -1;
 
-//     WriterBaseTester::testBuildPrinterDAT(w);
-// }
+    this->testWrite(values, WritingMethod::CSV);
+}
 
-// // gnuplot
-// TEST(WriterTest, BuildPrinterGnuplot) {
-//     Eigen::MatrixX2d M(1, 2);
-//     M << 0.0, 1.0;
+TEST_F(WriterBaseTester, WriteDAT) {
+    Eigen::MatrixX2d values(3, 2);
+    values << 0, 1, 1, 0, 2, -1;
 
-//     Writer<Eigen::MatrixX2d> w(M, WritingMethod::GNUPLOT);
+    this->testWrite(values, WritingMethod::DAT);
+}
 
-//     WriterBaseTester::testBuildPrinterGnuplot(w);
-// }
+TEST_F(WriterBaseTester, WriteGNUPLOT) {
+    Eigen::MatrixX2d values(3, 2);
+    values << 0, 1, 1, 0, 2, -1;
 
-// // main function to run all tests
-// int main(int argc, char** argv) {
-//     ::testing::InitGoogleTest(&argc, argv);
-//     return RUN_ALL_TESTS();
-// }
+    this->testWrite(values, WritingMethod::GNUPLOT);
+}

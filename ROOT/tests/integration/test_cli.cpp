@@ -44,10 +44,7 @@ TEST(NewtonMethodWithReaderCSVWriterCSV, QuadraticConvergesToMinus2) {
     ASSERT_FALSE(output.empty());
 
     // check CSV file created
-    std::ifstream file("result.csv");
-    ASSERT_TRUE(file.is_open()) << "CSV output file was not created.";
-
-    file.close();
+    EXPECT_TRUE(std::filesystem::exists("result.csv"));
     std::filesystem::remove("result.csv");
 }
 
@@ -65,10 +62,7 @@ TEST(NewtonMethodWithReaderCSVWriterDAT, QuadraticConvergesToMinus2) {
     ASSERT_FALSE(output.empty());
 
     // check DAT file created
-    std::ifstream file("result.dat");
-    ASSERT_TRUE(file.is_open()) << "DAT output file was not created.";
-
-    file.close();
+    EXPECT_TRUE(std::filesystem::exists("result.dat"));
     std::filesystem::remove("result.dat");
 }
 
@@ -86,17 +80,14 @@ TEST(NewtonMethodWithReaderCSVWriterGNUPlot, QuadraticConvergesToMinus2) {
     ASSERT_FALSE(output.empty());
 
     // check DAT file created
-    std::ifstream file("result.dat");
-    ASSERT_TRUE(file.is_open()) << "DAT output file was not created.";
-
-    file.close();
+    EXPECT_TRUE(std::filesystem::exists("result.dat"));
     std::filesystem::remove("result.dat");
 
-    std::ifstream filePlt("result.plt");
-    ASSERT_TRUE(filePlt.is_open()) << "PLT output file was not created.";
-
-    filePlt.close();
+    EXPECT_TRUE(std::filesystem::exists("result.plt"));
     std::filesystem::remove("result.plt");
+
+    EXPECT_TRUE(std::filesystem::exists("result.png"));
+    std::filesystem::remove("result.png");
 }
 
 TEST(NewtonMethodWithReaderDATWriterCSV, QuadraticConvergesToMinus2) {
@@ -113,10 +104,7 @@ TEST(NewtonMethodWithReaderDATWriterCSV, QuadraticConvergesToMinus2) {
     ASSERT_FALSE(output.empty());
 
     // check CSV file created
-    std::ifstream file("result.csv");
-    ASSERT_TRUE(file.is_open()) << "CSV output file was not created.";
-
-    file.close();
+    EXPECT_TRUE(std::filesystem::exists("result.csv"));
     std::filesystem::remove("result.csv");
 }
 
@@ -134,10 +122,7 @@ TEST(NewtonMethodWithReaderDATWriterDAT, QuadraticConvergesToMinus2) {
     ASSERT_FALSE(output.empty());
 
     // check DAT file created
-    std::ifstream file("result.dat");
-    ASSERT_TRUE(file.is_open()) << "DAT output file was not created.";
-
-    file.close();
+    EXPECT_TRUE(std::filesystem::exists("result.dat"));
     std::filesystem::remove("result.dat");
 }
 
@@ -155,17 +140,14 @@ TEST(NewtonMethodWithReaderDATWriterGNUPlot, QuadraticConvergesToMinus2) {
     ASSERT_FALSE(output.empty());
 
     // check DAT file created
-    std::ifstream file("result.dat");
-    ASSERT_TRUE(file.is_open()) << "DAT output file was not created.";
-
-    file.close();
+    EXPECT_TRUE(std::filesystem::exists("result.dat"));
     std::filesystem::remove("result.dat");
 
-    std::ifstream filePlt("result.plt");
-    ASSERT_TRUE(filePlt.is_open()) << "PLT output file was not created.";
-
-    filePlt.close();
+    EXPECT_TRUE(std::filesystem::exists("result.plt"));
     std::filesystem::remove("result.plt");
+
+    EXPECT_TRUE(std::filesystem::exists("result.png"));
+    std::filesystem::remove("result.png");
 }
 
 TEST(NewtonMethodWithReaderCSVWriterCLI, QuadraticConvergesToMinus2) {

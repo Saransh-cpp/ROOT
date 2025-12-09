@@ -1,3 +1,6 @@
+#ifndef READER_CSV_TESTER_HPP
+#define READER_CSV_TESTER_HPP
+
 #include <gtest/gtest.h>
 
 #include "ROOT/reader.hpp"
@@ -23,3 +26,5 @@ class ReaderCSVTester : public ::testing::Test {
         EXPECT_EQ(result, expected);
     }
 };
+
+#endif  // READER_CSV_TESTER_HPP
