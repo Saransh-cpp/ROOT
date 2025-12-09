@@ -72,6 +72,33 @@ TEST(NewtonMethodWithReaderCSVWriterDAT, QuadraticConvergesToMinus2) {
     std::filesystem::remove("result.dat");
 }
 
+TEST(NewtonMethodWithReaderCSVWriterGNUPlot, QuadraticConvergesToMinus2) {
+    std::string filename = "../../../../ROOT/tests/test_data/config.csv";
+    std::string exe = "../../ROOT/root_cli";
+
+    std::string cmd = exe +
+                      " --wgnuplot result"
+                      " csv --file " +
+                      filename;
+
+    std::string output = exec_command(cmd);
+
+    ASSERT_FALSE(output.empty());
+
+    // check DAT file created
+    std::ifstream file("result.dat");
+    ASSERT_TRUE(file.is_open()) << "DAT output file was not created.";
+
+    file.close();
+    std::filesystem::remove("result.dat");
+
+    std::ifstream filePlt("result.plt");
+    ASSERT_TRUE(filePlt.is_open()) << "PLT output file was not created.";
+
+    filePlt.close();
+    std::filesystem::remove("result.plt");
+}
+
 TEST(NewtonMethodWithReaderDATWriterCSV, QuadraticConvergesToMinus2) {
     std::string filename = "../../../../ROOT/tests/test_data/config.dat";
     std::string exe = "../../ROOT/root_cli";
@@ -112,6 +139,33 @@ TEST(NewtonMethodWithReaderDATWriterDAT, QuadraticConvergesToMinus2) {
 
     file.close();
     std::filesystem::remove("result.dat");
+}
+
+TEST(NewtonMethodWithReaderDATWriterGNUPlot, QuadraticConvergesToMinus2) {
+    std::string filename = "../../../../ROOT/tests/test_data/config.dat";
+    std::string exe = "../../ROOT/root_cli";
+
+    std::string cmd = exe +
+                      " --wgnuplot result"
+                      " dat --file " +
+                      filename;
+
+    std::string output = exec_command(cmd);
+
+    ASSERT_FALSE(output.empty());
+
+    // check DAT file created
+    std::ifstream file("result.dat");
+    ASSERT_TRUE(file.is_open()) << "DAT output file was not created.";
+
+    file.close();
+    std::filesystem::remove("result.dat");
+
+    std::ifstream filePlt("result.plt");
+    ASSERT_TRUE(filePlt.is_open()) << "PLT output file was not created.";
+
+    filePlt.close();
+    std::filesystem::remove("result.plt");
 }
 
 TEST(NewtonMethodWithReaderCSVWriterCLI, QuadraticConvergesToMinus2) {

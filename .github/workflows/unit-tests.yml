@@ -38,4 +38,4 @@ jobs:
         run: cmake --build build -j8
 
       - name: Run unit tests
-        run: ctest --test-dir build --output-on-failure -j8
+        run: ctest --test-dir build --output-on-failure
