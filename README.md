@@ -156,9 +156,9 @@ $ ./build/ROOT/ROOT/root_cli --wcli cli --function "x^2-4" newton --initial 1.0 
 
 - .dat input file called input.dat with first row not being header and " " separating different values, .dat file output called output.dat, Bisection method to find the root of x^3-1, with initial interval [-2,2], verbose output (given tolerance and maximum iterations):
 
-```
-$ ./build/ROOT/ROOT/root_cli --verbose --wdat output dat input
-```
+    ```
+    root_cli --verbose --wdat output dat input
+    ```
 
     where input.dat is:
 
