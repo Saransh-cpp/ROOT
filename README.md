@@ -180,7 +180,7 @@ $ ./build/ROOT/ROOT/root_cli --wcsv output --ocsvsep , csv input --sep , --heade
 ```
 
     where input.csv is:
-    
+
     ```
     function,method,initial,tolerance,max_iterations,g-function
     'cos(x)',fixed_point,0.5,1e-5,100,'cos(x)'
