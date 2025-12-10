@@ -160,16 +160,16 @@ $ ./build/ROOT/ROOT/root_cli --wcli cli --function "x^2-4" newton --initial 1.0 
 $ ./build/ROOT/ROOT/root_cli --verbose --wdat output dat input
 ```
 
-where input.dat is:
-
-```
-function = x^3-1
-method = bisection
-initial = -1
-tolerance = 1e-5
-max-iterations = 100
-derivative = 2*x
-```
+    where input.dat is:
+    
+    ```
+    function = x^3-1
+    method = bisection
+    initial = -1
+    tolerance = 1e-5
+    max-iterations = 100
+    derivative = 2*x
+    ```
 
 - .csv input file called input.csv with first row which is a header and "," separating different values, .csv file ouput
 called output.csv, Fixed Point Method to find the root of cos(x), with
