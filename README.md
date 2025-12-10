@@ -7,6 +7,8 @@
 
 ROOT, but not the [particle physics one](https://github.com/root-project/root). Project submission for MATH-458: Programming concepts in scientific computing.
 
+The project bundles a header-only C++ library (`libROOT`) implementing root-finding algorithms and a CLI application (`root_cli`) to read and parse input, run the algorithms implemented in libROOT, and write the output to a file of specific format.
+
 ## Project structure
 
 The project uses the recommended [Canonical Project Structure](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2018/p1204r0.html) for C++ projects.
@@ -38,13 +40,15 @@ The project uses the recommended [Canonical Project Structure](https://www.open-
 ```
 
 Apart from being divided into a library and a user-facing application/executable, the design on the project
-is concretely split into three phases.
+is concretely split into four phases.
 
 ### CLI
 
-The CLI application is written (and should be written) within the `main` function, followed by calling the `Reader`, `Solver`, and `Writer` classes in this order.
+The CLI application is written (and should be written) within the `main` function. The `main` function further calls the `Reader`, `Solver`, and `Writer` classes (in this order) on the input passed through the CLI application.
 
 ### Readers and Parsers
+
+Reading and parsing is handled by the `ReaderBase` and `FunctionParserBase` daughter classes. Adding a new reading method should include writing a new `ReaderBase` daughter class and adding functionality to parse a new type of function should include writing a new `FunctionParserBase` daughter class. The information read is stored by the `ConfigBase` daughter classes (these are data classes to be specific, and can ideally by just `struct`s, but they use some object-oriented features, requiring them to be `class`es). Adding a new stepper type should include adding a new `ConfigBase` daughter class. The `read` method of the `ReaderBase` daughter classes accept a pointer of the type `CLI::App` and return a pointer to an object of the type of one of the daughter classes of `ConfigBase`. The `Reader` classes further implement helper methods for reading and parsing different things, and functions for constructing the `ConfigBase` object itself. Similarly, the `parse` function of the `FunctionParser` classes takes in a `string` and returns a C++ function (parses a specific type of function). The classes also include helper methods for parsing functions, and a method (in `FunctionParserBase`) to infer the type of the function (from the string) and dispatch the appropriate daughter class objects (and methods) to parse the function.
 
 ### Solver and Steppers
 
@@ -208,7 +212,11 @@ the equation x^3-8 starting from the two initial points 1 and 3:
 
 ## Typical program execution
 
-Input reading is handled by a CLI implemented using `CLI11`, the `Reader` classes, and the `Parser` classes. The output is passed from the CLI to one of the Reader classes
+Input reading is handled by a CLI implemented using `CLI11`, which passes the read options to the appropriate `ReaderBase` daughter class. The `read` method of the `ReaderBase` daughter classes construct and return a `ConfigBase` daughter class object. The `ReaderBase` daughter classes also use the `FunctionParserBase` daughter classes internally to parse the function (and derivation + g function) inputted by user (string to a C++ function). The information stored in `ConfigBase` daughter classes is then passed down to the `Solver` class to run the algorithm.
+
+<add a paragraph about solver and stepper here>
+
+<add a paragraph about writer and printer here>
 
 ## Tests
 
