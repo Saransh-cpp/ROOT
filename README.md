@@ -101,6 +101,98 @@ Which will put the library's header files and the application `<install_path>/in
 
 ## Usage
 
+TLDR;
+```
+ROOT Command Line Interface
+
+
+root_cli [OPTIONS] SUBCOMMAND
+
+
+OPTIONS:
+  -h,     --help              Print this help message and exit
+  -v,     --verbose           Enable verbose output
+          --wcli, --write-to-cli
+                              Write results to command line
+          --wcsv, --write-to-csv TEXT
+                              Path for writing results to CSV file
+          --ocsvsep, --output-csv-sep CHAR [,]
+                              Separator character for CSV output
+          --wdat, --write-to-dat TEXT
+                              Path for writing results to DAT file
+          --wgnuplot, --write-to-gnuplot TEXT
+                              Path for writing results to Gnuplot file
+          --ofmode, --output-file-mode CHAR:{a,o} [o]
+                              Append or overwrite output file: 'a' for append, 'o' for
+                              overwrite
+
+SUBCOMMANDS:
+  csv                         Use CSV input
+  dat                         Use DAT input
+  cli                         Use CLI input
+```
+
+Assuming that `root_cli` is on your `PATH`, the program can be executed with:
+
+```
+root_cli <arguments>
+# or use the full install/build path of the executable: /path/to/root_cli <arguments>
+```
+
+In order to print out more information about the arguments and the subcommands:
+
+```
+root_cli <arguments>
+```
+
+Every additional needed function must be added together with the function to find the root of.
+Here's a list of examples of possible execution syntax:
+
+- CLI input, CLI output, Newton-Raphson method to find the root of x^2-4, starting from initial guess 1 (default tolerance and maximum iterations):
+
+    ```
+    root_cli --wcli cli --function "x^2-4" newton --initial 1.0 --derivative "2*x"
+    ```
+
+- DAT input file called input.dat with first row not being header and " " separating different values, .dat file output called output.dat, Bisection method to find the root of x^3-1, with initial interval [-2,2], verbose output (given tolerance and maximum iterations):
+
+    ```
+    root_cli --verbose --wdat output dat input
+    ```
+
+    where input.dat is:
+
+    ```
+    function = x^3-1
+    method = bisection
+    initial = -1
+    tolerance = 1e-5
+    max-iterations = 100
+    derivative = 2*x
+    ```
+
+- CSV input file called input.csv with first row which is a header and "," separating different values, .csv file ouput
+called output.csv, Fixed Point Method to find the root of cos(x), with
+initial guess 0.5, fixed point function cos(x):
+
+    ```
+    root_cli --wcsv output --ocsvsep , csv input --sep , --header
+    ```
+
+    where input.csv is:
+
+    ```
+    function,method,initial,tolerance,max_iterations,g-function
+    'cos(x)',fixed_point,0.5,1e-5,100,'cos(x)'
+    ```
+
+- CLI input, .dat output file called output.dat and moreover a GNU Plot is created from it as output.png. Chords method to solve
+the equation x^3-8 starting from the two initial points 1 and 3:
+
+    ```
+    root_cli --wdat output --wgnuplot output cli --function x^3-8 chords --x0 --x1 3
+    ```
+
 The installed CLI application can simply be used by:
 
 ```

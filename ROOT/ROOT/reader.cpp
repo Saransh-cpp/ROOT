@@ -107,10 +107,10 @@ std::unique_ptr<ConfigBase> ReaderBase::make_config_from_map(
     }
 
     int max_iter = 100;
-    auto it_max = config_map.find("max_iterations");
+    auto it_max = config_map.find("max-iterations");
     if (it_max != config_map.end()) {
         if (!parseInt(it_max->second, max_iter)) {
-            std::cerr << "\033[31mmake_config_from_map: invalid max_iterations: " << it_max->second << "\033[0m\n";
+            std::cerr << "\033[31mmake_config_from_map: invalid max-iterations: " << it_max->second << "\033[0m\n";
             std::exit(EXIT_FAILURE);
         }
     }
@@ -202,14 +202,14 @@ std::unique_ptr<ConfigBase> ReaderBase::make_config_from_map(
 
         case Method::FIXED_POINT: {
             auto it_x0 = config_map.find("initial");
-            auto it_g = config_map.find("function_g");
+            auto it_g = config_map.find("g-function");
             if (it_x0 == config_map.end() || it_g == config_map.end()) {
-                std::cerr << "\033[31mmake_config_from_map: fixed_point requires initial and function_g\033[0m\n";
+                std::cerr << "\033[31mmake_config_from_map: fixed_point requires initial and g-function\033[0m\n";
                 std::exit(EXIT_FAILURE);
             }
             double initial = 0.0;
-            auto function_g = FunctionParserBase::parseFunction(it_g->second);
-            return std::make_unique<FixedPointConfig>(tolerance, max_iter, aitken, function, initial, function_g,
+            auto g_function = FunctionParserBase::parseFunction(it_g->second);
+            return std::make_unique<FixedPointConfig>(tolerance, max_iter, aitken, function, initial, g_function,
                                                       verbose);
         }
     }  // switch
@@ -312,8 +312,8 @@ std::unique_ptr<ConfigBase> ReaderCSV::read(CLI::App* app, bool verbose) {
         }
     } else {
         // positional mapping documented here:
-        std::vector<std::string> posnames = {"method",     "tolerance",  "max_iterations", "aitken",     "function",
-                                             "derivative", "interval_a", "interval_b",     "function_g", "initial",
+        std::vector<std::string> posnames = {"method",     "tolerance",  "max-iterations", "aitken",     "function",
+                                             "derivative", "interval_a", "interval_b",     "function-g", "initial",
                                              "x0",         "x1"};
         for (size_t i = 0; i < values.size() && i < posnames.size(); ++i) {
             config_map[posnames[i]] = values[i];
@@ -383,7 +383,7 @@ std::unique_ptr<ConfigBase> ReaderCLI::read(CLI::App* app, bool verbose) {
     if (verbose) {
         std::cout << "ReaderCLI: read configuration\n";
         std::cout << "  tolerance = " << app->get_option("--tolerance")->as<double>() << "\n";
-        std::cout << "  max_iterations = " << app->get_option("--max-iterations")->as<int>() << "\n";
+        std::cout << "  max-iterations = " << app->get_option("--max-iterations")->as<int>() << "\n";
         std::cout << "  aitken = " << (app->get_option("--aitken")->as<bool>() ? "true" : "false") << "\n";
         std::cout << "  function = " << app->get_option("--function")->as<std::string>() << "\n";
         std::cout << "  verbose = " << (verbose ? "true" : "false") << "\n";
@@ -423,7 +423,7 @@ std::unique_ptr<ConfigBase> ReaderCLI::read(CLI::App* app, bool verbose) {
                 app->get_subcommand("fixed_point")->get_option("--g-function")->as<std::string>()),
             verbose);
         if (verbose) {
-            std::cout << "  g_function = "
+            std::cout << " g-function = "
                       << app->get_subcommand("fixed_point")->get_option("--g-function")->as<std::string>() << "\n";
             std::cout << "  initial = " << app->get_subcommand("fixed_point")->get_option("--initial")->as<double>()
                       << "\n";
