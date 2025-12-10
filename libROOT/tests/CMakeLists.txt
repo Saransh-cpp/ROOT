@@ -1,7 +1,0 @@
-if(BUILD_TESTING)
-    add_executable(test_libroot test_solver.cpp)
-    target_include_directories(test_libroot PRIVATE ${CMAKE_SOURCE_DIR}/libROOT ${CMAKE_SOURCE_DIR}/external/eigen)
-    target_link_libraries(test_libroot PRIVATE GTest::gtest_main)
-    include(GoogleTest)
-    gtest_discover_tests(test_libroot)
-endif()

@@ -29,11 +29,12 @@ class StepperBase;
 template <typename T>
 class Solver {
   private:
-    Method method;            //!< Method which will be used - defined thanks to @author Saransh-ccp's Reader
-    int max_iterations;       //!< Stores the maximum iterations for the method
-    double tolerance;         //!< Stores the tolerance below which the process ends
-    bool aitken_requirement;  //!< True if Aitken acceleration is required, 0 otherwise
-    bool verbose;             //!< Verbose mode flag
+    friend class SolverTester;  //!< Friend class for unit testing purposes
+    Method method;              //!< Method which will be used - defined thanks to @author Saransh-ccp's Reader
+    int max_iterations;         //!< Stores the maximum iterations for the method
+    double tolerance;           //!< Stores the tolerance below which the process ends
+    bool aitken_requirement;    //!< True if Aitken acceleration is required, 0 otherwise
+    bool verbose;               //!< Verbose mode flag
     std::function<double(double)>
         derivative_or_function_g;  //!< Stores the derivative or g_function of the function if needed
     /** \brief Stores in the first column the points computed at each step, in
