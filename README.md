@@ -7,7 +7,7 @@
 
 ROOT, but not the [particle physics one](https://github.com/root-project/root). Project submission for MATH-458: Programming concepts in scientific computing.
 
-## Project structure
+## Project structure and dependencies
 
 The project uses the recommended [Canonical Project Structure](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2018/p1204r0.html) for C++ projects.
 
@@ -18,21 +18,62 @@ The project uses the recommended [Canonical Project Structure](https://www.open-
 ├── .github                   # GitHub related files
 │   └── workflows             # CI files to build/test/check the project
 ├── .gitignore                # To ignore files from git
+├── .gitmodules
 ├── .pre-commit-config.yaml   # Pre-commit configuration
 ├── CMakeLists.txt            # Top-level CMakeLists.txt
 ├── Doxyfile                  # Doxygen configuration
-├── external                  # External libraries (as git submodules)
-│   └── googletest            # Googletest submodule to run tests
-├── libROOT                   # Developer-facing ROOT library
-│   ├── CMakeLists.txt        # CMakeLists.txt for developer-facing ROOT library
-│   ├── libROOT               # CXX and HXX files
-│   └── tests                 # Tests for the ROOT library
 ├── README.md                 # This file
-└── ROOT                      # User-facing root_cli application/executable
-    ├── CMakeLists.txt        # CMakeLists.txt for user-facing root_cli application/executable
-    ├── ROOT                  # CXX and HXX files
-    └── tests                 # Tests for the root_cli application/executable
+├── ROOT                      # User-facing root_cli application/executable
+│   ├── CMakeLists.txt        # CMakeLists.txt for user-facing root_cli application/executable
+│   ├── ROOT                  # CXX and HXX files
+│   └── tests                 # Tests for the root_cli application/executable
+├── external                  # External libraries (as git submodules)
+│   ├── CLI11                 # CLI11 submodule for the root_cli executable
+│   ├── eigen                 # Eigen submodule for matrix and vector calculations
+│   └── googletest            # Googletest submodule to run tests
+└── libROOT                   # Developer-facing ROOT library
+    ├── CMakeLists.txt        # CMakeLists.txt for developer-facing ROOT library
+    ├── libROOT               # CXX and HXX files
+    └── tests                 # Tests for the ROOT library
 ```
+
+### Dependencies
+
+#### Dependencies for the project
+
+##### Required
+
+The required dependencies are included within the project as git submodules and are pinned to specific
+versions for reproducibility.
+
+- `CLI11` (`v2.6.1`): for constructing the CLI interface for the user-facing `root_cli` application.
+- `Eigen3` (`v5.0.1`): for matric and vector usage / calculations.
+
+##### Optional
+
+These can be installed by a user and are not installed through the project's build system.
+
+- `gnuplot`: for plotting results
+
+#### Required dependencies for the tests
+
+`gnuplot` must be installed before building the project with `-DTEST=ON`. `GoogleTest` is installed automatically if the project is built with `-DTEST=ON`.
+
+- `GoogleTest` (`v1.17.0`): for all tests.
+- `gnuplot`: for testing `gnuplot` related code.
+
+#### Dependencies for the documentation
+
+These can be installed by a user and are not installed through the project's build system.
+
+##### Required
+
+- `doxygen`: for generating the documentation.
+
+##### Optional
+
+- `graphviz`: for generating hierarchy and flow diagrams in the documentation.
+
 
 ## Building and installing the project
 
@@ -113,9 +154,42 @@ All of which can also be set in `CMakeLists.txt`.
 
 ## Tests
 
-Tests for the library (`libROOT`) can be found in `libROOT/tests`, and the tests for the application (`root_cli`) can be found in `ROOT/tests`. We follow [test-driven development (TDD)](https://en.wikipedia.org/wiki/Test-driven_development), which means that each code changing PR must have tests to validate the changes. We use `googletest` `v1.17.0` (as a git submodule) to test our code.
+Tests for the library (`libROOT`) can be found in `libROOT/tests`, and the tests for the application (`root_cli`) can be found in `ROOT/tests`. We follow [test-driven development (TDD)](https://en.wikipedia.org/wiki/Test-driven_development), which means that each code changing PR must have tests to validate the changes.
 
 All the following tests and checks run as part of a Continuous Integration pipeline on GitHub Actions (on every PR and push to `main`).
+
+### Structure of tests
+
+```
+./ROOT/tests                                # Tests for ROOT
+├── integration                             # Integration tests for ROOT
+│   ├── CMakeLists.txt                      # Build file for Integration tests
+│   └── test_cli.cpp                        # Tests for the entire root_cli application
+├── test_data                               # Data files used in tests
+│   ├── config.csv
+│   └── config.dat
+└── unit                                    # Unit tests for ROOT
+    ├── CMakeLists.txt                      # Build file for unit tests
+    ├── function_parser_base_tester.hpp     # The parameterized testing class (friend of the class being tested)
+    ├── polynomial_parser_tester.hpp
+    ├── reader_base_tester.hpp
+    ├── reader_csv_tester.hpp
+    ├── test_function_parser.cpp            # Actual tests (calling paramaterized functions from the testing class)
+    ├── test_polynomial_parser.cpp
+    ├── test_reader.cpp
+    ├── test_trigonometric_parser.cpp
+    ├── test_writer.cpp
+    ├── trigonometric_parser_tester.hpp
+    └── writer_tester.hpp
+...
+./libROOT/tests                             # Tests for libROOT
+└── unit                                    # Unit tests for libROOT
+    ├── CMakeLists.txt                      # Build file for unit tests
+    ├── solver_tester.hpp                   # The parameterized testing class (friend of the class being tested)
+    └── test_solver.cpp                     # Actual tests (calling paramaterized functions from the testing class)
+```
+
+## Building and running tests
 
 To build the tests, make sure your submodules are up-to-date (more specifically, the `googletest` submodule):
 

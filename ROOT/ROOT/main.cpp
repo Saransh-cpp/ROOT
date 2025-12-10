@@ -67,13 +67,6 @@ int main(int argc, char** argv) {
     std::string dat_file;
     dat->add_option("--file", dat_file, "Path to DAT file containing input data")->required()->check(CLI::ExistingFile);
 
-    char dat_sep = ' ';
-    dat->add_option("--sep", dat_sep, "Separator character for DAT file")->capture_default_str();
-    char dat_quote = '"';
-    dat->add_option("--quote", dat_quote, "Quote/delimiter character for DAT file")->capture_default_str();
-    bool dat_header = true;
-    dat->add_option("--header", dat_header, "Indicates whether the first row is a header row")->capture_default_str();
-
     // CLI
     auto* cli = app.add_subcommand("cli", "Use CLI input");
     std::string function_str;
