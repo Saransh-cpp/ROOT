@@ -101,12 +101,46 @@ Which will put the library's header files and the application `<install_path>/in
 
 ## Usage
 
-The program can be executed with:
+TLDR;
+```
+
+ROOT Command Line Interface 
+
+
+root_cli [OPTIONS] SUBCOMMAND
+
+
+OPTIONS:
+  -h,     --help              Print this help message and exit 
+  -v,     --verbose           Enable verbose output 
+          --wcli, --write-to-cli 
+                              Write results to command line 
+          --wcsv, --write-to-csv TEXT 
+                              Path for writing results to CSV file 
+          --ocsvsep, --output-csv-sep CHAR [,]  
+                              Separator character for CSV output 
+          --wdat, --write-to-dat TEXT 
+                              Path for writing results to DAT file 
+          --wgnuplot, --write-to-gnuplot TEXT 
+                              Path for writing results to Gnuplot file 
+          --ofmode, --output-file-mode CHAR:{a,o} [o]  
+                              Append or overwrite output file: 'a' for append, 'o' for 
+                              overwrite 
+
+SUBCOMMANDS:
+  csv                         Use CSV input 
+  dat                         Use DAT input 
+  cli                         Use CLI input 
+```
+
+Assuming that `root_cli` is on your `PATH`, the program can be executed with:
 
 ```
-$ ./build/ROOT/ROOT/root_cli <arguments>
+root_cli <arguments>
+# or use the full install/build path of the executable: /path/to/root_cli <arguments>
 ```
-In order to print out helper to pass correctly the arguments `--help` can be added:
+
+In order to print out more information about the arguments and the subcommands:
 
 ```
 $ ./build/ROOT/ROOT/root_cli <arguments>
