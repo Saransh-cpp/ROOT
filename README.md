@@ -117,14 +117,15 @@ Here's a list of examples of possible execution syntax:
 - CLI input, CLI output, Newton-Raphson method to find the root of x^2-4, starting from initial guess 1 (default tolerance and maximum iterations):
 
 ```
-$ ./build/ROOT/ROOT/root_cli cli --wcli --function x^2-4 newton --initial 1.0 --derivative 2*x
+$ ./build/ROOT/ROOT/root_cli --wcli cli --function "x^2-4" newton --initial 1.0 --derivative "2*x"
 ```
 
-- .dat file input called input.dat with first row not being header and " " separating different values, .dat file output called output.dat, Bisection method to find the root of x^3-1, with initial interval [-2,2], verbose output (given tolerance and maximum iterations):
+- .dat input file called input.dat with first row not being header and " " separating different values, .dat file output called output.dat, Bisection method to find the root of x^3-1, with initial interval [-2,2], verbose output (given tolerance and maximum iterations):
 
 ```
-$ ./build/ROOT/ROOT/root_cli --verbose --wdat output dat input --tolerance 1e-3 --max-iteration 100 bisection
+$ ./build/ROOT/ROOT/root_cli --verbose --wdat output dat input 
 ```
+
 where input.dat is:
 
 ```
@@ -132,8 +133,30 @@ function = x^3-1
 method = bisection
 initial = -1
 tolerance = 1e-5
-max_iterations = 100
+max-iterations = 100
 derivative = 2*x
+```
+
+- .csv input file called input.csv with first row which is a header and "," separating different values, .csv file ouput
+called output.csv, Fixed Point Method to find the root of cos(x), with 
+initial guess 0.5, fixed point function cos(x):
+
+```
+$ ./build/ROOT/ROOT/root_cli --wcsv output --ocsvsep , csv input --sep , --header
+```
+
+where input.csv is:
+
+```
+function,method,initial,tolerance,max_iterations,g-function
+'cos(x)',fixed_point,0.5,1e-5,100,'cos(x)'
+```
+
+- CLI input, .dat output file called output.dat and moreover a GNU Plot is created from it as output.png. Chords method to solve
+the equation x^3-8 starting from the two initial points 1 and 3:
+
+```
+$ ./build/ROOT/ROOT/root_cli --wdat output --wgnuplot output cli --function x^3-8 chords --x0 --x1 3
 ```
 
 The installed CLI application can simply be used by:
