@@ -161,7 +161,7 @@ $ ./build/ROOT/ROOT/root_cli --verbose --wdat output dat input
 ```
 
     where input.dat is:
-    
+
     ```
     function = x^3-1
     method = bisection
