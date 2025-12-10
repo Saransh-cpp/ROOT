@@ -17,6 +17,8 @@ if(TEST)
     else()
         message(FATAL_ERROR "external/googletest not found; create a new git submodule")
     endif()
+
+    find_package(Gnuplot REQUIRED)
 endif()
 
 find_package(Doxygen)

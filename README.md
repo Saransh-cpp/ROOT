@@ -7,7 +7,7 @@
 
 ROOT, but not the [particle physics one](https://github.com/root-project/root). Project submission for MATH-458: Programming concepts in scientific computing.
 
-## Project structure
+## Project structure and dependencies
 
 The project uses the recommended [Canonical Project Structure](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2018/p1204r0.html) for C++ projects.
 
@@ -18,21 +18,62 @@ The project uses the recommended [Canonical Project Structure](https://www.open-
 ├── .github                   # GitHub related files
 │   └── workflows             # CI files to build/test/check the project
 ├── .gitignore                # To ignore files from git
+├── .gitmodules
 ├── .pre-commit-config.yaml   # Pre-commit configuration
 ├── CMakeLists.txt            # Top-level CMakeLists.txt
 ├── Doxyfile                  # Doxygen configuration
-├── external                  # External libraries (as git submodules)
-│   └── googletest            # Googletest submodule to run tests
-├── libROOT                   # Developer-facing ROOT library
-│   ├── CMakeLists.txt        # CMakeLists.txt for developer-facing ROOT library
-│   ├── libROOT               # CXX and HXX files
-│   └── tests                 # Tests for the ROOT library
 ├── README.md                 # This file
-└── ROOT                      # User-facing root_cli application/executable
-    ├── CMakeLists.txt        # CMakeLists.txt for user-facing root_cli application/executable
-    ├── ROOT                  # CXX and HXX files
-    └── tests                 # Tests for the root_cli application/executable
+├── ROOT                      # User-facing root_cli application/executable
+│   ├── CMakeLists.txt        # CMakeLists.txt for user-facing root_cli application/executable
+│   ├── ROOT                  # CXX and HXX files
+│   └── tests                 # Tests for the root_cli application/executable
+├── external                  # External libraries (as git submodules)
+│   ├── CLI11                 # CLI11 submodule for the root_cli executable
+│   ├── eigen                 # Eigen submodule for matrix and vector calculations
+│   └── googletest            # Googletest submodule to run tests
+└── libROOT                   # Developer-facing ROOT library
+    ├── CMakeLists.txt        # CMakeLists.txt for developer-facing ROOT library
+    ├── libROOT               # CXX and HXX files
+    └── tests                 # Tests for the ROOT library
 ```
+
+### Dependencies
+
+#### Dependencies for the project
+
+##### Required
+
+The required dependencies are included within the project as git submodules and are pinned to specific
+versions for reproducibility.
+
+- `CLI11` (`v2.6.1`): for constructing the CLI interface for the user-facing `root_cli` application.
+- `Eigen3` (`v5.0.1`): for matric and vector usage / calculations.
+
+##### Optional
+
+These can be installed by a user and are not installed through the project's build system.
+
+- `gnuplot`: for plotting results
+
+#### Required dependencies for the tests
+
+`gnuplot` must be installed before building the project with `-DTEST=ON`. `GoogleTest` is installed automatically if the project is built with `-DTEST=ON`.
+
+- `GoogleTest` (`v1.17.0`): for all tests.
+- `gnuplot`: for testing `gnuplot` related code.
+
+#### Dependencies for the documentation
+
+These can be installed by a user and are not installed through the project's build system.
+
+##### Required
+
+- `doxygen`: for generating the documentation.
+
+##### Optional
+
+- `graphviz`: for generating hierarchy and flow diagrams in the documentation.
+
 
 ## Building and installing the project
 
