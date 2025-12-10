@@ -119,9 +119,42 @@ All of which can also be set in `CMakeLists.txt`.
 
 ## Tests
 
-Tests for the library (`libROOT`) can be found in `libROOT/tests`, and the tests for the application (`root_cli`) can be found in `ROOT/tests`. We follow [test-driven development (TDD)](https://en.wikipedia.org/wiki/Test-driven_development), which means that each code changing PR must have tests to validate the changes. We use `googletest` `v1.17.0` (as a git submodule) to test our code.
+Tests for the library (`libROOT`) can be found in `libROOT/tests`, and the tests for the application (`root_cli`) can be found in `ROOT/tests`. We follow [test-driven development (TDD)](https://en.wikipedia.org/wiki/Test-driven_development), which means that each code changing PR must have tests to validate the changes.
 
 All the following tests and checks run as part of a Continuous Integration pipeline on GitHub Actions (on every PR and push to `main`).
+
+### Structure of tests
+
+```
+./ROOT/tests                                # Tests for ROOT
+├── integration                             # Integration tests for ROOT
+│   ├── CMakeLists.txt                      # Build file for Integration tests
+│   └── test_cli.cpp                        # Tests for the entire root_cli application
+├── test_data                               # Data files used in tests
+│   ├── config.csv
+│   └── config.dat
+└── unit                                    # Unit tests for ROOT
+    ├── CMakeLists.txt                      # Build file for unit tests
+    ├── function_parser_base_tester.hpp     # The parameterized testing class (friend of the class being tested)
+    ├── polynomial_parser_tester.hpp
+    ├── reader_base_tester.hpp
+    ├── reader_csv_tester.hpp
+    ├── test_function_parser.cpp            # Actual tests (calling paramaterized functions from the testing class)
+    ├── test_polynomial_parser.cpp
+    ├── test_reader.cpp
+    ├── test_trigonometric_parser.cpp
+    ├── test_writer.cpp
+    ├── trigonometric_parser_tester.hpp
+    └── writer_tester.hpp
+...
+./libROOT/tests                             # Tests for libROOT
+└── unit                                    # Unit tests for libROOT
+    ├── CMakeLists.txt                      # Build file for unit tests
+    ├── solver_tester.hpp                   # The parameterized testing class (friend of the class being tested)
+    └── test_solver.cpp                     # Actual tests (calling paramaterized functions from the testing class)
+```
+
+## Building and running tests
 
 To build the tests, make sure your submodules are up-to-date (more specifically, the `googletest` submodule):
 
