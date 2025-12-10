@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "writer_base_tester.hpp"
+#include "writer_tester.hpp"
 
 TEST_F(WriterBaseTester, BuildPrinterCLI) {
     Eigen::MatrixX2d values(3, 2);

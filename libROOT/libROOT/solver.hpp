@@ -89,14 +89,14 @@ Eigen::Vector2d Solver<T>::get_previous_result(int step_length) {
 template <>
 void Solver<double>::save_starting_point() {
     if (results.rows() == 0) results.conservativeResize(1, 2);
-    save_results(0, {initial_guess, function(initial_guess)});
+    this->save_results(0, {this->initial_guess, this->function(this->initial_guess)});
 }
 
 template <>
 void Solver<Eigen::Vector2d>::save_starting_point() {
     if (results.rows() == 0) results.resize(1, 2);
     double to_save = initial_guess(1);
-    save_results(0, {to_save, function(to_save)});
+    this->save_results(0, {to_save, this->function(to_save)});
 }
 
 template <typename T>
@@ -114,41 +114,45 @@ Eigen::MatrixX2d Solver<T>::solve() {
 
     save_starting_point();
 
-    if (verbose) {
-        std::cout << "x(0): " << get_previous_result(0)(0) << "; f(x0): " << get_previous_result(0)(1) << std::endl;
+    if (this->verbose) {
+        std::cout << "x(0): " << this->get_previous_result(0)(0) << "; f(x0): " << this->get_previous_result(0)(1)
+                  << std::endl;
     }
 
     int iter = 1;
 
-    while (err > tolerance && abs(get_previous_result(0)(1)) > tolerance && iter < max_iterations) {
-        if (verbose) {
-            std::cout << "x(0): " << get_previous_result(0)(0) << "; f(x0): " << get_previous_result(0)(1) << std::endl;
+    while (err > this->tolerance && abs(this->get_previous_result(0)(1)) > this->tolerance &&
+           iter < this->max_iterations) {
+        if (this->verbose) {
+            std::cout << "x(0): " << this->get_previous_result(0)(0) << "; f(x0): " << this->get_previous_result(0)(1)
+                      << std::endl;
         }
-        solver_step(iter, stepper, err);
+        this->solver_step(iter, stepper, err);
     }
 
-    if (iter == max_iterations && err > tolerance) {
-        std::cerr << "033[31mThe solution did not converge in" << max_iterations << " iterations\033[0m" << std::endl;
+    if (iter == this->max_iterations && err > this->tolerance) {
+        std::cerr << "033[31mThe solution did not converge in" << this->max_iterations << " iterations\033[0m"
+                  << std::endl;
     }
-    if (verbose) {
-        if (err <= tolerance || abs(get_previous_result(0)(1)) <= tolerance) {
+    if (this->verbose) {
+        if (err <= this->tolerance || abs(this->get_previous_result(0)(1)) <= this->tolerance) {
             std::cout << "Converged in " << iter - 1 << " iterations." << std::endl;
         }
     }
-    std::cout << "Final estimate: x = " << get_previous_result(0)(0) << "; f(x) = " << get_previous_result(0)(1)
-              << "; error = " << err << std::endl;
+    std::cout << "Final estimate: x = " << this->get_previous_result(0)(0)
+              << "; f(x) = " << this->get_previous_result(0)(1) << "; error = " << err << std::endl;
 
     return results;
 }
 
 template <typename T>
 void Solver<T>::solver_step(int& iter, std::unique_ptr<StepperBase<T>>& stepper, double& err) {
-    if (verbose) {
+    if (this->verbose) {
         std::cout << "Iteration " << iter << ": ";
     }
     auto new_results = stepper->step(this->get_previous_result(0));
-    save_results(iter, new_results);
-    err = calculate_error(new_results(0), this->get_previous_result(1)(0));
+    this->save_results(iter, new_results);
+    err = this->calculate_error(new_results(0), this->get_previous_result(1)(0));
     ++iter;
 }
 
