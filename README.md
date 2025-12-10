@@ -149,9 +149,9 @@ Here's a list of examples of possible execution syntax:
 
 - CLI input, CLI output, Newton-Raphson method to find the root of x^2-4, starting from initial guess 1 (default tolerance and maximum iterations):
 
-```
-$ ./build/ROOT/ROOT/root_cli --wcli cli --function "x^2-4" newton --initial 1.0 --derivative "2*x"
-```
+    ```
+    root_cli --wcli cli --function "x^2-4" newton --initial 1.0 --derivative "2*x"
+    ```
 
 - DAT input file called input.dat with first row not being header and " " separating different values, .dat file output called output.dat, Bisection method to find the root of x^3-1, with initial interval [-2,2], verbose output (given tolerance and maximum iterations):
 
