@@ -206,22 +206,6 @@ the equation x^3-8 starting from the two initial points 1 and 3:
     root_cli --wdat output --wgnuplot output cli --function x^3-8 chords --x0 --x1 3
     ```
 
-The installed CLI application can simply be used by:
-
-```
-$ <install_path>/bin/root_cli
-# or just root_cli if installed in /usr/local/bin/ on unix for instance
-```
-
-And the shared library can be used inside `cxx` files using:
-
-```
-# pass the path of headers
-g++ <file>.cpp -o <executable_name> -I<install_path>/include
-```
-
-All of which can also be set in `CMakeLists.txt`.
-
 ## Typical program execution
 
 Input reading is handled by a CLI implemented using `CLI11`, the `Reader` classes, and the `Parser` classes. The output is passed from the CLI to one of the Reader classes
@@ -337,3 +321,5 @@ The documentation is automatically built (on every PR) and deployed (on every pu
 ## Limitations and problems
 
 Most of the limitations and problems can be found as independent issues in the [issue tracker on GitHub](https://github.com/Saransh-cpp/ROOT/issues).
+
+## Authors and their contributions
