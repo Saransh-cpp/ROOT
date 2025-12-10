@@ -208,8 +208,8 @@ std::unique_ptr<ConfigBase> ReaderBase::make_config_from_map(
                 std::exit(EXIT_FAILURE);
             }
             double initial = 0.0;
-            auto g-function = FunctionParserBase::parseFunction(it_g->second);
-            return std::make_unique<FixedPointConfig>(tolerance, max_iter, aitken, function, initial, g-function,
+            auto g_function = FunctionParserBase::parseFunction(it_g->second);
+            return std::make_unique<FixedPointConfig>(tolerance, max_iter, aitken, function, initial, g_function,
                                                       verbose);
         }
     }  // switch
