@@ -323,3 +323,7 @@ The documentation is automatically built (on every PR) and deployed (on every pu
 Most of the limitations and problems can be found as independent issues in the [issue tracker on GitHub](https://github.com/Saransh-cpp/ROOT/issues).
 
 ## Authors and their contributions
+
+- **Andrea Saporito** (@andreasaporito): Stepper, Solver, Writer, Printer classes/functionalities, most of the integration tests and some unit tests, and some fixes/refactoring here and there (touching Reader and Parser classes/functionalities, and the build system).
+
+- **Saransh Chopra** (@Saransh-cpp): Top-level CLI executable/application, Reader and Parser classes/functionalities, Project infrastructure (build system {code, docs, tests}, project structure, CI/CD), most of the unit tests and some integration tests, and some refactoring here and there (touching Stepper, Solver, Writer, and Printer classes/functionalities).
