@@ -179,12 +179,12 @@ initial guess 0.5, fixed point function cos(x):
 $ ./build/ROOT/ROOT/root_cli --wcsv output --ocsvsep , csv input --sep , --header
 ```
 
-where input.csv is:
-
-```
-function,method,initial,tolerance,max_iterations,g-function
-'cos(x)',fixed_point,0.5,1e-5,100,'cos(x)'
-```
+    where input.csv is:
+    
+    ```
+    function,method,initial,tolerance,max_iterations,g-function
+    'cos(x)',fixed_point,0.5,1e-5,100,'cos(x)'
+    ```
 
 - CLI input, .dat output file called output.dat and moreover a GNU Plot is created from it as output.png. Chords method to solve
 the equation x^3-8 starting from the two initial points 1 and 3:
