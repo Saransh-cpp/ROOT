@@ -103,7 +103,6 @@ Which will put the library's header files and the application `<install_path>/in
 
 TLDR;
 ```
-
 ROOT Command Line Interface
 
 
