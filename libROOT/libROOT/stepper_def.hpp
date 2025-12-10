@@ -3,13 +3,13 @@
  * @brief Contains definitions for all the Classes Stepper to compute steps of numerical methods to find the root
  * of non-linear equations
  *
- * @author andreasaporito
- *
  * The stepper classes will store the required functions, derivatives, and booleans to define how to compute the
  * step.
  * Each inherited class specializes the abstract Stepper to a real Stepper of a certain method.
  * The computation step is overridden in each class, and some additional arguments are saved depending on the
  * method. The generic Stepper constructor is inherited and the new specialized object will type the templated one.
+ *
+ * @author andreasaporito
  */
 #ifndef ROOT_STEPPER_DEF_HPP
 #define ROOT_STEPPER_DEF_HPP
@@ -27,6 +27,9 @@ class StepperBase {
     bool aitken_requirement;                 //!< Option to use Aitken's acceleration
     /**
      * @brief Virtual function to compute the step for the method -> overridden by all the methods
+     *
+     * @param previous_iteration 2-dimensional vector storing x(i-1) and f(x(i-1)) - previous guesses
+     * @return 2-dimensional vector storing x(i) and f(x(i)) - new guesses
      */
     virtual Eigen::Vector2d compute_step(Eigen::Vector2d) = 0;
     /**

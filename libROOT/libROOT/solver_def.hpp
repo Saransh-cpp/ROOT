@@ -2,17 +2,18 @@
  * @file solver_def.hpp
  * @brief Contains definition of class Solver to find the root of a non-linear equation with some numerical methods
  *
- * @author andreasaporito
- *
  * The Solver class will handle all the methods and arguments required for managing a solving process to find
  * the root of a Non-linear function.
  * For this scope, it will run a while loop and compute the error to check convergence, and will create an object
  * of the Stepper class to actually computing the step, passing the required arguments to it.
  * The results will be eventually stored in a Matrix, which will we passed to a Writer object to print it out in
  * a file or in the output window.
+ *
+ * @author andreasaporito
  */
 #ifndef ROOT_SOLVER_DEF_HPP
 #define ROOT_SOLVER_DEF_HPP
+
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 #include <functional>
@@ -37,9 +38,6 @@ class Solver {
     bool verbose;               //!< Verbose mode flag
     std::function<double(double)>
         derivative_or_function_g;  //!< Stores the derivative or g_function of the function if needed
-    /** \brief Stores in the first column the points computed at each step, in
-     * the second the value of the function at those points.
-     */
     Eigen::MatrixX2d results;  //!< Stores in the first column the points computed at each step, in the second the value
                                //!< of the function at those points.
     std::function<double(double)>
@@ -85,6 +83,7 @@ class Solver {
   public:
     /**
      * @brief Constructor for Solver object
+     *
      * @param fun The function to find the root of
      * @param initial_guess The initial guess(es) or interval
      * @param method The method which will be used for the Solution
@@ -95,6 +94,18 @@ class Solver {
      */
     Solver(std::function<double(double)> fun, T initial_guess, const Method method, int max_iterations,
            double tolerance, bool aitken_mode, bool verbose);
+    /**
+     * @brief Constructor for Solver object
+     *
+     * @param fun The function to find the root of
+     * @param initial_guess The initial guess(es) or interval
+     * @param method The method which will be used for the Solution
+     * @param max_iterations Maximum iterations in which the method has to converge
+     * @param tolerance The tolerance below which the error/function will make the method converge
+     * @param aitken_mode Option to apply Aitken's acceleration
+     * @param verbose Option to give verbose output
+     * @param derivative_or_function_g The derivative of the function (for Newton) or g_function (for Fixed Point)
+     */
     Solver(std::function<double(double)> fun, T initial_guess, const Method method, int max_iterations,
            double tolerance, bool aitken_mode, bool verbose, std::function<double(double)> derivative_or_function_g);
     /** @brief Calls everything required to Solve with a method.

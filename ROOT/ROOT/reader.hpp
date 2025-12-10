@@ -6,6 +6,9 @@
  * which are responsible for reading configuration data from various file formats
  * (e.g., CSV, DAT) and producing ConfigBase objects.
  *
+ * This file was written with constant LLM assistance (vibe coded). I built
+ * the structure and logic, and the LLM helped fill in the details.
+ *
  * @author Saransh-cpp
  */
 #ifndef READER_HPP
