@@ -170,7 +170,7 @@ $ ./build/ROOT/ROOT/root_cli --wcli cli --function "x^2-4" newton --initial 1.0 
     derivative = 2*x
     ```
 
-- .csv input file called input.csv with first row which is a header and "," separating different values, .csv file ouput
+- CSV input file called input.csv with first row which is a header and "," separating different values, .csv file ouput
 called output.csv, Fixed Point Method to find the root of cos(x), with
 initial guess 0.5, fixed point function cos(x):
 
