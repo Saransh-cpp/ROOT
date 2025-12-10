@@ -142,8 +142,9 @@ root_cli <arguments>
 In order to print out more information about the arguments and the subcommands:
 
 ```
-$ ./build/ROOT/ROOT/root_cli <arguments>
+root_cli <arguments>
 ```
+
 Every additional needed function must be added together with the function to find the root of.
 Here's a list of examples of possible execution syntax:
 
