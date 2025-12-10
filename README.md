@@ -175,9 +175,9 @@ $ ./build/ROOT/ROOT/root_cli --verbose --wdat output dat input
 called output.csv, Fixed Point Method to find the root of cos(x), with
 initial guess 0.5, fixed point function cos(x):
 
-```
-$ ./build/ROOT/ROOT/root_cli --wcsv output --ocsvsep , csv input --sep , --header
-```
+    ```
+    root_cli --wcsv output --ocsvsep , csv input --sep , --header
+    ```
 
     where input.csv is:
 
