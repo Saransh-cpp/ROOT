@@ -189,9 +189,9 @@ $ ./build/ROOT/ROOT/root_cli --wcsv output --ocsvsep , csv input --sep , --heade
 - CLI input, .dat output file called output.dat and moreover a GNU Plot is created from it as output.png. Chords method to solve
 the equation x^3-8 starting from the two initial points 1 and 3:
 
-```
-$ ./build/ROOT/ROOT/root_cli --wdat output --wgnuplot output cli --function x^3-8 chords --x0 --x1 3
-```
+    ```
+    root_cli --wdat output --wgnuplot output cli --function x^3-8 chords --x0 --x1 3
+    ```
 
 The installed CLI application can simply be used by:
 
