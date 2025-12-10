@@ -4,7 +4,7 @@ OUTPUT_DIRECTORY       = docs/
 
 INPUT                  = .
 USE_MDFILE_AS_MAINPAGE = ./README.md
-EXCLUDE                = ./external ./build ./.clang-tidy ./.clang-format
+EXCLUDE                = ./external ./build ./.clang-tidy ./.clang-format ./cmake-build-debug ./cmake-build-release
 
 FILE_PATTERNS          = *.cxx *.cpp *.c *.h *.hxx *.hpp *.h++ *.md *.txt *.clang-format *.clang-tidy
 
