@@ -208,6 +208,10 @@ std::unique_ptr<ConfigBase> ReaderBase::make_config_from_map(
                 std::exit(EXIT_FAILURE);
             }
             double initial = 0.0;
+            if (!parseDouble(it_x0->second, initial)) {
+                std::cerr << "\033[31mmake_config_from_map: invalid initial\033[0m\n";
+                std::exit(EXIT_FAILURE);
+            }
             auto g_function = FunctionParserBase::parseFunction(it_g->second);
             return std::make_unique<FixedPointConfig>(tolerance, max_iter, aitken, function, initial, g_function,
                                                       verbose);

@@ -60,7 +60,7 @@ int main(int argc, char** argv) {
     char csv_quote = '"';
     csv->add_option("--quote", csv_quote, "Quote/delimiter character for CSV file")->capture_default_str();
     bool csv_header = true;
-    csv->add_option("--header", csv_header, "Indicates whether the first row is a header row")->capture_default_str();
+    csv->add_flag("--header", csv_header, "Indicates whether the first row is a header row")->capture_default_str();
 
     // DAT
     auto* dat = app.add_subcommand("dat", "Use DAT input");

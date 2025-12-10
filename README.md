@@ -171,10 +171,10 @@ Here's a list of examples of possible execution syntax:
     root_cli --wcli cli --function "x^2-4" newton --initial 1.0 --derivative "2*x"
     ```
 
-- DAT input file called input.dat with first row not being header and " " separating different values, .dat file output called output.dat, Bisection method to find the root of x^3-1, with initial interval [-2,2], verbose output (given tolerance and maximum iterations):
+- DAT input file called input.dat, DAT output file called output.dat, Bisection method to find the root of x^3-1, with initial interval [-2,2], verbose output (given tolerance and maximum iterations):
 
     ```
-    root_cli --verbose --wdat output dat input
+    root_cli --verbose --wdat output dat --file input.dat
     ```
 
     where input.dat is:
@@ -182,32 +182,43 @@ Here's a list of examples of possible execution syntax:
     ```
     function = x^3-1
     method = bisection
-    initial = -1
+    interval_a = -2
+    interval_b = 2
     tolerance = 1e-5
     max-iterations = 100
     derivative = 2*x
     ```
 
-- CSV input file called input.csv with first row which is a header and "," separating different values, .csv file ouput
-called output.csv, Fixed Point Method to find the root of cos(x), with
-initial guess 0.5, fixed point function cos(x):
+- CSV input file called input.csv with first row which is a header and "," separating different values, CSV output file called output.csv, Fixed Point Method to find the root of x^2-x, with initial guess 0.5, fixed point function x^2:
 
     ```
-    root_cli --wcsv output --ocsvsep , csv input --sep , --header
+    root_cli --verbose --wcsv output --ocsvsep , csv --file input.csv --sep , --header
     ```
 
     where input.csv is:
 
     ```
     function,method,initial,tolerance,max_iterations,g-function
-    'cos(x)',fixed_point,0.5,1e-5,100,'cos(x)'
+    x^2-x,fixed_point,0.5,1e-5,100,x^2
     ```
 
-- CLI input, .dat output file called output.dat and moreover a GNU Plot is created from it as output.png. Chords method to solve
-the equation x^3-8 starting from the two initial points 1 and 3:
+- Same as above but with aitken acceleration (will converge faster):
 
     ```
-    root_cli --wdat output --wgnuplot output cli --function x^3-8 chords --x0 --x1 3
+    root_cli --verbose --wcsv output --ocsvsep , csv --file input.csv --sep , --header
+    ```
+
+    where input.csv is:
+
+    ```
+    function,method,initial,tolerance,max_iterations,g-function,aitken
+    x^2-x,fixed_point,0.5,1e-5,100,x^2,true
+    ```
+
+- CLI input, DAT output file called output.dat, gnuplot writing method (a GNU Plot named output.png is created), Chords method to solve the equation x^3-8 starting from the two initial points 1 and 3:
+
+    ```
+    root_cli --wgnuplot output cli --function x^3-8 chords --x0 1 --x1 3
     ```
 
 ## Typical program execution
@@ -332,6 +343,6 @@ Most of the limitations and problems can be found as independent issues in the [
 
 ## Authors and their contributions
 
-- **Andrea Saporito** (@andreasaporito): Stepper, Solver, Writer, Printer classes/functionalities, most of the integration tests and some unit tests, and some fixes/refactoring here and there (touching Reader and Parser classes/functionalities, and the build system).
+- **Andrea Saporito** ([@andreasaporito](https://github.com/andreasaporito)): Stepper, Solver, Writer, Printer classes/functionalities, most of the integration tests and some unit tests, and some fixes/refactoring here and there (touching Reader and Parser classes/functionalities, and the build system).
 
-- **Saransh Chopra** (@Saransh-cpp): Top-level CLI executable/application, Reader and Parser classes/functionalities, Project infrastructure (build system {code, docs, tests}, project structure, CI/CD), most of the unit tests and some integration tests, and some refactoring here and there (touching Stepper, Solver, Writer, and Printer classes/functionalities).
+- **Saransh Chopra** ([@Saransh-cpp](https://github.com/Saransh-cpp)): Top-level CLI executable/application, Reader and Parser classes/functionalities, Project infrastructure (build system {code, docs, tests}, project structure, CI/CD), most of the unit tests and some integration tests, and some refactoring here and there (touching Stepper, Solver, Writer, and Printer classes/functionalities).
