@@ -146,31 +146,31 @@ std::unique_ptr<ConfigBase> ReaderBase::make_config_from_map(
     // Build concrete config based on method
     switch (method) {
         case Method::BISECTION: {
-            auto it_a = config_map.find("initial_point");
-            auto it_b = config_map.find("final_point");
+            auto it_a = config_map.find("interval_a");
+            auto it_b = config_map.find("interval_b");
             if (it_a == config_map.end() || it_b == config_map.end()) {
-                std::cerr << "\033[31mmake_config_from_map: bisection requires initial_point and final_point\033[0m\n";
+                std::cerr << "\033[31mmake_config_from_map: bisection requires interval_a and interval_b\033[0m\n";
                 std::exit(EXIT_FAILURE);
             }
-            double initial_point = 0.0;
-            double final_point = 0.0;
-            if (!parseDouble(it_a->second, initial_point) || !parseDouble(it_b->second, final_point)) {
+            double interval_a = 0.0;
+            double interval_b = 0.0;
+            if (!parseDouble(it_a->second, interval_a) || !parseDouble(it_b->second, interval_b)) {
                 std::cerr << "\033[31mmake_config_from_map: invalid bisection endpoints\033[0m\n";
                 std::exit(EXIT_FAILURE);
             }
-            return std::make_unique<BisectionConfig>(tolerance, max_iter, aitken, function, initial_point, final_point,
+            return std::make_unique<BisectionConfig>(tolerance, max_iter, aitken, function, interval_a, interval_b,
                                                      verbose);
         }
 
         case Method::NEWTON: {
-            auto it_x0 = config_map.find("initial_guess");
+            auto it_x0 = config_map.find("initial");
             if (it_x0 == config_map.end()) {
-                std::cerr << "\033[31mmake_config_from_map: newton requires initial_guess\033[0m\n";
+                std::cerr << "\033[31mmake_config_from_map: newton requires initial\033[0m\n";
                 std::exit(EXIT_FAILURE);
             }
-            double initial_guess = 0.0;
-            if (!parseDouble(it_x0->second, initial_guess)) {
-                std::cerr << "\033[31mmake_config_from_map: invalid initial_guess\033[0m\n";
+            double initial = 0.0;
+            if (!parseDouble(it_x0->second, initial)) {
+                std::cerr << "\033[31mmake_config_from_map: invalid initial\033[0m\n";
                 std::exit(EXIT_FAILURE);
             }
             auto it_df = config_map.find("derivative");
@@ -179,13 +179,13 @@ std::unique_ptr<ConfigBase> ReaderBase::make_config_from_map(
                 std::exit(EXIT_FAILURE);
             }
             std::function<double(double)> function_derivative = FunctionParserBase::parseFunction(it_df->second);
-            return std::make_unique<NewtonConfig>(tolerance, max_iter, aitken, function, function_derivative,
-                                                  initial_guess, verbose);
+            return std::make_unique<NewtonConfig>(tolerance, max_iter, aitken, function, function_derivative, initial,
+                                                  verbose);
         }
 
         case Method::CHORDS: {
-            auto it_x0 = config_map.find("initial_point1");
-            auto it_x1 = config_map.find("initial_point2");
+            auto it_x0 = config_map.find("x0");
+            auto it_x1 = config_map.find("x1");
             if (it_x0 == config_map.end() || it_x1 == config_map.end()) {
                 std::cerr << "\033[31mmake_config_from_map: chords requires two initial points\033[0m\n";
                 std::exit(EXIT_FAILURE);
@@ -201,15 +201,15 @@ std::unique_ptr<ConfigBase> ReaderBase::make_config_from_map(
         }
 
         case Method::FIXED_POINT: {
-            auto it_x0 = config_map.find("initial_guess");
+            auto it_x0 = config_map.find("initial");
             auto it_g = config_map.find("function_g");
             if (it_x0 == config_map.end() || it_g == config_map.end()) {
-                std::cerr << "\033[31mmake_config_from_map: fixed_point requires initial_guess and function_g\033[0m\n";
+                std::cerr << "\033[31mmake_config_from_map: fixed_point requires initial and function_g\033[0m\n";
                 std::exit(EXIT_FAILURE);
             }
-            double initial_guess = 0.0;
+            double initial = 0.0;
             auto function_g = FunctionParserBase::parseFunction(it_g->second);
-            return std::make_unique<FixedPointConfig>(tolerance, max_iter, aitken, function, initial_guess, function_g,
+            return std::make_unique<FixedPointConfig>(tolerance, max_iter, aitken, function, initial, function_g,
                                                       verbose);
         }
     }  // switch
@@ -312,9 +312,9 @@ std::unique_ptr<ConfigBase> ReaderCSV::read(CLI::App* app, bool verbose) {
         }
     } else {
         // positional mapping documented here:
-        std::vector<std::string> posnames = {"method",     "tolerance",    "max_iterations", "aitken",
-                                             "function",   "derivative",   "initial_point",  "final_point",
-                                             "function_g", "initial_guess"};
+        std::vector<std::string> posnames = {"method",     "tolerance",  "max_iterations", "aitken",     "function",
+                                             "derivative", "interval_a", "interval_b",     "function_g", "initial",
+                                             "x0",         "x1"};
         for (size_t i = 0; i < values.size() && i < posnames.size(); ++i) {
             config_map[posnames[i]] = values[i];
         }
@@ -335,9 +335,6 @@ std::unique_ptr<ConfigBase> ReaderCSV::read(CLI::App* app, bool verbose) {
 
 std::unique_ptr<ConfigBase> ReaderDAT::read(CLI::App* app, bool verbose) {
     this->filename = app->get_option("--file")->as<std::string>();
-    this->sep = app->get_option("--sep")->as<char>();
-    this->quote = app->get_option("--quote")->as<char>();
-    this->has_header = app->get_option("--header")->as<bool>();
     std::ifstream ifs(filename);
     if (!ifs) {
         std::cerr << "\033[31mReaderDAT: failed to open file: " << filename << "\033[0m\n";
@@ -403,8 +400,7 @@ std::unique_ptr<ConfigBase> ReaderCLI::read(CLI::App* app, bool verbose) {
         if (verbose) {
             std::cout << "  derivative = "
                       << app->get_subcommand("newton")->get_option("--derivative")->as<std::string>() << "\n";
-            std::cout << "  initial_guess = " << app->get_subcommand("newton")->get_option("--initial")->as<double>()
-                      << "\n";
+            std::cout << "  initial = " << app->get_subcommand("newton")->get_option("--initial")->as<double>() << "\n";
         }
     } else if (*app->get_subcommand("chords")) {
         config = std::make_unique<ChordsConfig>(
@@ -429,8 +425,8 @@ std::unique_ptr<ConfigBase> ReaderCLI::read(CLI::App* app, bool verbose) {
         if (verbose) {
             std::cout << "  g_function = "
                       << app->get_subcommand("fixed_point")->get_option("--g-function")->as<std::string>() << "\n";
-            std::cout << "  initial_guess = "
-                      << app->get_subcommand("fixed_point")->get_option("--initial")->as<double>() << "\n";
+            std::cout << "  initial = " << app->get_subcommand("fixed_point")->get_option("--initial")->as<double>()
+                      << "\n";
         }
     } else if (*app->get_subcommand("bisection")) {
         config = std::make_unique<BisectionConfig>(
