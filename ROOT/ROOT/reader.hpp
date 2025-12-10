@@ -34,7 +34,6 @@ class ReaderBase {
     std::string filename;  //!< The input filename to read from.
     char sep;              //!< Field separator character.
     char quote;            //!< Quote/delimiter character.
-    bool has_header;       //!< Indicates whether the first row is a header row.
     /**
      * @brief Virtual destructor for ReaderBase.
      *

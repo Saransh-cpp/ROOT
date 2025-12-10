@@ -159,7 +159,8 @@ root_cli <arguments>
 In order to print out more information about the arguments and the subcommands:
 
 ```
-root_cli <arguments>
+root_cli --help
+root_cli <subcommand> --help
 ```
 
 Every additional needed function must be added together with the function to find the root of.
@@ -171,7 +172,7 @@ Here's a list of examples of possible execution syntax:
     root_cli --wcli cli --function "x^2-4" newton --initial 1.0 --derivative "2*x"
     ```
 
-- DAT input file called input.dat, DAT output file called output.dat, Bisection method to find the root of x^3-1, with initial interval [-2,2], verbose output (given tolerance and maximum iterations):
+- DAT input file called input.dat, DAT output file called output.dat, Bisection method to find the root of x^3-1, with initial interval [-2,2], and verbose output (given tolerance and maximum iterations):
 
     ```
     root_cli --verbose --wdat output dat --file input.dat
@@ -189,10 +190,10 @@ Here's a list of examples of possible execution syntax:
     derivative = 2*x
     ```
 
-- CSV input file called input.csv with first row which is a header and "," separating different values, CSV output file called output.csv, Fixed Point Method to find the root of x^2-x, with initial guess 0.5, fixed point function x^2:
+- CSV input file called input.csv with first row which is a header and "," separating different values, CSV output file called output.csv, Fixed Point Method to find the root of x^2-x, with initial guess 0.5, fixed point function x^2, and verbose output (given tolerance and maximum iterations)::
 
     ```
-    root_cli --verbose --wcsv output --ocsvsep , csv --file input.csv --sep , --header
+    root_cli --verbose --wcsv output --ocsvsep , csv --file input.csv --sep ,
     ```
 
     where input.csv is:
@@ -205,7 +206,7 @@ Here's a list of examples of possible execution syntax:
 - Same as above but with aitken acceleration (will converge faster):
 
     ```
-    root_cli --verbose --wcsv output --ocsvsep , csv --file input.csv --sep , --header
+    root_cli --verbose --wcsv output --ocsvsep , csv --file input.csv --sep ,
     ```
 
     where input.csv is:

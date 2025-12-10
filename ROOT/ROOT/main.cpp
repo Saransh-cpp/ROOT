@@ -59,8 +59,6 @@ int main(int argc, char** argv) {
     csv->add_option("--sep", csv_sep, "Separator character for CSV file")->capture_default_str();
     char csv_quote = '"';
     csv->add_option("--quote", csv_quote, "Quote/delimiter character for CSV file")->capture_default_str();
-    bool csv_header = true;
-    csv->add_flag("--header", csv_header, "Indicates whether the first row is a header row")->capture_default_str();
 
     // DAT
     auto* dat = app.add_subcommand("dat", "Use DAT input");
