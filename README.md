@@ -60,6 +60,41 @@ Which will put the library's header files and the application `<install_path>/in
 
 ## Usage
 
+The program can be executed with:
+
+```
+$ ./build/ROOT/ROOT/root_cli <arguments>
+```
+In order to print out helper to pass correctly the arguments `--help` can be added:
+
+```
+$ ./build/ROOT/ROOT/root_cli <arguments>
+```
+Every additional needed function must be added together with the function to find the root of.
+Here's a list of examples of possible execution syntax:
+
+- CLI input, CLI output, Newton-Raphson method to find the root of x^2-4, starting from initial guess 1 (default tolerance and maximum iterations):
+
+```
+$ ./build/ROOT/ROOT/root_cli cli --wcli --function x^2-4 newton --initial 1.0 --derivative 2*x
+```
+
+- .dat file input called input.dat with first row not being header and " " separating different values, .dat file output called output.dat, Bisection method to find the root of x^3-1, with initial interval [-2,2], verbose output (given tolerance and maximum iterations):
+
+```
+$ ./build/ROOT/ROOT/root_cli --verbose --wdat output dat input --tolerance 1e-3 --max-iteration 100 bisection
+```
+where input.dat is:
+
+```
+function = x^3-1
+method = bisection
+initial = -1
+tolerance = 1e-5
+max_iterations = 100
+derivative = 2*x
+```
+
 The installed CLI application can simply be used by:
 
 ```
