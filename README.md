@@ -52,22 +52,19 @@ Reading and parsing is handled by the `ReaderBase` and `FunctionParserBase` daug
 
 ### Solver and Steppers
 
-The solution of the non-linear equation is completely handled by two types of `class`es: `Solver` and `StepperBase`, with her daughter specialized for each method (for now: Newton-Raphson, Bisection, Chords, Fixed Point).
-The `Solver` class is constructed with all the inputs required and taken from the previous reading and configuring steps, and has methods to manage the outer passages involved in the solution, all of which are called inside a unique `solve` method. These steps involve mainly the convergence check, the results saving, and the definition and call of the object specialized in computing the single step of the numerical method itself.
-`Solver` has no daughter classes but could be refactored to be daughter of a `SolverBase` class which does everything which is in common for all the numerical methods (convergence check and while loop); this refactored `SolverNonLinear` would inherit all the methods from the mother class and add arguments for the functions and the boolean to require Aitken's acceleration. This new `SolverNonLinear` could have daughter classes for solving single equations (our current `Solver`) or systems of them,  which would differ just in the type of the arguments saved (e.g. derivative/jacobian for Newton-Raphson). This draft idea, which could be substituted by a fully templated version of the `SolverNonLinear` class, comes from the fact that templating is already used to define the different kinds of initial guesses allowed, and it is not possible  (in C++) to partially specialize different templates. Another more brute-force idea could be to define all the different arguments as matrices and then use them as 1 by 1 matrices (or vectors) for the single equation case, without creating two daughter classes. All of these ideas would have to be adapted for the `Stepper` classes too.
-A `StepperBase` object is constructed inside the `Solver::solve` method, initially as completely virtual. Then it is converted into a specialized daughter class of it, with all the required arguments to use for the single step computation.
-The only method executed by the Steppers is `compute_step` which computes a single step of the numerical method and returns the results for it.
-To allow more numerical methods, it is possible to simply define new daughter classes with different `compute_step` algorithms and potentially different arguments to store.
+Solving non-linear equation is completely handled by two classes: `Solver` and `StepperBase`. `StepperBase` has specialized child classes for each method (for now: Newton-Raphson, Bisection, Chords, Fixed Point).
+The `Solver` class is constructed with the data stored in `ConfigBase` child classes, and has methods to manage the high-level API involved in solving an equation. The `solve` method of the `Solver` class comprises of multiple internal calls, mainly involving convergence check, results saving, instantiating an object of one of the specialized `StepperBase` child classes, and calling the relevant method to compute single step of the numerical method.
+
+`Solver` has no child classes but it could be refactored to be child of a `SolverBase` class (refactoring and abstracting common steps, such as the convergence check and the solve loop). The refactored `SolverNonLinear` class would inherit all the methods from the abstract class and add arguments for the functions and the boolean to require Aitken's acceleration. The new `SolverNonLinear` could have child classes for solving single equations (our current `Solver`) or systems of equations, which would differ just in the type of the arguments saved (e.g. derivative/jacobian for Newton-Raphson). This draft idea, which could be substituted by a fully templated version of the `SolverNonLinear` class, comes from the fact that templating is already used to define the different kinds of initial guesses allowed, and it is not possible (in C++) to partially specialize different templates. Another more brute-force idea could be to define all the different arguments as matrices and then use them as 1 X 1 matrices (or vectors) for the single equation case, without creating two daughter classes. All of these ideas would have to be adapted for the `Stepper` classes too.
+
+`Solver::solve` declares a `StepperBase` pointer and later instantiated it to point to an object of one of its child class, passing down all the required arguments to use for a single step computation. The only public method executed by the `Stepper`s is `compute_step`, which computes a single step of the numerical method and returns the results. To allow more numerical methods, it is possible to simply define new child classes with different `compute_step` algorithms and potentially different arguments to store.
 
 ### Writer and Printers
 
-The writing part of the project is done again by two major `class`es: `Writer` and `PrinterBase`, with her daughter classes for each output destination available.
-All the inputs required to define how and where to write the results are defined in the reading and configuring step.
-What is important to point out is that these classes are not defined as only applicable for our specific project, but can write anything correctly passed (potentially with slight refactoring of the code).
-This classes' methods are coded just for the typed version required in out project, but different typed version would be easy to add.
-`Writer` has arguments to store what to write and how, and methods (all of which are called by a unique `write` one) to define, convert and handle a `PrinterBase` object.
-`PrinterBase` is then specialized for a certain output destination, all of which have a overriden `write_values` method which prints a given input on a stored output.
-To allow different writing destinations, new daughter classes can be defined inheriting from existing ones.
+The writing part of the project is handled by two classes: `Writer` and `PrinterBase`, with `PrinterBase` having child classes for each output type. The output type and other relevant information is carried down through the `ConfigBase` classes (defined by the `Reader`s).
+Importantly, these classes are not only defined for our specific project, but can write anything correctly passed (potentially with slight refactoring of the code). The classes' methods are implemented just for the type required in our project, but different typed versions would be easy to add.
+
+`Writer` stores what to write and how, the writing method, and implements a high-level `write` method to instantiate an object of one of the `PrinterBase` child classes. `PrinterBase` has child classes specialized for certain output types, all of which have an overwritten `write_values` method which prints a given input on a stored output. To allow different writing destinations, new child classes can be defined inheriting from the existing ones.
 
 ## Dependencies
 
@@ -241,12 +238,9 @@ Here's a list of examples of possible execution syntax:
 
 Input reading is handled by a CLI implemented using `CLI11`, which passes the read options to the appropriate `ReaderBase` daughter class. The `read` method of the `ReaderBase` daughter classes construct and return a `ConfigBase` daughter class object. The `ReaderBase` daughter classes also use the `FunctionParserBase` daughter classes internally to parse the function (and derivation + g function) inputted by user (string to a C++ function). The information stored in `ConfigBase` daughter classes is then passed down to the `Solver` class to run the algorithm.
 
-The `solve` method of `Solver` construct and converts a `StepperBase` daughter class object, handles its methods calls, and finally returns the matrix of the results of the computation performed.
-`compute_step` method of each `StepperBase` daughter class gets the previous iteration and computes and returns the new guess, which will be saved and checked by `Solver`'s methods.
-The final results returned by `solve` are then passed down to the `Writer` class to write them.
+The `solve` method of `Solver` constructs a `StepperBase` child class object, handles its methods calls, and finally returns the matrix of the results of the computation performed. `compute_step` method of each `StepperBase` child class gets the previous iteration and computes and returns the new guess, which will be saved and checked by `Solver`'s methods. The final results returned by `solve` are then passed down to the `Writer` class to write them.
 
-The `write` method of `Writer` construct and converts a `PrinterBase` daughter class object, and handles its methods calls.
-`write_values` method of each `StepperBase` daughter class gets a certain value to be printed and prints it out in a defined destination.
+The `write` method of `Writer` construct a `PrinterBase` child class object, and handles its methods calls. `write_values` method of each `StepperBase` child class gets a certain value to be printed and prints it out in a defined destination.
 
 ## Tests
 
