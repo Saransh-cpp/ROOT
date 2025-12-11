@@ -148,8 +148,8 @@ OPTIONS:
                               Separator character for CSV output
           --wdat, --write-to-dat TEXT
                               Path for writing results to DAT file
-          --wgnuplot, --write-to-gnuplot TEXT
-                              Path for writing results to Gnuplot file
+          --wgnuplot, --write-to-gnuplot Needs: --wdat
+                              Write results to Gnuplot file
           --ofmode, --output-file-mode CHAR:{a,o} [o]
                               Append or overwrite output file: 'a' for append, 'o' for
                               overwrite
@@ -229,7 +229,7 @@ Here's a list of examples of possible execution syntax:
 - CLI input, DAT output file called output.dat, gnuplot writing method (a GNU Plot named output.png is created), Chords method to solve the equation x^3-8 starting from the two initial points 1 and 3:
 
     ```
-    root_cli --wdat output --wgnuplot output cli --function x^3-8 chords --x0 1 --x1 3
+    root_cli --wdat output --wgnuplot cli --function x^3-8 chords --x0 1 --x1 3
     ```
 
 ## Typical program execution
