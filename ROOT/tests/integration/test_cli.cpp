@@ -72,7 +72,7 @@ TEST(NewtonMethodWithReaderCSVWriterGNUPlot, QuadraticConvergesToMinus2) {
 
     std::string cmd = exe +
                       " --wdat result"
-                      " --wgnuplot result"
+                      " --wgnuplot"
                       " csv --file " +
                       filename;
 
@@ -133,7 +133,7 @@ TEST(NewtonMethodWithReaderDATWriterGNUPlot, QuadraticConvergesToMinus2) {
 
     std::string cmd = exe +
                       " --wdat result"
-                      " --wgnuplot result"
+                      " --wgnuplot"
                       " dat --file " +
                       filename;
 

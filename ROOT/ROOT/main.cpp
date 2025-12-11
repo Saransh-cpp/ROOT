@@ -39,9 +39,9 @@ int main(int argc, char** argv) {
         ->capture_default_str();
 
     std::string write_to_dat;
-    app.add_option("--wdat,--write-to-dat", write_to_dat, "Path for writing results to DAT file");
-    std::string write_with_gnuplot;
-    app.add_option("--wgnuplot,--write-to-gnuplot", write_with_gnuplot, "Path for writing results to Gnuplot file");
+    auto* wdat = app.add_option("--wdat,--write-to-dat", write_to_dat, "Path for writing results to DAT file");
+    bool write_with_gnuplot = false;
+    app.add_flag("--wgnuplot,--write-to-gnuplot", write_with_gnuplot, "Write results to Gnuplot file")->needs(wdat);
 
     char append_or_overwrite = 'o';
     app.add_option("--ofmode,--output-file-mode", append_or_overwrite,
@@ -194,8 +194,8 @@ int main(int argc, char** argv) {
                                         append_or_overwrite == 'o');
         writer.write();
     } else if (!write_to_dat.empty()) {
-        if (!write_with_gnuplot.empty()) {
-            Writer<Eigen::MatrixX2d> writer(results, WritingMethod::GNUPLOT, write_with_gnuplot, ',',
+        if (write_with_gnuplot) {
+            Writer<Eigen::MatrixX2d> writer(results, WritingMethod::GNUPLOT, write_to_dat, ' ',
                                             append_or_overwrite == 'o');
             writer.write();
         } else {

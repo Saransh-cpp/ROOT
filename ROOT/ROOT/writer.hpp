@@ -38,7 +38,7 @@ void Writer<Eigen::MatrixX2d>::write() {
     // LLM
     if (auto gp = dynamic_cast<PrinterGNUPlot<Eigen::Vector2d>*>(printer.get())) {
         gp->generate_gnuplot_script();
-        std::cout << "Gnuplot script generated: plot.plt\n";
+        std::cout << "Gnuplot script generated: " << this->filename << ".plt\n";
     }
 }
 
@@ -59,7 +59,8 @@ void Writer<T>::build_printer(std::unique_ptr<PrinterBase<V>>& printer) {
             printer = std::make_unique<PrinterGNUPlot<V>>(this->filename, this->overwrite);
             break;
         default:
-            throw std::runtime_error("Unknown writing method");
+            std::cerr << "\033[31mError: Unknown writing method.\033[0m\n";
+            std::exit(EXIT_FAILURE);
     }
 }
 
@@ -85,7 +86,8 @@ PrinterFile<V>::PrinterFile(const std::string& fname, bool ow_mode) {
     }
 
     if (!file.is_open()) {
-        throw std::runtime_error("File could not be opened");
+        std::cerr << "\033[31mError: could not open file " << this->filename << " for writing.\033[0m\n";
+        std::exit(EXIT_FAILURE);
     }
 }
 
