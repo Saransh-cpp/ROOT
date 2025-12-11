@@ -52,7 +52,22 @@ Reading and parsing is handled by the `ReaderBase` and `FunctionParserBase` daug
 
 ### Solver and Steppers
 
+The solution of the non-linear equation is completely handled by two types of `class`es: `Solver` and `StepperBase`, with her daughter specialized for each method (for now: Newton-Raphson, Bisection, Chords, Fixed Point).
+The `Solver` class is constructed with all the inputs required and taken from the previous reading and configuring steps, and has methods to manage the outer passages involved in the solution, all of which are called inside a unique `solve` method. These steps involve mainly the convergence check, the results saving, and the definition and call of the object specialized in computing the single step of the numerical method itself.
+`Solver` has no daughter classes but could be refactored to be daughter of a `SolverBase` class which does everything which is in common for all the numerical methods (convergence check and while loop); this refactored `SolverNonLinear` would inherit all the methods from the mother class and add arguments for the functions and the boolean to require Aitken's acceleration. This new `SolverNonLinear` could have daughter classes for solving single equations (our current `Solver`) or systems of them,  which would differ just in the type of the arguments saved (e.g. derivative/jacobian for Newton-Raphson). This draft idea, which could be substituted by a fully templated version of the `SolverNonLinear` class, comes from the fact that templating is already used to define the different kinds of initial guesses allowed, and it is not possible  (in C++) to partially specialize different templates. Another more brute-force idea could be to define all the different arguments as matrices and then use them as 1 by 1 matrices (or vectors) for the single equation case, without creating two daughter classes. All of these ideas would have to be adapted for the `Stepper` classes too.
+A `StepperBase` object is constructed inside the `Solver::solve` method, initially as completely virtual. Then it is converted into a specialized daughter class of it, with all the required arguments to use for the single step computation.
+The only method executed by the Steppers is `compute_step` which computes a single step of the numerical method and returns the results for it.
+To allow more numerical methods, it is possible to simply define new daughter classes with different `compute_step` algorithms and potentially different arguments to store.
+
 ### Writer and Printers
+
+The writing part of the project is done again by two major `class`es: `Writer` and `PrinterBase`, with her daughter classes for each output destination available.
+All the inputs required to define how and where to write the results are defined in the reading and configuring step.
+What is important to point out is that these classes are not defined as only applicable for our specific project, but can write anything correctly passed (potentially with slight refactoring of the code).
+This classes' methods are coded just for the typed version required in out project, but different typed version would be easy to add.
+`Writer` has arguments to store what to write and how, and methods (all of which are called by a unique `write` one) to define, convert and handle a `PrinterBase` object.
+`PrinterBase` is then specialized for a certain output destination, all of which have a overriden `write_values` method which prints a given input on a stored output.
+To allow different writing destinations, new daughter classes can be defined inheriting from existing ones.
 
 ## Dependencies
 
