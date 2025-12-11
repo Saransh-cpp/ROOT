@@ -7,7 +7,9 @@
 
 ROOT, but not the [particle physics one](https://github.com/root-project/root). Project submission for MATH-458: Programming concepts in scientific computing.
 
-## Project structure and dependencies
+The project bundles a header-only C++ library (`libROOT`) implementing root-finding algorithms and a CLI application (`root_cli`) to read and parse input, run the algorithms implemented in libROOT, and write the output to a file of specific format.
+
+## Project structure
 
 The project uses the recommended [Canonical Project Structure](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2018/p1204r0.html) for C++ projects.
 
@@ -37,11 +39,37 @@ The project uses the recommended [Canonical Project Structure](https://www.open-
     └── tests                 # Tests for the ROOT library
 ```
 
-### Dependencies
+Apart from being divided into a library and a user-facing application/executable, the design on the project
+is concretely split into four phases.
 
-#### Dependencies for the project
+### CLI
 
-##### Required
+The CLI application is written (and should be written) within the `main` function. The `main` function further calls the `Reader`, `Solver`, and `Writer` classes (in this order) on the input passed through the CLI application.
+
+### Readers and Parsers
+
+Reading and parsing is handled by the `ReaderBase` and `FunctionParserBase` daughter classes. Adding a new reading method should include writing a new `ReaderBase` daughter class and adding functionality to parse a new type of function should include writing a new `FunctionParserBase` daughter class. The information read is stored by the `ConfigBase` daughter classes (these are data classes to be specific, and can ideally by just structs, but they use some object-oriented features, requiring them to be classes). Adding a new stepper type should include adding a new `ConfigBase` daughter class. The `read` method of the `ReaderBase` daughter classes accept a pointer of the type `CLI::App` and return a pointer to an object of the type of one of the daughter classes of `ConfigBase`. The `Reader` classes further implement helper methods for reading and parsing different things, and functions for constructing the `ConfigBase` object itself. Similarly, the `parse` function of the `FunctionParser` classes takes in a `string` and returns a C++ function (parses a specific type of function). The classes also include helper methods for parsing functions, and a method (in `FunctionParserBase`) to infer the type of the function (from the string) and dispatch the appropriate daughter class objects (and methods) to parse the function. In the future, it would make sense to add a wrapper around `Reader` classes to abstract `Config` creation and pointer manipulation from the `main` function (just how it is done by the `Solver` and `Writer` classes).
+
+### Solver and Steppers
+
+Solving non-linear equation is completely handled by two classes: `Solver` and `StepperBase`. `StepperBase` has specialized child classes for each method (for now: Newton-Raphson, Bisection, Chords, Fixed Point).
+The `Solver` class is constructed with the data stored in `ConfigBase` child classes, and has methods to manage the high-level API involved in solving an equation. The `solve` method of the `Solver` class comprises of multiple internal calls, mainly involving convergence check, results saving, instantiating an object of one of the specialized `StepperBase` child classes, and calling the relevant method to compute single step of the numerical method.
+
+`Solver` has no child classes but it could be refactored to be child of a `SolverBase` class (refactoring and abstracting common steps, such as the convergence check and the solve loop). The refactored `SolverNonLinear` class would inherit all the methods from the abstract class and add arguments for the functions and the boolean to require Aitken's acceleration. The new `SolverNonLinear` could have child classes for solving single equations (our current `Solver`) or systems of equations, which would differ just in the type of the arguments saved (e.g. derivative/jacobian for Newton-Raphson). This draft idea, which could be substituted by a fully templated version of the `SolverNonLinear` class, comes from the fact that templating is already used to define the different kinds of initial guesses allowed, and it is not possible (in C++) to partially specialize different templates. Another more brute-force idea could be to define all the different arguments as matrices and then use them as 1 X 1 matrices (or vectors) for the single equation case, without creating two daughter classes. All of these ideas would have to be adapted for the `Stepper` classes too.
+
+`Solver::solve` declares a `StepperBase` pointer and later instantiates it to point to an object of one of its child class, passing down all the required arguments to use for a single step computation. The only public method executed by the `Stepper`s is `compute_step`, which computes a single step of the numerical method and returns the results. To allow more numerical methods, it is possible to simply define new child classes with different `compute_step` algorithms and potentially different arguments to store.
+
+### Writer and Printers
+
+The writing part of the project is handled by two classes: `Writer` and `PrinterBase`, with `PrinterBase` having child classes for each output type. The output type and other relevant information is carried down through the `ConfigBase` classes (defined by the `Reader`s). Importantly, these classes are not only defined for our specific project, but can write anything correctly passed (potentially with slight refactoring of the code). The classes' methods are implemented just for the type required in our project, but different typed versions would be easy to add.
+
+`Writer` stores what to write and how, the writing method, and implements a high-level `write` method to instantiate an object of one of the `PrinterBase` child classes. `PrinterBase` has child classes specialized for certain output types, all of which have an overwritten `write_values` method which prints a given input on a stored output. To allow different writing destinations, new child classes can be defined inheriting from the existing ones.
+
+## Dependencies
+
+### Dependencies for the project
+
+#### Required
 
 The required dependencies are included within the project as git submodules and are pinned to specific
 versions for reproducibility.
@@ -49,28 +77,28 @@ versions for reproducibility.
 - `CLI11` (`v2.6.1`): for constructing the CLI interface for the user-facing `root_cli` application.
 - `Eigen3` (`v5.0.1`): for matric and vector usage / calculations.
 
-##### Optional
+#### Optional
 
 These can be installed by a user and are not installed through the project's build system.
 
 - `gnuplot`: for plotting results
 
-#### Required dependencies for the tests
+### Required dependencies for the tests
 
 `gnuplot` must be installed before building the project with `-DTEST=ON`. `GoogleTest` is installed automatically if the project is built with `-DTEST=ON`.
 
 - `GoogleTest` (`v1.17.0`): for all tests.
 - `gnuplot`: for testing `gnuplot` related code.
 
-#### Dependencies for the documentation
+### Dependencies for the documentation
 
 These can be installed by a user and are not installed through the project's build system.
 
-##### Required
+#### Required
 
 - `doxygen`: for generating the documentation.
 
-##### Optional
+#### Optional
 
 - `graphviz`: for generating hierarchy and flow diagrams in the documentation.
 
@@ -142,7 +170,8 @@ root_cli <arguments>
 In order to print out more information about the arguments and the subcommands:
 
 ```
-root_cli <arguments>
+root_cli --help
+root_cli <subcommand> --help
 ```
 
 Every additional needed function must be added together with the function to find the root of.
@@ -154,10 +183,10 @@ Here's a list of examples of possible execution syntax:
     root_cli --wcli cli --function "x^2-4" newton --initial 1.0 --derivative "2*x"
     ```
 
-- DAT input file called input.dat with first row not being header and " " separating different values, .dat file output called output.dat, Bisection method to find the root of x^3-1, with initial interval [-2,2], verbose output (given tolerance and maximum iterations):
+- DAT input file called input.dat, DAT output file called output.dat, Bisection method to find the root of x^3-1, with initial interval [-2,2], and verbose output (given tolerance and maximum iterations):
 
     ```
-    root_cli --verbose --wdat output dat input
+    root_cli --verbose --wdat output dat --file input.dat
     ```
 
     where input.dat is:
@@ -165,49 +194,52 @@ Here's a list of examples of possible execution syntax:
     ```
     function = x^3-1
     method = bisection
-    initial = -1
+    interval_a = -2
+    interval_b = 2
     tolerance = 1e-5
     max-iterations = 100
     derivative = 2*x
     ```
 
-- CSV input file called input.csv with first row which is a header and "," separating different values, .csv file ouput
-called output.csv, Fixed Point Method to find the root of cos(x), with
-initial guess 0.5, fixed point function cos(x):
+- CSV input file called input.csv with first row which is a header and "," separating different values, CSV output file called output.csv, Fixed Point Method to find the root of x^2-x, with initial guess 0.5, fixed point function x^2, and verbose output (given tolerance and maximum iterations)::
 
     ```
-    root_cli --wcsv output --ocsvsep , csv input --sep , --header
+    root_cli --verbose --wcsv output --ocsvsep , csv --file input.csv --sep ,
     ```
 
     where input.csv is:
 
     ```
     function,method,initial,tolerance,max_iterations,g-function
-    'cos(x)',fixed_point,0.5,1e-5,100,'cos(x)'
+    x^2-x,fixed_point,0.5,1e-65,100,x^2
     ```
 
-- CLI input, .dat output file called output.dat and moreover a GNU Plot is created from it as output.png. Chords method to solve
-the equation x^3-8 starting from the two initial points 1 and 3:
+- Same as above but with aitken acceleration (will converge faster):
 
     ```
-    root_cli --wdat output --wgnuplot output cli --function x^3-8 chords --x0 --x1 3
+    root_cli --verbose --wcsv output --ocsvsep , csv --file input.csv --sep ,
     ```
 
-The installed CLI application can simply be used by:
+    where input.csv is:
 
-```
-$ <install_path>/bin/root_cli
-# or just root_cli if installed in /usr/local/bin/ on unix for instance
-```
+    ```
+    function,method,initial,tolerance,max_iterations,g-function,aitken
+    x^2-x,fixed_point,0.5,1e-5,100,x^2,true
+    ```
 
-And the shared library can be used inside `cxx` files using:
+- CLI input, DAT output file called output.dat, gnuplot writing method (a GNU Plot named output.png is created), Chords method to solve the equation x^3-8 starting from the two initial points 1 and 3:
 
-```
-# pass the path of headers
-g++ <file>.cpp -o <executable_name> -I<install_path>/include
-```
+    ```
+    root_cli --wgnuplot output cli --function x^3-8 chords --x0 1 --x1 3
+    ```
 
-All of which can also be set in `CMakeLists.txt`.
+## Typical program execution
+
+Input reading is handled by a CLI implemented using `CLI11`, which passes the read options to the appropriate `ReaderBase` daughter class. The `read` method of the `ReaderBase` daughter classes construct and return a `ConfigBase` daughter class object. The `ReaderBase` daughter classes also use the `FunctionParserBase` daughter classes internally to parse the function (and derivation + g function) inputted by user (string to a C++ function). The information stored in `ConfigBase` daughter classes is then passed down to the `Solver` class to run the algorithm.
+
+The `solve` method of `Solver` constructs a `StepperBase` child class object, handles its methods calls, and finally returns the matrix of the results of the computation performed. `compute_step` method of each `StepperBase` child class gets the previous iteration and computes and returns the new guess, which will be saved and checked by `Solver`'s methods. The final results returned by `solve` are then passed down to the `Writer` class to write them.
+
+The `write` method of `Writer` construct a `PrinterBase` child class object, and handles its methods calls. `write_values` method of each `StepperBase` child class gets a certain value to be printed and prints it out in a defined destination.
 
 ## Tests
 
@@ -315,4 +347,14 @@ which will write the HTML files to `docs/html`.
 
 ### Building docs on GH Pages
 
-The documentation is automatically built (on every PR) and deployed (on every push to `main`) to GH Pages using the `build-and-deploy-docs` workflow.
+The documentation is automatically built (on every PR) and deployed (on every push to `main` here - [https://saransh-cpp.github.io/ROOT/](https://saransh-cpp.github.io/ROOT/)) to GH Pages using the `build-and-deploy-docs` workflow.
+
+## Limitations and problems
+
+Most of the limitations and problems can be found as independent issues in the [issue tracker on GitHub](https://github.com/Saransh-cpp/ROOT/issues), or in the previous Project Structure section.
+
+## Authors and their contributions
+
+- **Andrea Saporito** ([@andreasaporito](https://github.com/andreasaporito)): Stepper, Solver, Writer, Printer classes/functionalities, most of the integration tests and some unit tests, and some fixes/refactoring here and there (touching Reader and Parser classes/functionalities, and the build system).
+
+- **Saransh Chopra** ([@Saransh-cpp](https://github.com/Saransh-cpp)): Top-level CLI executable/application, Reader and Parser classes/functionalities, Project infrastructure (build system {code, docs, tests}, project structure, CI/CD), most of the unit tests and some integration tests, and some refactoring here and there (touching Stepper, Solver, Writer, and Printer classes/functionalities).

@@ -208,6 +208,10 @@ std::unique_ptr<ConfigBase> ReaderBase::make_config_from_map(
                 std::exit(EXIT_FAILURE);
             }
             double initial = 0.0;
+            if (!parseDouble(it_x0->second, initial)) {
+                std::cerr << "\033[31mmake_config_from_map: invalid initial\033[0m\n";
+                std::exit(EXIT_FAILURE);
+            }
             auto g_function = FunctionParserBase::parseFunction(it_g->second);
             return std::make_unique<FixedPointConfig>(tolerance, max_iter, aitken, function, initial, g_function,
                                                       verbose);
@@ -255,7 +259,6 @@ std::unique_ptr<ConfigBase> ReaderCSV::read(CLI::App* app, bool verbose) {
     this->filename = app->get_option("--file")->as<std::string>();
     this->sep = app->get_option("--sep")->as<char>();
     this->quote = app->get_option("--quote")->as<char>();
-    this->has_header = app->get_option("--header")->as<bool>();
     std::ifstream ifs(filename);
     if (!ifs) {
         std::cerr << "\033[31mReaderCSV: failed to open file: " << filename << "\033[0m\n";
@@ -265,32 +268,19 @@ std::unique_ptr<ConfigBase> ReaderCSV::read(CLI::App* app, bool verbose) {
     std::string headerLine;
     std::string valueLine;
 
-    if (this->has_header) {
-        if (!std::getline(ifs, headerLine)) {
-            std::cerr << "\033[31mReaderCSV: empty file (expecting header)\033[0m\n";
-            std::exit(EXIT_FAILURE);
-        }
-        if (!std::getline(ifs, valueLine)) {
-            std::cerr << "\033[31mReaderCSV: missing value row\033[0m\n";
-            std::exit(EXIT_FAILURE);
-        }
-    } else {
-        if (!std::getline(ifs, valueLine)) {
-            std::cerr << "\033[31mReaderCSV: empty file\033[0m\n";
-            std::exit(EXIT_FAILURE);
-        }
-        headerLine.clear();
+    if (!std::getline(ifs, headerLine)) {
+        std::cerr << "\033[31mReaderCSV: empty file (expecting header)\033[0m\n";
+        std::exit(EXIT_FAILURE);
+    }
+    if (!std::getline(ifs, valueLine)) {
+        std::cerr << "\033[31mReaderCSV: missing value row\033[0m\n";
+        std::exit(EXIT_FAILURE);
     }
 
     std::vector<std::string> headers;
-    if (this->has_header) {
-        headers = splitCsvLine(headerLine);
-        for (auto& header : headers) {
-            header = trim(header);
-        }
-    } else {
-        std::cerr << "\033[31mReaderCSV: no headers provided\033[0m\n";
-        std::exit(EXIT_FAILURE);
+    headers = splitCsvLine(headerLine);
+    for (auto& header : headers) {
+        header = trim(header);
     }
 
     auto values = splitCsvLine(valueLine);
@@ -311,13 +301,8 @@ std::unique_ptr<ConfigBase> ReaderCSV::read(CLI::App* app, bool verbose) {
             config_map[key] = values[i];
         }
     } else {
-        // positional mapping documented here:
-        std::vector<std::string> posnames = {"method",     "tolerance",  "max-iterations", "aitken",     "function",
-                                             "derivative", "interval_a", "interval_b",     "function-g", "initial",
-                                             "x0",         "x1"};
-        for (size_t i = 0; i < values.size() && i < posnames.size(); ++i) {
-            config_map[posnames[i]] = values[i];
-        }
+        std::cerr << "\033[31mReaderCSV: empty header row\033[0m\n";
+        std::exit(EXIT_FAILURE);
     }
 
     if (verbose) {

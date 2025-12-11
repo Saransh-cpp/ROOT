@@ -6,6 +6,9 @@
  * including polynomial and trigonometric functions. The parsers convert string representations
  * of functions into callable std::function<double(double)> objects.
  *
+ * This file was written with constant LLM assistance (vibe coded). I built
+ * the structure and logic, and the LLM helped fill in the details.
+ *
  * @author Saransh-cpp
  */
 #ifndef FUNCTION_HPP
