@@ -157,7 +157,7 @@ Here's a list of examples of possible execution syntax:
 - DAT input file called input.dat with first row not being header and " " separating different values, .dat file output called output.dat, Bisection method to find the root of x^3-1, with initial interval [-2,2], verbose output (given tolerance and maximum iterations):
 
     ```
-    root_cli --verbose --wdat output dat input
+    root_cli --verbose --wdat output dat --file input.dat
     ```
 
     where input.dat is:
@@ -165,10 +165,10 @@ Here's a list of examples of possible execution syntax:
     ```
     function = x^3-1
     method = bisection
-    initial = -1
+    interval_a = -1
+    interval_b = 2
     tolerance = 1e-5
     max-iterations = 100
-    derivative = 2*x
     ```
 
 - CSV input file called input.csv with first row which is a header and "," separating different values, .csv file ouput
@@ -176,21 +176,21 @@ called output.csv, Fixed Point Method to find the root of cos(x), with
 initial guess 0.5, fixed point function cos(x):
 
     ```
-    root_cli --wcsv output --ocsvsep , csv input --sep , --header
+    root_cli --wcsv output --ocsvsep , csv --file input.csv --sep , --header 1
     ```
 
     where input.csv is:
 
     ```
     function,method,initial,tolerance,max_iterations,g-function
-    'cos(x)',fixed_point,0.5,1e-5,100,'cos(x)'
+    cos(x),fixed_point,0.5,1e-5,100,cos(x)
     ```
 
 - CLI input, .dat output file called output.dat and moreover a GNU Plot is created from it as output.png. Chords method to solve
 the equation x^3-8 starting from the two initial points 1 and 3:
 
     ```
-    root_cli --wdat output --wgnuplot output cli --function x^3-8 chords --x0 --x1 3
+    root_cli --wdat output --wgnuplot output cli --function x^3-8 chords --x0 1 --x1 3
     ```
 
 The installed CLI application can simply be used by:

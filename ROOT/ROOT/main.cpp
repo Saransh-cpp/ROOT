@@ -196,12 +196,14 @@ int main(int argc, char** argv) {
                                         append_or_overwrite == 'o');
         writer.write();
     } else if (!write_to_dat.empty()) {
-        Writer<Eigen::MatrixX2d> writer(results, WritingMethod::DAT, write_to_dat, ' ', append_or_overwrite == 'o');
-        writer.write();
-    } else if (!write_with_gnuplot.empty()) {
+        if (!write_with_gnuplot.empty()) {
         Writer<Eigen::MatrixX2d> writer(results, WritingMethod::GNUPLOT, write_with_gnuplot, ',',
                                         append_or_overwrite == 'o');
         writer.write();
+    }
+        else {
+            Writer<Eigen::MatrixX2d> writer(results, WritingMethod::DAT, write_to_dat, ' ', append_or_overwrite == 'o');
+            writer.write();}
     }
 
     return 0;
