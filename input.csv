@@ -1,2 +1,0 @@
-function,method,initial,tolerance,max_iterations,g-function,aitken
-x^2-x,fixed_point,0.5,1e-5,100,x^2,true
