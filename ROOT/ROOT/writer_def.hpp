@@ -2,8 +2,6 @@
  * @file writer_def.hpp
  * @brief Contains definitions for classes Writer and Printer to Write on different output destinations
  *
- * @author andreasaporito
- *
  * These classes themselves could be used for other kinds of writing, and do not have any relationship
  * with the solver process.
  * The Writer class handles the writing outer process, meanwhile the printers effectively write on the output or
@@ -11,6 +9,9 @@
  * The Printer classes actually print a given value in the specified output, getting just one value from the
  * ones stored in Writer object. They can write on the output, on .csv or .dat files, or they can
  * write on a .dat file and then create a gnuplot.
+ *
+ * @author andreasaporito
+ *
  */
 #ifndef ROOT_WRITER_DEF_HPP
 #define ROOT_WRITER_DEF_HPP
@@ -26,7 +27,7 @@ template <typename V>
 class PrinterBase;
 
 /**
- * @brief Writer class - stores required arguments and handles the printing flow
+ * @brief Class to store required arguments and handle the printing flow
  */
 template <typename T>
 class Writer {
@@ -63,20 +64,26 @@ class Writer {
     void write();
 };
 
-/** @brief Abstract Printer class*/
+/** @brief Abstract Printer class */
 template <typename V>
 class PrinterBase {
   public:
+    /** @brief Default constructor for the PrinterBase class */
     PrinterBase() = default;
+    /** @brief Virtual destructor for the PrinterBase class */
     virtual ~PrinterBase() = default;
+    /** @brief Pure virtual method to write a given value
+     *
+     * @param value The given value to be written.
+     */
     virtual void write_values(const V& value) = 0;
 };
 
-/** @brief The class to print out the values in the CLI*/
+/** @brief The class to print out the values in the CLI */
 template <typename V>
 class PrinterCLI : public PrinterBase<V> {
   public:
-    /** @brief Constructor for the PrinterCLI class - just prints out a string*/
+    /** @brief Constructor for the PrinterCLI class - just prints out a string */
     PrinterCLI();
     /** @brief Method to actually print a given value in the output
      *
@@ -134,7 +141,11 @@ class PrinterCSV : public PrinterFile<V> {
      * @param ow_mode Option to overwrite or append the file
      */
     PrinterCSV(const std::string& fname, char sep, bool ow_mode);
-    /** @brief Writes a given result into the .csv file with the sotred separator */
+    /**
+     * @brief Writes a given result into the .csv file with the sotred separator
+     *
+     * @param value The value to write
+     */
     void write_values(const V& value) override;
 };
 

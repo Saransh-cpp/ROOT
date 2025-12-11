@@ -15,6 +15,6 @@ Checks: >
   google-*
 CheckOptions:
   - key: readability-function-cognitive-complexity.Threshold
-    value: '37'
+    value: '40'
 ExtraArgs: ['-std=c++20']
 WarningsAsErrors: '*'

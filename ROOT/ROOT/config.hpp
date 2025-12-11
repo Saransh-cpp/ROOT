@@ -6,6 +6,9 @@
  * including Bisection, Newton, Secant, and Fixed Point methods. Each configuration
  * class encapsulates the parameters required for its respective method.
  *
+ * This file was written with constant LLM assistance (vibe coded). I built
+ * the structure and logic, and the LLM helped fill in the details.
+ *
  * @author Saransh-cpp
  *
  */
