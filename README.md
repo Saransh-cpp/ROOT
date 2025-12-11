@@ -215,7 +215,7 @@ Here's a list of examples of possible execution syntax:
 
     ```
     function,method,initial,tolerance,max_iterations,g-function
-    x^2-x,fixed_point,0.5,1e-5,100,x^2
+    x^2-x,fixed_point,0.5,1e-65,100,x^2
     ```
 
 - Same as above but with aitken acceleration (will converge faster):
@@ -241,9 +241,12 @@ Here's a list of examples of possible execution syntax:
 
 Input reading is handled by a CLI implemented using `CLI11`, which passes the read options to the appropriate `ReaderBase` daughter class. The `read` method of the `ReaderBase` daughter classes construct and return a `ConfigBase` daughter class object. The `ReaderBase` daughter classes also use the `FunctionParserBase` daughter classes internally to parse the function (and derivation + g function) inputted by user (string to a C++ function). The information stored in `ConfigBase` daughter classes is then passed down to the `Solver` class to run the algorithm.
 
-<add a paragraph about solver and stepper here>
+The `solve` method of `Solver` construct and converts a `StepperBase` daughter class object, handles its methods calls, and finally returns the matrix of the results of the computation performed.
+`compute_step` method of each `StepperBase` daughter class gets the previous iteration and computes and returns the new guess, which will be saved and checked by `Solver`'s methods.
+The final results returned by `solve` are then passed down to the `Writer` class to write them.
 
-<add a paragraph about writer and printer here>
+The `write` method of `Writer` construct and converts a `PrinterBase` daughter class object, and handles its methods calls.
+`write_values` method of each `StepperBase` daughter class gets a certain value to be printed and prints it out in a defined destination.
 
 ## Tests
 
@@ -355,7 +358,7 @@ The documentation is automatically built (on every PR) and deployed (on every pu
 
 ## Limitations and problems
 
-Most of the limitations and problems can be found as independent issues in the [issue tracker on GitHub](https://github.com/Saransh-cpp/ROOT/issues).
+Most of the limitations and problems can be found as independent issues in the [issue tracker on GitHub](https://github.com/Saransh-cpp/ROOT/issues), or in the previous Project Structure section.
 
 ## Authors and their contributions
 
