@@ -148,8 +148,8 @@ OPTIONS:
                               Separator character for CSV output
           --wdat, --write-to-dat TEXT
                               Path for writing results to DAT file
-          --wgnuplot, --write-to-gnuplot TEXT
-                              Path for writing results to Gnuplot file
+          --wgnuplot, --write-to-gnuplot Needs: --wdat
+                              Write results to Gnuplot file
           --ofmode, --output-file-mode CHAR:{a,o} [o]
                               Append or overwrite output file: 'a' for append, 'o' for
                               overwrite
@@ -198,7 +198,6 @@ Here's a list of examples of possible execution syntax:
     interval_b = 2
     tolerance = 1e-5
     max-iterations = 100
-    derivative = 2*x
     ```
 
 - CSV input file called input.csv with first row which is a header and "," separating different values, CSV output file called output.csv, Fixed Point Method to find the root of x^2-x, with initial guess 0.5, fixed point function x^2, and verbose output (given tolerance and maximum iterations)::
@@ -230,7 +229,7 @@ Here's a list of examples of possible execution syntax:
 - CLI input, DAT output file called output.dat, gnuplot writing method (a GNU Plot named output.png is created), Chords method to solve the equation x^3-8 starting from the two initial points 1 and 3:
 
     ```
-    root_cli --wgnuplot output cli --function x^3-8 chords --x0 1 --x1 3
+    root_cli --wdat output --wgnuplot cli --function x^3-8 chords --x0 1 --x1 3
     ```
 
 ## Typical program execution

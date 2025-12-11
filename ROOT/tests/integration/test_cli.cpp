@@ -71,7 +71,8 @@ TEST(NewtonMethodWithReaderCSVWriterGNUPlot, QuadraticConvergesToMinus2) {
     std::string exe = "../../ROOT/root_cli";
 
     std::string cmd = exe +
-                      " --wgnuplot result"
+                      " --wdat result"
+                      " --wgnuplot"
                       " csv --file " +
                       filename;
 
@@ -131,7 +132,8 @@ TEST(NewtonMethodWithReaderDATWriterGNUPlot, QuadraticConvergesToMinus2) {
     std::string exe = "../../ROOT/root_cli";
 
     std::string cmd = exe +
-                      " --wgnuplot result"
+                      " --wdat result"
+                      " --wgnuplot"
                       " dat --file " +
                       filename;
 
