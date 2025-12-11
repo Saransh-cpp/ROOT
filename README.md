@@ -354,7 +354,7 @@ which will write the HTML files to `docs/html`.
 
 ### Building docs on GH Pages
 
-The documentation is automatically built (on every PR) and deployed (on every push to `main`) to GH Pages using the `build-and-deploy-docs` workflow.
+The documentation is automatically built (on every PR) and deployed (on every push to `main` here - [https://saransh-cpp.github.io/ROOT/](https://saransh-cpp.github.io/ROOT/)) to GH Pages using the `build-and-deploy-docs` workflow.
 
 ## Limitations and problems
 
